@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div th:fragment="search-form(message)">
+  <h1 th:text="${message}"></h1>
+  <form action="#" th:action="@{/searched}" method="GET"><input type="text" id="tags" name="tags" th:value="${message}" onfocus="this.select();"><select name="sort" id="sort"><option value="image_id">画像のID</option><option value="image_name">画像の名前</option><option value="image_url">画像のURL</option><option value="tag_count">タグの数</option><option value="random">ランダム</option></select><select name="order" id="order"><option value="asc">昇順</option><option value="desc">降順</option></select><input type="submit" value="検索"></form>
+</div>
+</body>
+</html>

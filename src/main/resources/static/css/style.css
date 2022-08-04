@@ -1,0 +1,48 @@
+body {
+  position: relative;
+  font-family: "M PLUS Rounded 1c", sans-serif;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tag {
+  margin: 5px 10px;
+  text-decoration: none;
+}
+
+.tag a {
+  display: inline-block;
+  border-radius: 4px;
+  font-weight: bold;
+  padding: 2px 15px;
+  text-decoration: none;
+  background: dodgerblue;
+  color: whitesmoke;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1f1f1f;
+    color: whitesmoke;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background: white;
+    color: black;
+  }
+}
+
+form {
+  text-align: center;
+}
+
+form *{
+  outline: 0;
+  margin: 0;
+  height: 30px;
+}

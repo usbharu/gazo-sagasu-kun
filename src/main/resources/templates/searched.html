@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+  <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title th:text="${message}+' の検索結果'"></title>
+</head>
+<body>
+<div th:include="search-form :: search-form(${message})"></div>
+
+<th:block th:if="${images.size == 0}">
+  <h2>検索結果が見つかりませんでした</h2>
+</th:block>
+
+<th:block th:each="image : ${images}">
+  <div class="images">
+    <a th:href="${image.image.url}" target="_blank">
+      <img th:src="${image.image.url}" width="80%" th:alt="${image.image.name}">
+    </a>
+    <p th:text="${image.image.name}"></p>
+    <hr>
+    <div class="tags">
+      <th:block th:each="tag : ${image.tags}">
+        <div class="tag">
+
+          <a th:href="${'searched?tags=' + tag.name}">
+            <p th:text="'#'+${tag.name}"></p>
+          </a>
+        </div>
+      </th:block>
+    </div>
+  </div>
+</th:block>
+</body>
+</html>

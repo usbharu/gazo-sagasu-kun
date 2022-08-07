@@ -1,9 +1,8 @@
-package io.github.usbharu.imagesearch.controller;
+package io.github.usbharu.imagesearch.util;
 
 import java.io.File;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

@@ -6,7 +6,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 import io.github.usbharu.imagesearch.ImageSearchApplication;
-import io.github.usbharu.imagesearch.controller.ImageFileNameUtil;
+import io.github.usbharu.imagesearch.util.ImageFileNameUtil;
 import io.github.usbharu.imagesearch.db.test.CsvDataSetLoader;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.ImageTag;

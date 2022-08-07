@@ -1,7 +1,6 @@
 package io.github.usbharu.imagesearch.domain.service;
 
 import io.github.usbharu.imagesearch.domain.model.ImageTag;
-import io.github.usbharu.imagesearch.domain.repository.ImageTagDao;
 import io.github.usbharu.imagesearch.domain.repository.ImageTagDaoJdbc;
 import io.github.usbharu.imagesearch.domain.repository.ImageTagDaoOrder;
 import io.github.usbharu.imagesearch.domain.repository.ImageTagDaoOrderType;

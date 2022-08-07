@@ -31,9 +31,11 @@ public class IndexController {
   @GetMapping("/searched")
   public String searched(@ModelAttribute("tags") String msg,@ModelAttribute("sort") String sort,@ModelAttribute("order")String order, Model model) {
 
-    log.trace("Access to Searched : "+msg);
-    List<ImageTag> list = new ArrayList<>(imageSearch.search(msg.split("[; ,]"),sort,order));
+    log.trace("Access to Searched : " + msg);
+    List<ImageTag> list = new ArrayList<>(imageSearch.search(msg.split("[; ,]"), sort, order));
     model.addAttribute("message", msg);
+    model.addAttribute("order", order);
+    model.addAttribute("sort", sort);
     model.addAttribute("images", list);
     return "searched";
   }

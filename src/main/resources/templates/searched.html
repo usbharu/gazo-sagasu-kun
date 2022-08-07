@@ -7,7 +7,7 @@
   <title th:text="${message}+' の検索結果'"></title>
 </head>
 <body>
-<div th:include="search-form :: search-form(${message})"></div>
+<div th:include="search-form :: search-form(${message},${order},${sort})"></div>
 
 <th:block th:if="${images.size == 0}">
   <h2>検索結果が見つかりませんでした</h2>

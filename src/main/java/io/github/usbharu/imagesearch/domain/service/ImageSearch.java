@@ -1,9 +1,11 @@
 package io.github.usbharu.imagesearch.domain.service;
 
 import io.github.usbharu.imagesearch.domain.model.ImageTag;
+import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.repository.ImageTagDaoJdbc;
 import io.github.usbharu.imagesearch.domain.repository.ImageTagDaoOrder;
 import io.github.usbharu.imagesearch.domain.repository.ImageTagDaoOrderType;
+import io.github.usbharu.imagesearch.domain.repository.TagDao;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.logging.Log;
@@ -19,11 +21,15 @@ public class ImageSearch {
   @Autowired
   private ImageTagDaoJdbc imageTagDaoJdbc;
 
-  public List<ImageTag> search(String tags){
+
+  @Autowired
+  private TagDao tagDao;
+
+  public List<ImageTag> search(String tags) {
     return search(tags.split("[, ;]"));
   }
 
-  public List<ImageTag> search(String[] tags){
+  public List<ImageTag> search(String[] tags) {
     log.debug("search tags:" + Arrays.toString(tags));
     List<ImageTag> byTagNames = imageTagDaoJdbc.findByTagNames(List.of(tags));
     log.debug("Success to search : " + byTagNames.size());
@@ -37,12 +43,17 @@ public class ImageSearch {
     try {
       imageTagDaoOrder = ImageTagDaoOrder.fromString(order);
       imageTagDaoOrderType = ImageTagDaoOrderType.fromString(sort);
-    }catch (IllegalArgumentException e){
+    } catch (IllegalArgumentException e) {
       imageTagDaoOrderType = ImageTagDaoOrderType.IMAGE_ID;
       imageTagDaoOrder = ImageTagDaoOrder.ASC;
     }
-    List<ImageTag> byTagNames = imageTagDaoJdbc.findByTagNames(List.of(tags),imageTagDaoOrderType,imageTagDaoOrder);
+    List<ImageTag> byTagNames =
+        imageTagDaoJdbc.findByTagNames(List.of(tags), imageTagDaoOrderType, imageTagDaoOrder);
     log.debug("Success to search : " + byTagNames.size());
     return byTagNames;
+  }
+
+  public Tag randomTag() {
+    return tagDao.selectRandomOne();
   }
 }

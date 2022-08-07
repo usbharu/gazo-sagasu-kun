@@ -2,6 +2,7 @@ package io.github.usbharu.imagesearch.controller;
 
 import io.github.usbharu.imagesearch.domain.model.ImageTag;
 import io.github.usbharu.imagesearch.domain.service.ImageSearch;
+import io.github.usbharu.imagesearch.domain.service.TagService;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
@@ -20,19 +21,24 @@ public class IndexController {
   @Autowired
   private ImageSearch imageSearch;
 
+  @Autowired
+  private TagService tagService;
+
   @GetMapping("/")
   public String index(Model model) {
     log.trace("Access to Index");
-    model.addAttribute("message", "Hello World!");
+    model.addAttribute("message", imageSearch.randomTag().getName());
     return "index";
   }
 
 
   @GetMapping("/searched")
-  public String searched(@ModelAttribute("tags") String msg,@ModelAttribute("sort") String sort,@ModelAttribute("order")String order, Model model) {
+  public String searched(@ModelAttribute("tags") String msg, @ModelAttribute("sort") String sort,
+      @ModelAttribute("order") String order, Model model) {
 
     log.trace("Access to Searched : " + msg);
     List<ImageTag> list = new ArrayList<>(imageSearch.search(msg.split("[; ,]"), sort, order));
+    model.addAttribute("tagCount", tagService.tagOrderOfMostUsedLimit(20));
     model.addAttribute("message", msg);
     model.addAttribute("order", order);
     model.addAttribute("sort", sort);

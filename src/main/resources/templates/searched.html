@@ -1,36 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css"/>
   <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet">
   <meta charset="UTF-8">
+  <meta content="width=device-width" name="viewport">
   <title th:text="${message}+' の検索結果'"></title>
 </head>
 <body>
+<div>
+  <a href="/" style="color: inherit;"><h1>イラスト検索</h1></a>
+</div>
+
 <div th:include="search-form :: search-form(${message},${order},${sort})"></div>
 
 <th:block th:if="${images.size == 0}">
   <h2>検索結果が見つかりませんでした</h2>
 </th:block>
+<div class="wrapper">
 
-<th:block th:each="image : ${images}">
-  <div class="images">
-    <a th:href="${image.image.url}" target="_blank">
-      <img th:src="${image.image.url}" width="80%" th:alt="${image.image.name}">
-    </a>
-    <p th:text="${image.image.name}"></p>
-    <hr>
+
+  <section class="main">
+    <th:block th:each="image : ${images}">
+      <div class="images">
+        <hr>
+        <a target="_blank" th:href="${image.image.url}">
+          <img th:alt="${image.image.name}" th:src="${image.image.url}" width="80%">
+        </a>
+        <p th:text="${image.image.name}"></p>
+        <div class="tags">
+          <th:block th:each="tag : ${image.tags}">
+            <div class="tag">
+
+              <a th:href="${'searched?tags=' + tag.name}">
+                <p th:text="'#'+${tag.name}"></p>
+              </a>
+            </div>
+          </th:block>
+        </div>
+      </div>
+    </th:block>
+  </section>
+  <section class="side">
+    <h2>おすすめタグ</h2>
     <div class="tags">
-      <th:block th:each="tag : ${image.tags}">
-        <div class="tag">
 
-          <a th:href="${'searched?tags=' + tag.name}">
-            <p th:text="'#'+${tag.name}"></p>
+      <th:block th:each="tag : ${tagCount}">
+        <div class="tag">
+          <a th:href="${'searched?tags=' + tag.tag.name}">
+            <p th:text="'#'+${tag.tag.name}"></p>
           </a>
         </div>
       </th:block>
     </div>
-  </div>
-</th:block>
+  </section>
+</div>
 </body>
 </html>

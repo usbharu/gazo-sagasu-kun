@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Title</title>
+  <meta content="width=device-width" name="viewport">
 </head>
 <body>
 <div th:fragment="search-form(message,order,sort)">
-  <h1 th:text="${message}"></h1>
   <form action="#" method="GET" th:action="@{/searched}"><input id="tags" name="tags"
                                                                 onfocus="this.select();"
                                                                 th:value="${message}"
+                                                                class="input-tags"
                                                                 type="text"><select
       id="sort" name="sort">
     <option th:selected="${sort} == image_id" value="image_id">画像のID</option>

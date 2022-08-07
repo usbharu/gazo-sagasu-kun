@@ -20,6 +20,7 @@ public class ImageTagDaoJdbc implements ImageTagDao {
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
+
   @Override
   public List<ImageTag> findAll(ImageTagDaoOrderType orderType, ImageTagDaoOrder order) {
     String sql =
@@ -185,9 +186,10 @@ public class ImageTagDaoJdbc implements ImageTagDao {
     Image image = imageTag.getImage();
     int count = 0;
     for (Tag tag : imageTag.getTags()) {
+      log.debug("Inserting image tag: {}" + imageTag);
       count += jdbcTemplate.update(
           "INSERT INTO image_tag(image_id,tag_id) SELECT ?,? WHERE NOT EXISTS(SELECT 1 FROM image_tag WHERE image_id = ? AND tag_id = ?)",
-          image.getId(), tag, image.getId(), tag.getId());
+          image.getId(), tag.getId(), image.getId(), tag.getId());
     }
     return count;
   }

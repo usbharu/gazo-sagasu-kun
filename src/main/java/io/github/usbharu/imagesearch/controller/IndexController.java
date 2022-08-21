@@ -25,8 +25,8 @@ public class IndexController {
   @Autowired
   private TagService tagService;
 
-  @Value("${imagesearch.scan.http.folder}")
-  private String httpFolder;
+  @Value("${imagesearch.scan.http.folder:}")
+  private String httpFolder = "";
 
   @GetMapping("/")
   public String index(Model model) {

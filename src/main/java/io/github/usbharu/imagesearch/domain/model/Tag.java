@@ -23,4 +23,25 @@ public class Tag {
   public String getName() {
     return name;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Tag)) {
+      return false;
+    }
+
+    Tag tag = (Tag) o;
+
+    return getName().equals(tag.getName());
+  }
+
+  @Override
+  public int hashCode() {
+    int result = getId();
+    result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+    return result;
+  }
 }

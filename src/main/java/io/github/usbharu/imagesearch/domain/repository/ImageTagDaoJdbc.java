@@ -26,15 +26,16 @@ public class ImageTagDaoJdbc implements ImageTagDao {
     String sql =
         "SELECT image_id,\n"
             + "       image.name             as image_name,\n"
-            + "       image.url              as image_url,\n"
+            + "       image.path             as image_url,\n"
+            + "       image.groupId      as image_group,\n"
             + "       GROUP_CONCAT(tag_id)   as tags_id,\n"
             + "       GROUP_CONCAT(tag.name) as tags_name\n"
             + "FROM image_tag\n"
             + "         LEFT JOIN tag ON tag.id = image_tag.tag_id\n"
             + "         LEFT JOIN image ON image.id = image_tag.image_id\n"
             + "GROUP BY image_id\n"
-            + "ORDER BY "+
-    formatOrderSql(orderType, order);
+            + "ORDER BY " +
+            formatOrderSql(orderType, order);
     return parseImageTags(
         jdbcTemplate.queryForList(sql));
   }
@@ -43,13 +44,13 @@ public class ImageTagDaoJdbc implements ImageTagDao {
   public ImageTag findByImageUrl(String url) {
     String sql = "SELECT image_id,\n"
         + "       image.name             as image_name,\n"
-        + "       image.url              as image_url,\n"
+        + "       image.path             as image_url,\n"
         + "       GROUP_CONCAT(tag_id)   as tags_id,\n"
         + "       GROUP_CONCAT(tag.name) as tags_name\n"
         + "FROM image_tag\n"
         + "         LEFT JOIN tag on tag.id = image_tag.tag_id\n"
         + "         LEFT JOIN image on image.id = image_tag.image_id\n"
-        + "WHERE image.url = ?\n"
+        + "WHERE image.path = ?\n"
         + "GROUP BY image_id";
     return parseImageTags(
         jdbcTemplate.queryForList(sql, url)).get(0);
@@ -59,7 +60,7 @@ public class ImageTagDaoJdbc implements ImageTagDao {
   public ImageTag findByImageId(int id) {
     String sql = "SELECT image_id,\n"
         + "       image.name             as image_name,\n"
-        + "       image.url              as image_url,\n"
+        + "       image.path              as image_url,\n"
         + "       GROUP_CONCAT(tag_id)   as tags_id,\n"
         + "       GROUP_CONCAT(tag.name) as tags_name\n"
         + "FROM image_Tag\n"
@@ -76,7 +77,7 @@ public class ImageTagDaoJdbc implements ImageTagDao {
       ImageTagDaoOrder order) {
     String sql = "SELECT image_id,\n"
         + "       image.name             as image_name,\n"
-        + "       image.url              as image_url,\n"
+        + "       image.path             as image_url,\n"
         + "       GROUP_CONCAT(tag_id)   as tags_id,\n"
         + "       GROUP_CONCAT(tag.name) as tags_name\n"
         + "FROM image_tag\n"
@@ -84,7 +85,7 @@ public class ImageTagDaoJdbc implements ImageTagDao {
         + "         LEFT JOIN image on image.id = image_tag.image_id\n"
         + "WHERE image.name = ?\n"
         + "GROUP BY image_id\n"
-        + "ORDER BY "+formatOrderSql(orderType, order);
+        + "ORDER BY " + formatOrderSql(orderType, order);
     return parseImageTags(
         jdbcTemplate.queryForList(sql, name));
   }
@@ -95,7 +96,7 @@ public class ImageTagDaoJdbc implements ImageTagDao {
     String sql =
         "SELECT image_id,\n"
             + "       image.name             as image_name,\n"
-            + "       image.url              as image_url,\n"
+            + "       image.path              as image_url,\n"
             + "       GROUP_CONCAT(tag_id)   as tags_id,\n"
             + "       GROUP_CONCAT(tag.name) as tags_name\n"
             + "FROM main.image_tag\n"
@@ -103,8 +104,8 @@ public class ImageTagDaoJdbc implements ImageTagDao {
             + "         LEFT JOIN image ON image.id = image_tag.image_id\n"
             + "WHERE image_id IN (SELECT image_id FROM image_tag WHERE tag_id = ?)\n"
             + "GROUP BY image_id\n"
-            + "ORDER BY "+
-    formatOrderSql(orderType, order);
+            + "ORDER BY " +
+            formatOrderSql(orderType, order);
     return parseImageTags(
         jdbcTemplate.queryForList(sql, id));
   }
@@ -115,7 +116,7 @@ public class ImageTagDaoJdbc implements ImageTagDao {
     String sql =
         "SELECT image_id,\n"
             + "       image.name as image_name,\n"
-            + "       image.url as image_url,\n"
+            + "       image.path as image_url,\n"
             + "       GROUP_CONCAT(tag_id)   as tags_id,\n"
             + "       GROUP_CONCAT(tag.name) as tags_name\n"
             + "FROM image_tag\n"
@@ -124,7 +125,7 @@ public class ImageTagDaoJdbc implements ImageTagDao {
             + "WHERE image_id IN\n"
             + "      (SELECT image_id FROM image_tag WHERE tag_id = (SELECT id FROM tag WHERE name = ?))\n"
             + "GROUP BY image_id\n"
-            + "ORDER BY "+formatOrderSql(orderType,order);
+            + "ORDER BY " + formatOrderSql(orderType, order);
     return parseImageTags(
         jdbcTemplate.queryForList(sql, name));
   }
@@ -135,7 +136,7 @@ public class ImageTagDaoJdbc implements ImageTagDao {
     String sql =
         "SELECT image_id,\n"
             + "       image.name             as image_name,\n"
-            + "       image.url              as image_url,\n"
+            + "       image.path             as image_url,\n"
             + "       GROUP_CONCAT(tag_id)   as tags_id,\n"
             + "       GROUP_CONCAT(tag.name) as tags_name\n"
             + "FROM image_tag\n"
@@ -151,8 +152,8 @@ public class ImageTagDaoJdbc implements ImageTagDao {
             + "                   GROUP BY image.id\n"
             + "                   HAVING COUNT(image.id) >= ?)\n"
             + "GROUP BY image_id\n"
-            + "ORDER BY "+
-    formatOrderSql(orderType, order);
+            + "ORDER BY " +
+            formatOrderSql(orderType, order);
     return parseImageTags(
         jdbcTemplate.queryForList(sql, ids.size()));
   }
@@ -163,7 +164,8 @@ public class ImageTagDaoJdbc implements ImageTagDao {
     String sql =
         "SELECT image_id,\n"
             + "       image.name as image_name,\n"
-            + "       image.url as image_url,\n"
+            + "       image.path as image_url,\n"
+            + "       image.groupId as image_group,\n"
             + "       GROUP_CONCAT(tag_id) as tags_id,\n"
             + "       GROUP_CONCAT(tag.name) as tags_name\n"
             + "FROM image_tag\n"
@@ -177,7 +179,7 @@ public class ImageTagDaoJdbc implements ImageTagDao {
             + "                   GROUP BY image.id\n"
             + "                   HAVING COUNT(image.id) >= ?)\n"
             + "GROUP BY image_id\n"
-            + "ORDER BY "+formatOrderSql(orderType, order);
+            + "ORDER BY " + formatOrderSql(orderType, order);
     return parseImageTags(
         jdbcTemplate.queryForList(sql, names.size()));
   }
@@ -212,18 +214,19 @@ public class ImageTagDaoJdbc implements ImageTagDao {
     List<ImageTag> result = new ArrayList<>();
     for (Map<String, Object> stringObjectMap : mapList) {
       result.add(new ImageTag(new Image((Integer) stringObjectMap.get("image_id"),
-          (String) stringObjectMap.get("image_name"), (String) stringObjectMap.get("image_url")),
+          (String) stringObjectMap.get("image_name"), (String) stringObjectMap.get("image_url"),
+          (Integer) stringObjectMap.get("image_group")),
           parseTag(stringObjectMap)));
     }
     return result;
   }
 
-  private Tag[] parseTag(Map<String, Object> map) {
+  private List<Tag> parseTag(Map<String, Object> map) {
     String[] tagsId = ((String) map.get("tags_id")).split(",");
     String[] tagsName = ((String) map.get("tags_name")).split(",");
-    Tag[] result = new Tag[tagsId.length];
+    List<Tag> result = new ArrayList<>();
     for (int i = 0; i < tagsId.length; i++) {
-      result[i] = new Tag(Integer.parseInt(tagsId[i]), tagsName[i]);
+      result.add(new Tag(Integer.parseInt(tagsId[i]), tagsName[i]));
     }
     return result;
   }
@@ -254,7 +257,7 @@ public class ImageTagDaoJdbc implements ImageTagDao {
     return sb.toString();
   }
 
-  private String formatOrderSql(ImageTagDaoOrderType type,ImageTagDaoOrder order) {
+  private String formatOrderSql(ImageTagDaoOrderType type, ImageTagDaoOrder order) {
     String sql = type.getSql();
     switch (type) {
       case RANDOM:

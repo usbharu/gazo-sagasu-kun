@@ -20,47 +20,34 @@ public class ImageDao {
   public List<Image> findAll() {
     log.debug("findAll");
     List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT * FROM image");
-    List<Image> result = new ArrayList<>();
-    for (Map<String, Object> map : maps) {
-      result.add(
-          new Image((Integer) map.get("id"), (String) map.get("name"), (String) map.get("url")));
-    }
+    List<Image> result = parseMapList(maps);
     log.debug("Success to findAll : " + result.size());
     return result;
   }
 
   public List<Image> findAllOrderByNameAsc() {
     log.debug("findAllOrderByNameAsc");
-    List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT * FROM image ORDER BY name ASC");
-    List<Image> result = new ArrayList<>();
-    for (Map<String, Object> map : maps) {
-      result.add(
-          new Image((Integer) map.get("id"), (String) map.get("name"), (String) map.get("url")));
-    }
+    List<Map<String, Object>> maps =
+        jdbcTemplate.queryForList("SELECT * FROM image ORDER BY name ASC");
+    List<Image> result = parseMapList(maps);
     log.debug("Success to findAllOrderByNameAsc : " + result.size());
     return result;
   }
 
   public List<Image> findAllOrderByNameDesc() {
     log.debug("findAllOrderByNameDesc");
-    List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT * FROM image ORDER BY name DESC");
-    List<Image> result = new ArrayList<>();
-    for (Map<String, Object> map : maps) {
-      result.add(
-          new Image((Integer) map.get("id"), (String) map.get("name"), (String) map.get("url")));
-    }
+    List<Map<String, Object>> maps =
+        jdbcTemplate.queryForList("SELECT * FROM image ORDER BY name DESC");
+    List<Image> result = parseMapList(maps);
     log.debug("Success to findAllOrderByNameDesc : " + result.size());
     return result;
   }
 
-  public List<Image> findAllOrderByIdDesc(){
+  public List<Image> findAllOrderByIdDesc() {
     log.debug("findAllOrderByIdDesc");
-    List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT * FROM image ORDER BY id DESC");
-    List<Image> result = new ArrayList<>();
-    for (Map<String, Object> map : maps) {
-      result.add(
-          new Image((Integer) map.get("id"), (String) map.get("name"), (String) map.get("url")));
-    }
+    List<Map<String, Object>> maps =
+        jdbcTemplate.queryForList("SELECT * FROM image ORDER BY id DESC");
+    List<Image> result = parseMapList(maps);
     log.debug("Success to findAllOrderByIdDesc : " + result.size());
     return result;
   }
@@ -69,18 +56,15 @@ public class ImageDao {
     log.debug("findByName name:" + name);
     List<Map<String, Object>> maps =
         jdbcTemplate.queryForList("SELECT * FROM image WHERE name = ?", name);
-    List<Image> result = new ArrayList<>();
-    for (Map<String, Object> map : maps) {
-      result.add(new Image((String) map.get("name"), (String) map.get("url")));
-    }
+    List<Image> result = parseMapList(maps);
     log.debug("Success to findByName : " + result.size());
     return result;
   }
 
   public Image findByUrl(String url) {
     log.debug("findByUrl url:" + url);
-    Map<String, Object> maps = jdbcTemplate.queryForMap("SELECT * FROM image WHERE url = ?", url);
-    Image image = new Image((String) maps.get("name"), (String) maps.get("url"));
+    Map<String, Object> maps = jdbcTemplate.queryForMap("SELECT * FROM image WHERE path = ?", url);
+    Image image = parseMap(maps);
     log.debug("Success to findByUrl : " + image);
     return image;
 
@@ -89,8 +73,8 @@ public class ImageDao {
   public int insertOne(Image image) {
     log.debug("insertOne image:" + image);
     int update = jdbcTemplate.update(
-        "INSERT INTO image (name,url) SELECT ?,? WHERE NOT EXISTS(SELECT name,url FROM image WHERE url = ?)",
-        image.getName(), image.getUrl(), image.getUrl());
+        "INSERT INTO image (name,path,groupId) SELECT ?,?,? WHERE NOT EXISTS(SELECT name,path FROM image WHERE path = ?)",
+        image.getName(), image.getPath(), image.getPath(), image.getGroup());
     log.debug("Success to insertOne : " + update);
     return update;
   }
@@ -99,12 +83,10 @@ public class ImageDao {
     log.debug("insertOneWithReturnImage image:" + image);
     insertOne(image);
     Map<String, Object> stringObjectMap =
-        jdbcTemplate.queryForMap("SELECT id,name,url FROM image WHERE url = ?", image.getUrl());
-    Image resultImage =
-        new Image(((Integer) stringObjectMap.get("id")), (String) stringObjectMap.get("name"),
-            (String) stringObjectMap.get("url"));
-    log.debug("Success to insertOneWithReturnImage : " + resultImage);
-    return resultImage;
+        jdbcTemplate.queryForMap("SELECT id,name,path FROM image WHERE path = ?", image.getPath());
+    Image result = parseMap(stringObjectMap);
+    log.debug("Success to insertOneWithReturnImage : " + result);
+    return result;
   }
 
   public Image selectOne(String url) {
@@ -114,9 +96,22 @@ public class ImageDao {
 
   public int deleteOne(String url) {
     log.debug("deleteOne url:" + url);
-    int update = jdbcTemplate.update("DELETE FROM image WHERE url = ?", url);
+    int update = jdbcTemplate.update("DELETE FROM image WHERE path = ?", url);
     log.debug("Success to deleteOne : " + update);
     return update;
+  }
+
+
+  private List<Image> parseMapList(List<Map<String, Object>> mapList) {
+    List<Image> result = new ArrayList<>();
+    for (Map<String, Object> stringObjectMap : mapList) {
+      result.add(parseMap(stringObjectMap));
+    }
+    return result;
+  }
+
+  private Image parseMap(Map<String, Object> map) {
+    return new Image((Integer) map.get("id"), (String) map.get("name"), (String) map.get("path"));
   }
 
 }

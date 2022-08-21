@@ -65,7 +65,7 @@ class ImageDaoTest {
   @DatabaseSetup(value = "/imageDB/forInsert/")
   @ExpectedDatabase(value = "/imageDB/forInsert/expected/", assertionMode = DatabaseAssertionMode.NON_STRICT)
   void insertOne_insertOne_returnOne() {
-    Image image = new Image("new.jpg", "/testData/1/new.jpg");
+    Image image = new Image("new.jpg", "/testData/1/new.jpg", 1);
     System.out.println("imageDao.findAll().size() = " + imageDao.findAll().size());
     int result = imageDao.insertOne(image);
     System.out.println("imageDao.findAll().size() = " + imageDao.findAll().size());
@@ -83,8 +83,8 @@ class ImageDaoTest {
   @DatabaseSetup(value = "/imageDB/forDelete/")
   @ExpectedDatabase(value = "/imageDB/forDelete/expected/", assertionMode = DatabaseAssertionMode.NON_STRICT)
   void deleteOne_deleteOne_returnOne() {
-    Image image = new Image("delete.jpg", "/testData/1/delete.jpg");
-    int result = imageDao.deleteOne(image.getUrl());
+    Image image = new Image("delete.jpg", "/testData/1/delete.jpg", 1);
+    int result = imageDao.deleteOne(image.getPath());
     assertEquals(1, result);
   }
 }

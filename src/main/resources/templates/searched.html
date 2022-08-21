@@ -24,8 +24,8 @@
     <th:block th:each="image : ${images}">
       <div class="images">
         <hr>
-        <a target="_blank" th:href="${image.image.url}">
-          <img th:alt="${image.image.name}" th:src="${image.image.url}" width="80%">
+        <a target="_blank" th:href="${httpUrl}+${image.image.path}">
+          <img th:alt="${image.image.name}" th:src="${httpUrl}+${image.image.path}" width="80%">
         </a>
         <p th:text="${image.image.name}"></p>
         <div class="tags">

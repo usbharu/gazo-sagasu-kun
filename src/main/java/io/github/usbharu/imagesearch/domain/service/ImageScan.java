@@ -11,7 +11,9 @@ import io.github.usbharu.imagesearch.util.TimeOut;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.imaging.ImageReadException;
@@ -89,11 +91,11 @@ public class ImageScan {
         if (exifValueWithExactMatch != null) {
           String[] tags = exifValueWithExactMatch.getValue().toString().split("[; ,]");
           log.trace("getTags : "+ Arrays.toString(tags));
-          Tag[] tagsArray = new Tag[tags.length];
+          List<Tag> tagsArray = new ArrayList<>();
           for (int i = 0; i < tags.length; i++) {
-            tagsArray[i] = tagDao.insertOneWithReturnTag(tags[i]);
+            tagsArray.set(i, tagDao.insertOneWithReturnTag(tags[i]));
           }
-          log.trace("scanJpegImage : " + jpegFile + " tags : " + Arrays.toString(tagsArray));
+          log.trace("scanJpegImage : " + jpegFile + " tags : " + tagsArray);
           imageTagDaoJdbc.insertOne(new ImageTag(image, tagsArray));
           log.trace("success : " + jpegFile);
         }

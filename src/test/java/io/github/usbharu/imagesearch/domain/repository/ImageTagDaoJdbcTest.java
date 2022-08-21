@@ -6,11 +6,11 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 import io.github.usbharu.imagesearch.ImageSearchApplication;
-import io.github.usbharu.imagesearch.util.ImageFileNameUtil;
 import io.github.usbharu.imagesearch.db.test.CsvDataSetLoader;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.ImageTag;
 import io.github.usbharu.imagesearch.domain.model.Tag;
+import io.github.usbharu.imagesearch.util.ImageFileNameUtil;
 import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -38,7 +38,7 @@ class ImageTagDaoJdbcTest {
     List<ImageTag> all = imageTagDao.findAll();
     int count = 0;
     for (ImageTag imageTag : all) {
-      count += imageTag.getTags().length;
+      count += imageTag.getTags().size();
     }
     assertEquals(255, count);
   }
@@ -50,8 +50,8 @@ class ImageTagDaoJdbcTest {
     System.out.println("url = " + url);
     String url1 = url.replaceAll("\\\\", "/");
     ImageTag imageTag = imageTagDao.findByImageUrl(url1);
-    assertEquals(url1, imageTag.getImage().getUrl());
-    assertEquals(1, imageTag.getTags().length);
+    assertEquals(url1, imageTag.getImage().getPath());
+    assertEquals(1, imageTag.getTags().size());
   }
 
   @Test
@@ -86,8 +86,8 @@ class ImageTagDaoJdbcTest {
   @DatabaseSetup(value = "/image_tagDB/forInsert/")
   void insertOne_insertOne_returnOne() {
     int i = imageTagDao.insertOne(new ImageTag(new Image(2, "1.jpg",
-        ImageFileNameUtil.filePath+"\\testData\\1\\1.jpg"
-    ), new Tag[] {new Tag(1,"tag1")}));
+        ImageFileNameUtil.filePath + "\\testData\\1\\1.jpg",
+        1), List.of(new Tag(1, "tag1"))));
     assertEquals(1,i);
   }
 }

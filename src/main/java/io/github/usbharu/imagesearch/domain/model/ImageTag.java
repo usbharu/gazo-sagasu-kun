@@ -1,10 +1,13 @@
 package io.github.usbharu.imagesearch.domain.model;
 
-public class ImageTag {
-  private final Image image;
-  private final Tag[] tags;
+import java.util.List;
 
-  public ImageTag(Image image, Tag[] tags) {
+public class ImageTag {
+
+  private final Image image;
+  private final List<Tag> tags;
+
+  public ImageTag(Image image, List<Tag> tags) {
     this.image = image;
     this.tags = tags;
   }
@@ -13,7 +16,7 @@ public class ImageTag {
     return image;
   }
 
-  public Tag[] getTags() {
+  public List<Tag> getTags() {
     return tags;
   }
 }

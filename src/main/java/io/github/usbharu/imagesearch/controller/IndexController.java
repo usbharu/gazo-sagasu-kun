@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,9 @@ public class IndexController {
 
   @Autowired
   private TagService tagService;
+
+  @Value("${imagesearch.scan.http.folder}")
+  private String httpFolder;
 
   @GetMapping("/")
   public String index(Model model) {
@@ -43,6 +47,7 @@ public class IndexController {
     model.addAttribute("order", order);
     model.addAttribute("sort", sort);
     model.addAttribute("images", list);
+    model.addAttribute("httpUrl", httpFolder);
     return "searched";
   }
 }

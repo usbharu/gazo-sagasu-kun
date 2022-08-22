@@ -21,6 +21,7 @@ public void setFilePath(String filePath) {
   @Value("${imagesearch.httpImageFolder}")
   public static String filePath;
 
+  @Deprecated
   public static String getURL(File file) throws UnknownHostException {
     Path path = file.toPath();
     String s = filePath + "\\" + path.subpath(path.getNameCount() - 2, path.getNameCount());

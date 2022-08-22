@@ -264,17 +264,9 @@ public class ImageTagDaoJdbc implements ImageTagDao {
     List<ImageTag> result = new ArrayList<>();
 
     for (Map<String, Object> stringObjectMap : mapList) {
-      Object image_id = stringObjectMap.get("image_id");
-      Object image_name = stringObjectMap.get("image_name");
-      Object image_url = stringObjectMap.get("image_url");
-      Object image_group = stringObjectMap.get("image_group");
-      System.out.println("image_id = " + image_id);
-      System.out.println("image_name = " + image_name);
-      System.out.println("image_url = " + image_url);
-      System.out.println("image_group = " + image_group);
-      result.add(new ImageTag(new Image((Integer) image_id,
-          (String) image_name, (String) image_url,
-          (Integer) image_group),
+      result.add(new ImageTag(new Image((Integer) stringObjectMap.get("image_id"),
+          (String) stringObjectMap.get("image_name"), (String) stringObjectMap.get("image_url"),
+          (Integer) stringObjectMap.get("image_group")),
           parseTag(stringObjectMap)));
     }
     return result;
@@ -318,11 +310,9 @@ public class ImageTagDaoJdbc implements ImageTagDao {
 
   private String formatOrderSql(ImageTagDaoOrderType type, ImageTagDaoOrder order) {
     String sql = type.getSql();
-    switch (type) {
-      case RANDOM:
-        return sql;
-      default:
-        return sql + " " + order.getSql();
+    if (type == ImageTagDaoOrderType.RANDOM) {
+      return sql;
     }
+    return sql + " " + order.getSql();
   }
 }

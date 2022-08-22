@@ -8,6 +8,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class TimeOut {
+
+  private TimeOut() {
+  }
+
   public static void with(Runnable runnable)
       throws ExecutionException, InterruptedException, TimeoutException {
     with(runnable,1000);

@@ -69,11 +69,11 @@ public class DynamicSearchDao {
       image.getMetadata()
           .add(new Group((Integer) map.get("image_group"), (String) map.get("group_name")));
       Tags tags = new Tags();
-      String[] tags_ids = ((String) map.get("tags_id")).split(",");
-      String[] tags_name = ((String) map.get("tags_name")).split(",");
+      String[] tagIds = ((String) map.get("tags_id")).split(",");
+      String[] tagNames = ((String) map.get("tags_name")).split(",");
       List<Tag> tagList = new ArrayList<>();
-      for (int i = 0; i < tags_ids.length; i++) {
-        tagList.add(new Tag(Integer.parseInt(tags_ids[i]), tags_name[i]));
+      for (int i = 0; i < tagIds.length; i++) {
+        tagList.add(new Tag(Integer.parseInt(tagIds[i]), tagNames[i]));
       }
       tags.addAll(tagList);
       image.getMetadata().add(tags);

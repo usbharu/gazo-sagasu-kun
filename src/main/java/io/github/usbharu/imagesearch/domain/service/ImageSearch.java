@@ -60,6 +60,7 @@ public class ImageSearch {
     return byTagNames;
   }
 
+  @Deprecated
   public List<Image> search2(String[] tags, String sort, String order) {
     log.debug("search tags:" + Arrays.toString(tags) + " sort:" + sort + " order:" + order);
     ImageTagDaoOrder imageTagDaoOrder;

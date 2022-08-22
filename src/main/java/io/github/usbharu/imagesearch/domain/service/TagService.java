@@ -12,7 +12,7 @@ public class TagService {
   @Autowired
   private TagDao tagDao;
 
-  public List<TagCount> TagOrderOfMostUsed() {
+  public List<TagCount> tagOrderOfMostUsed() {
     return tagDao.tagCount();
   }
 

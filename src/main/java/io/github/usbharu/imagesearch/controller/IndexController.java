@@ -1,6 +1,6 @@
 package io.github.usbharu.imagesearch.controller;
 
-import io.github.usbharu.imagesearch.domain.model.ImageTag;
+import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.service.ImageSearch;
 import io.github.usbharu.imagesearch.domain.service.TagService;
 import java.util.ArrayList;
@@ -19,11 +19,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class IndexController {
 
   Log log = LogFactory.getLog(IndexController.class);
-  @Autowired
-  private ImageSearch imageSearch;
+
+  private final ImageSearch imageSearch;
+
+
+  private final TagService tagService;
 
   @Autowired
-  private TagService tagService;
+  public IndexController(ImageSearch imageSearch, TagService tagService) {
+    this.imageSearch = imageSearch;
+    this.tagService = tagService;
+  }
 
   @Value("${imagesearch.scan.http.folder:}")
   private String httpFolder = "";
@@ -40,8 +46,9 @@ public class IndexController {
   public String searched(@ModelAttribute("tags") String msg, @ModelAttribute("sort") String sort,
       @ModelAttribute("order") String order, Model model) {
 
+    System.out.println("msg = " + msg);
     log.trace("Access to Searched : " + msg);
-    List<ImageTag> list = new ArrayList<>(imageSearch.search(msg.split("[; ,]"), sort, order));
+    List<Image> list = new ArrayList<>(imageSearch.search2(msg.split("[; ,]"), sort, order));
     model.addAttribute("tagCount", tagService.tagOrderOfMostUsedLimit(20));
     model.addAttribute("message", msg);
     model.addAttribute("order", order);

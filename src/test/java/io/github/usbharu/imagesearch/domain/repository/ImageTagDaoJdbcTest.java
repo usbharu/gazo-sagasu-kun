@@ -40,7 +40,7 @@ class ImageTagDaoJdbcTest {
     for (ImageTag imageTag : all) {
       count += imageTag.getTags().size();
     }
-    assertEquals(255, count);
+    assertEquals(250, count);
   }
 
   @Test
@@ -58,14 +58,14 @@ class ImageTagDaoJdbcTest {
   @DatabaseSetup(value = "/image_tagDB/")
   void findByTagId_findByTagId_returnAllImageTag() {
     List<ImageTag> imageTags = imageTagDao.findByTagId(1);
-    assertEquals(34, imageTags.size());
+    assertEquals(33, imageTags.size());
   }
 
   @Test
   @DatabaseSetup(value = "/image_tagDB/")
   void findByTagName_findByTagName_returnAllImageTag() {
     List<ImageTag> imageTags = imageTagDao.findByTagName("tag1");
-    assertEquals(34, imageTags.size());
+    assertEquals(33, imageTags.size());
   }
 
   @Test

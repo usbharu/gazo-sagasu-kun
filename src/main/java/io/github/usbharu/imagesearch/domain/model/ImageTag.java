@@ -2,6 +2,7 @@ package io.github.usbharu.imagesearch.domain.model;
 
 import java.util.List;
 
+@Deprecated
 public class ImageTag {
 
   private final Image image;

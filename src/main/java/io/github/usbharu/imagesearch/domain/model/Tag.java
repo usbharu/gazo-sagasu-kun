@@ -1,12 +1,14 @@
 package io.github.usbharu.imagesearch.domain.model;
 
-public class Tag {
+import java.util.List;
+
+public class Tag implements ImageMetadata {
 
   private final int id;
   private final String name;
 
 
-  public Tag(String name){
+  public Tag(String name) {
     this.id = -1;
     this.name = name;
   }
@@ -22,6 +24,20 @@ public class Tag {
 
   public String getName() {
     return name;
+  }
+
+  public String getTagName() {
+    return "#" + name;
+  }
+
+  @Override
+  public String getType() {
+    return "tag";
+  }
+
+  @Override
+  public List<String> getValues() {
+    return List.of(name);
   }
 
   @Override

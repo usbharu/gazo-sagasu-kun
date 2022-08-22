@@ -1,6 +1,7 @@
 package io.github.usbharu.imagesearch.controller;
 
 import io.github.usbharu.imagesearch.domain.model.Image;
+import io.github.usbharu.imagesearch.domain.service.GroupService;
 import io.github.usbharu.imagesearch.domain.service.ImageSearch;
 import io.github.usbharu.imagesearch.domain.service.TagService;
 import java.util.List;
@@ -24,10 +25,14 @@ public class IndexController {
 
   private final TagService tagService;
 
+  private final GroupService groupService;
+
   @Autowired
-  public IndexController(ImageSearch imageSearch, TagService tagService) {
+  public IndexController(ImageSearch imageSearch, TagService tagService,
+      GroupService groupService) {
     this.imageSearch = imageSearch;
     this.tagService = tagService;
+    this.groupService = groupService;
   }
 
   @Value("${imagesearch.scan.http.folder:}")
@@ -37,6 +42,7 @@ public class IndexController {
   public String index(Model model) {
     log.trace("Access to Index");
     model.addAttribute("message", imageSearch.randomTag().getName());
+    model.addAttribute("groups", groupService.getGroupsAndAll());
     return "index";
   }
 
@@ -67,6 +73,7 @@ public class IndexController {
     model.addAttribute("message", tags);
     model.addAttribute("images", images);
     model.addAttribute("httpUrl", httpFolder);
+    model.addAttribute("groups", groupService.getGroupsAndAll());
     return "search";
   }
 }

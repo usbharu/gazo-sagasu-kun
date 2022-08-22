@@ -23,6 +23,9 @@ public class DynamicSearchBuilder {
   }
 
   public DynamicSearchBuilder setGroup(String group) {
+    if (group.equals("all")) {
+      return this;
+    }
     this.group = group;
     return this;
   }

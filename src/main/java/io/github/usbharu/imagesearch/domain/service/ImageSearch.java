@@ -3,6 +3,8 @@ package io.github.usbharu.imagesearch.domain.service;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.ImageTag;
 import io.github.usbharu.imagesearch.domain.model.Tag;
+import io.github.usbharu.imagesearch.domain.repository.DynamicSearchBuilder;
+import io.github.usbharu.imagesearch.domain.repository.DynamicSearchDao;
 import io.github.usbharu.imagesearch.domain.repository.ImageTagDaoJdbc;
 import io.github.usbharu.imagesearch.domain.repository.ImageTagDaoOrder;
 import io.github.usbharu.imagesearch.domain.repository.ImageTagDaoOrderType;
@@ -25,6 +27,9 @@ public class ImageSearch {
 
   @Autowired
   private TagDao tagDao;
+
+  @Autowired
+  DynamicSearchDao dynamicSearchDao;
 
   public List<ImageTag> search(String tags) {
     return search(tags.split("[, ;]"));
@@ -72,12 +77,14 @@ public class ImageSearch {
     return byTagNames;
   }
 
+  public List<Image> search3(String[] tags, String group, String orderType, String order) {
+    return dynamicSearchDao.search(new DynamicSearchBuilder().setTags(List.of(tags)).setGroup(group)
+        .setOrderType(ImageTagDaoOrderType.fromString(orderType))
+        .setOrder(ImageTagDaoOrder.fromString(order)).createDynamicSearch());
+  }
+
   public Tag randomTag() {
-    log.debug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        + tagDao);
-    System.out.println("tagDao.findAll() = " + tagDao.findAll());
-    Tag tag = tagDao.selectRandomOne();
-    log.debug(tag);
-    return tag;
+
+    return tagDao.selectRandomOne();
   }
 }

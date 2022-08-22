@@ -7,8 +7,8 @@ public enum ImageTagDaoOrderType {
 
   private final String sql;
   private final String name;
-  private ImageTagDaoOrderType(String sql) {
-    this.name =  sql;
+  ImageTagDaoOrderType(String sql) {
+    this.name = sql;
     this.sql = sql;
   }
 
@@ -38,6 +38,6 @@ public enum ImageTagDaoOrderType {
         return order;
       }
     }
-    throw new IllegalArgumentException("Invalid value: " + value);
+    return IMAGE_ID;
   }
 }

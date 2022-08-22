@@ -31,7 +31,7 @@
         <th:block th:each="metadata : ${image.metadata}">
           <p th:text="${metadata.type}"></p>
           <th:block th:each="value : ${metadata.values}">
-            <a th:href="'searched?'+${metadata.type}+'='+${value}" th:text="${value}"></a>
+            <a th:href="'search?'+${metadata.type}+'='+${value}" th:text="${value}"></a>
           </th:block>
         </th:block>
 
@@ -55,7 +55,7 @@
 
       <th:block th:each="tag : ${tagCount}">
         <div class="tag">
-          <a th:href="${'searched?tags=' + tag.tag.name}">
+          <a th:href="${'search?tags=' + tag.tag.name}">
             <p th:text="'#'+${tag.tag.name}"></p>
           </a>
         </div>

@@ -7,11 +7,11 @@
 </head>
 <body>
 <div th:fragment="search-form(message,order,sort)">
-  <form action="#" method="GET" th:action="@{/searched}"><input id="tags" name="tags"
-                                                                onfocus="this.select();"
-                                                                th:value="${message}"
-                                                                class="input-tags"
-                                                                type="text"><select
+  <form action="#" method="GET" th:action="@{/search}"><input id="tags" name="tags"
+                                                              onfocus="this.select();"
+                                                              th:value="${message}"
+                                                              class="input-tags"
+                                                              type="text"><select
       id="sort" name="sort">
     <option th:selected="${sort} == image_id" value="image_id">画像のID</option>
     <option th:selected="${sort} == image_name" value="image_name">画像の名前</option>

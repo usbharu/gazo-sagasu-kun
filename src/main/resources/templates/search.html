@@ -12,7 +12,7 @@
   <a href="/" style="color: inherit;"><h1>イラスト検索</h1></a>
 </div>
 
-<div th:include="search-form :: search-form(${message},${order},${sort})"></div>
+<div th:include="search-form :: search-form(${message},${order},${sort},${groups},${group})"></div>
 
 <th:block th:if="${images.size == 0}">
   <h2>検索結果が見つかりませんでした</h2>
@@ -24,20 +24,28 @@
     <th:block th:each="image : ${images}">
       <div class="images">
         <hr>
-        <a target="_blank" th:href="${httpUrl}+${image.image.path}">
-          <img th:alt="${image.image.name}" th:src="${httpUrl}+${image.image.path}" width="80%">
+        <a target="_blank" th:href="${httpUrl}+${image.path}">
+          <img th:alt="${image.name}" th:src="${httpUrl}+${image.path}" width="80%">
         </a>
-        <p th:text="${image.image.name}"></p>
-        <div class="tags">
-          <th:block th:each="tag : ${image.tags}">
-            <div class="tag">
-
-              <a th:href="${'searched?tags=' + tag.name}">
-                <p th:text="'#'+${tag.name}"></p>
-              </a>
-            </div>
+        <p th:text="${image.name}"></p>
+        <th:block th:each="metadata : ${image.metadata}">
+          <p th:text="${metadata.type}"></p>
+          <th:block th:each="value : ${metadata.values}">
+            <a th:href="'search?'+${metadata.type}+'='+${value}" th:text="${value}"></a>
           </th:block>
-        </div>
+        </th:block>
+
+
+        <!--        <div class="tags">-->
+        <!--          <th:block th:each="tag : ${image.tags}">-->
+        <!--            <div class="tag">-->
+
+        <!--              <a th:href="${'searched?tags=' + tag.name}">-->
+        <!--                <p th:text="'#'+${tag.name}"></p>-->
+        <!--              </a>-->
+        <!--            </div>-->
+        <!--          </th:block>-->
+        <!--        </div>-->
       </div>
     </th:block>
   </section>
@@ -47,7 +55,7 @@
 
       <th:block th:each="tag : ${tagCount}">
         <div class="tag">
-          <a th:href="${'searched?tags=' + tag.tag.name}">
+          <a th:href="${'search?tags=' + tag.tag.name}">
             <p th:text="'#'+${tag.tag.name}"></p>
           </a>
         </div>

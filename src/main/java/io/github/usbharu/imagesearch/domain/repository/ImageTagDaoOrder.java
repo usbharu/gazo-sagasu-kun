@@ -5,7 +5,7 @@ public enum ImageTagDaoOrder {
 
   private final String sql;
 
-  private ImageTagDaoOrder(String sql) {
+  ImageTagDaoOrder(String sql) {
     this.sql = sql;
   }
 
@@ -19,6 +19,6 @@ public enum ImageTagDaoOrder {
         return order;
       }
     }
-    throw new IllegalArgumentException("Invalid value: " + value);
+    return ASC;
   }
 }

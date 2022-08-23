@@ -6,13 +6,17 @@
   <meta content="width=device-width" name="viewport">
 </head>
 <body>
-<div th:fragment="search-form(message,order,sort)">
-  <form action="#" method="GET" th:action="@{/searched}"><input id="tags" name="tags"
-                                                                onfocus="this.select();"
-                                                                th:value="${message}"
-                                                                class="input-tags"
-                                                                type="text"><select
-      id="sort" name="sort">
+<div th:fragment="search-form(message,order,sort,groups,currentGroup)">
+  <form action="#" method="GET" th:action="@{/search}"><input id="tags" name="tags"
+                                                              onfocus="this.select();"
+                                                              th:value="${message}"
+                                                              class="input-tags"
+                                                              type="text"><select id="group"
+                                                                                  name="group">
+    <option th:each="group : ${groups}" th:inslie="text" th:selected="${group.name == currentGroup}"
+            th:value="${group.name}">[[${group.name}]]
+    </option>
+  </select><select id="sort" name="sort">
     <option th:selected="${sort} == image_id" value="image_id">画像のID</option>
     <option th:selected="${sort} == image_name" value="image_name">画像の名前</option>
     <option th:selected="${sort} == image_url" value="image_url">画像のURL</option>

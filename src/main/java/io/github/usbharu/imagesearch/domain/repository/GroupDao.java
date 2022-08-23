@@ -26,9 +26,9 @@ public class GroupDao {
   }
 
   public Group findByName(String name) {
-    List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList("SELECT * FROM groupId WHERE name = ?", name);
-    return parseMapList(maps).get(0);
+    Map<String, Object> maps =
+        jdbcTemplate.queryForMap("SELECT * FROM groupId WHERE name = ?", name);
+    return parseMap(maps);
   }
 
   public int insertOne(String name) {

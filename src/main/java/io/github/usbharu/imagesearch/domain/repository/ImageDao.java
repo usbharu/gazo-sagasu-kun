@@ -72,9 +72,9 @@ public class ImageDao {
 
   public int insertOne(Image image) {
     log.debug("insertOne image:" + image);
-    int update = jdbcTemplate.update(
-        "INSERT INTO image (name,path,groupId) SELECT ?,?,? WHERE NOT EXISTS(SELECT name,path FROM image WHERE path = ?)",
-        image.getName(), image.getPath(), image.getPath(), image.getGroup());
+    int update =
+        jdbcTemplate.update("INSERT OR IGNORE INTO main.image(name, path, groupId) VALUES (?,?,?)",
+            image.getName(), image.getPath(), image.getGroup());
     log.debug("Success to insertOne : " + update);
     return update;
   }

@@ -1,6 +1,8 @@
 package io.github.usbharu.imagesearch.domain.model;
 
-public class Group {
+import java.util.List;
+
+public class Group implements ImageMetadata {
 
   private final int id;
   private final String name;
@@ -21,5 +23,23 @@ public class Group {
 
   public String getName() {
     return name;
+  }
+
+  @Override
+  public String getType() {
+    return "group";
+  }
+
+  @Override
+  public List<String> getValues() {
+    return List.of(name);
+  }
+
+  @Override
+  public String toString() {
+    return "Group{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        '}';
   }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
 
 
+@Deprecated
 @RestController
 public class PropertyController {
   @Value("${imagesearch.httpImageFolder}") private String httpImageFolder;

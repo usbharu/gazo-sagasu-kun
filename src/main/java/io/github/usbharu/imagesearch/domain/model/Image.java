@@ -1,5 +1,8 @@
 package io.github.usbharu.imagesearch.domain.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Image {
 
   private final int id;
@@ -7,7 +10,9 @@ public class Image {
   private final String path;
 
 
-  private final int group;
+  private final List<ImageMetadata> metadata = new ArrayList<>();
+
+  private int group;
 
 
   public Image(String name, String path) {
@@ -38,6 +43,10 @@ public class Image {
     this.group = group;
   }
 
+  public List<ImageMetadata> getMetadata() {
+    return metadata;
+  }
+
   public String getName() {
     return name;
   }
@@ -52,5 +61,21 @@ public class Image {
 
   public int getGroup() {
     return group;
+  }
+
+
+  public void setGroup(int group) {
+    this.group = group;
+  }
+
+  @Override
+  public String toString() {
+    return "Image{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", path='" + path + '\'' +
+        ", metadata=" + metadata +
+        ", group=" + group +
+        '}';
   }
 }

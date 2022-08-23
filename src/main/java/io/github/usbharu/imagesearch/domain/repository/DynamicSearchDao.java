@@ -59,9 +59,9 @@ public class DynamicSearchDao {
         + (dynamicSearch.group == null || dynamicSearch.group.isBlank() ? "\n" : groupSql)
         + "GROUP BY image_id\n"
         + "ORDER BY " + dynamicSearch.orderType + " " + dynamicSearch.order;
-    System.out.println("sql = " + sql);
+
     List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql);
-//    List<Map<String,Object>> maps = new ArrayList<>();
+
     List<Image> images = new ArrayList<>();
     for (Map<String, Object> map : maps) {
       Image image = new Image((Integer) map.get("image_id"), (String) map.get("image_name"),

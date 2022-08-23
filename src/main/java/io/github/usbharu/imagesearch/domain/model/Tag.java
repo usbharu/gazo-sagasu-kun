@@ -60,4 +60,12 @@ public class Tag implements ImageMetadata {
     result = 31 * result + (getName() != null ? getName().hashCode() : 0);
     return result;
   }
+
+  @Override
+  public String toString() {
+    return "Tag{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        '}';
+  }
 }

@@ -1,11 +1,14 @@
 package io.github.usbharu.imagesearch.domain.repository;
 
 import io.github.usbharu.imagesearch.domain.model.Image;
-import io.github.usbharu.imagesearch.domain.model.ImageTag;
+import io.github.usbharu.imagesearch.domain.model.ImageMetadata;
 import io.github.usbharu.imagesearch.domain.model.Tag;
+import io.github.usbharu.imagesearch.domain.model.Tags;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -13,53 +16,75 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class BulkInsertDao {
 
-  @Autowired
-  private JdbcTemplate jdbcTemplate;
+  private final JdbcTemplate jdbcTemplate;
+
+  private final TagDao tagDao;
+
+  private final GroupDao groupDao;
 
   @Autowired
-  private TagDao tagDao;
+  public BulkInsertDao(JdbcTemplate jdbcTemplate, TagDao tagDao, GroupDao groupDao) {
+    this.jdbcTemplate = jdbcTemplate;
+    this.tagDao = tagDao;
+    this.groupDao = groupDao;
+  }
 
-  public void insert(List<ImageTag> images) {
-    List<Tag> tagList = new ArrayList<>();
-    for (ImageTag image : images) {
-      tagList.addAll(image.getTags());
-    }
+  private Logger logger = LoggerFactory.getLogger(BulkInsertDao.class);
 
-    StringBuilder sql1 = new StringBuilder();
-    sql1.append("INSERT OR IGNORE INTO tag (name) VALUES");
-    for (Tag tag : tagList) {
-      sql1.append("('").append(tag.getName()).append("'),");
-    }
-    sql1.deleteCharAt(sql1.length() - 1);
-    jdbcTemplate.update(sql1.toString());
-
-    StringBuilder sql2 = new StringBuilder();
-    sql2.append("INSERT OR IGNORE INTO image(name,path,groupId) VALUES");
-    for (ImageTag image : images) {
-      Image image1 = image.getImage();
-      sql2.append("('").append(image1.getName()).append("','").append(image1.getPath()).append("',")
-          .append(image1.getGroup()).append("),");
-    }
-    sql2.deleteCharAt(sql2.length() - 1);
-    sql2.append("RETURNING id,name,path,groupId");
-    List<Image> updatedImageList = parseImage(jdbcTemplate.queryForList(sql2.toString()));
-
-    StringBuilder sql3 = new StringBuilder();
-    sql3.append("INSERT OR IGNORE INTO image_tag(image_id,tag_id) VALUES");
-    for (ImageTag imageTag : images) {
-      Image image = containsTag(imageTag, updatedImageList);
-      if (image != null) {
-        List<Tag> tags = getTags(imageTag.getTags());
-        for (Tag tag : tags) {
-          sql3.append("(").append(image.getId()).append(",").append(tag.getId()).append("),");
-        }
-      }
-    }
-    sql3.deleteCharAt(sql3.length() - 1);
-    if (updatedImageList.isEmpty()) {
+  public void insert2(List<Image> images) {
+    if (images.isEmpty()) {
       return;
     }
-    jdbcTemplate.update(sql3.toString());
+    List<Tag> tagList = new ArrayList<>();
+    for (Image image : images) {
+      Tags tags = getTags(image);
+
+      tagList.addAll(tags);
+
+    }
+    StringBuilder tagSql = new StringBuilder();
+    tagSql.append("INSERT OR IGNORE INTO tag(name) VALUES");
+    for (Tag tag : tagList) {
+      tagSql.append("('").append(tag.getName()).append("'),");
+    }
+    tagSql.deleteCharAt(tagSql.length() - 1);
+    jdbcTemplate.update(tagSql.toString());
+
+    StringBuilder imageSql = new StringBuilder();
+    imageSql.append("INSERT OR IGNORE INTO image(name,path,groupId) VALUES");
+
+    for (Image image : images) {
+      imageSql.append("('").append(image.getName()).append("','").append(image.getPath())
+          .append("',").append(image.getGroup()).append("),");
+    }
+    imageSql.deleteCharAt(imageSql.length() - 1);
+    imageSql.append("RETURNING id,name,path,groupId");
+    List<Image> updatedImageList = parseImage(jdbcTemplate.queryForList(imageSql.toString()));
+
+    logger.debug("{} images have been updated.",updatedImageList.size());
+
+    StringBuilder imageTagSql = new StringBuilder();
+    imageTagSql.append("INSERT OR IGNORE INTO image_tag(image_id,tag_id) VALUES");
+    List<Image> imageList = parseImage(jdbcTemplate.queryForList("SELECT id,name,path,groupId FROM main.image"));
+    if (imageList.isEmpty()) {
+      return;
+    }
+    for (Image image : images) {
+      int id = -1;
+      for (Image image1 : imageList) {
+        if (image1.getPath().equals(image.getPath())) {
+          id = image1.getId();
+        }
+      }
+
+      List<Tag> tags =  getTags(getTags(image));
+      for (Tag tag : tags) {
+        imageTagSql.append("(").append(id).append(",").append(tag.getId()).append("),");
+      }
+    }
+    imageTagSql.deleteCharAt(imageTagSql.length()-1);
+
+    jdbcTemplate.update(imageTagSql.toString());
 
   }
 
@@ -93,12 +118,13 @@ public class BulkInsertDao {
     return parseTag(jdbcTemplate.queryForList(sb.toString()));
   }
 
-  private Image containsTag(ImageTag imageTag, List<Image> updatedImageList) {
-    for (Image image : updatedImageList) {
-      if (image.getName().equals(imageTag.getImage().getName())) {
-        return image;
+  private Tags getTags(Image image) {
+    for (ImageMetadata metadatum : image.getMetadata()) {
+      if (metadatum instanceof Tags) {
+        return ((Tags) metadatum);
       }
     }
-    return null;
+    return new Tags();
+
   }
 }

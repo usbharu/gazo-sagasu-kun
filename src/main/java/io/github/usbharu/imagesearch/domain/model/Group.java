@@ -34,4 +34,12 @@ public class Group implements ImageMetadata {
   public List<String> getValues() {
     return List.of(name);
   }
+
+  @Override
+  public String toString() {
+    return "Group{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        '}';
+  }
 }

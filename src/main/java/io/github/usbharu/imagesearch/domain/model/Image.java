@@ -12,7 +12,7 @@ public class Image {
 
   private final List<ImageMetadata> metadata = new ArrayList<>();
 
-  private final int group;
+  private int group;
 
 
   public Image(String name, String path) {
@@ -61,5 +61,21 @@ public class Image {
 
   public int getGroup() {
     return group;
+  }
+
+
+  public void setGroup(int group) {
+    this.group = group;
+  }
+
+  @Override
+  public String toString() {
+    return "Image{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", path='" + path + '\'' +
+        ", metadata=" + metadata +
+        ", group=" + group +
+        '}';
   }
 }

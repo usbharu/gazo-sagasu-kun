@@ -2,8 +2,8 @@ package io.github.usbharu.imagesearch.domain.service;
 
 import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.model.Image;
-import io.github.usbharu.imagesearch.domain.model.ImageTag;
 import io.github.usbharu.imagesearch.domain.model.Tag;
+import io.github.usbharu.imagesearch.domain.model.Tags;
 import io.github.usbharu.imagesearch.domain.repository.BulkInsertDao;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
 import io.github.usbharu.imagesearch.util.ImageFileNameUtil;
@@ -35,7 +35,7 @@ public class ImageScanner {
 
   private final GroupDao groupDao;
   private final Map<String, List<Path>> pathsMap = new HashMap<>();
-  private final List<ImageTag> imageTags = new ArrayList<>();
+  private final List<Image> images = new ArrayList<>();
   private final BulkInsertDao bulkInsertDao;
   Log log = LogFactory.getLog(ImageScanner.class);
   private Map<String, String> group;
@@ -64,52 +64,62 @@ public class ImageScanner {
     if (!file.isDirectory()) {
       log.warn(folder + " is not directory");
     }
-    imageTags.clear();
+    images.clear();
     scanFolder(file, 0);
     log.info("endScan");
     log.debug("map:" + pathsMap);
-    log.debug("imageTags:" + imageTags.size());
-    bulkInsertDao.insert(imageTags);
+    log.debug(images.get(0));
+    bulkInsertDao.insert2(images);
+//    bulkInsertDao.insert(imageTags);
   }
 
   private void scanFolder(File file, int depth) {
     log.debug("depth:" + depth + " , file:" + file);
+    GroupPathSet group1 = getGroup(file);
+    log.debug("group:" + group1);
     if (depth >= this.depth) {
       return;
     }
+    // TODO: 2022/08/22 ここでグループの判定したほうがループがすくなると思う
     for (File listFile : file.listFiles()) {
       if (listFile.isDirectory()) {
         scanFolder(listFile, depth + 1);
       } else if (ImageFileNameUtil.isJpg(listFile.getName())) {
-        scanImage(listFile);
+        scanImage(listFile, group1);
       }
     }
   }
 
-  protected void scanImage(File image) {
-    for (Entry<String, List<Path>> stringListEntry : pathsMap.entrySet()) {
-      for (Path path : stringListEntry.getValue()) {
-        Path imagePath = image.toPath();
-        if (imagePath.startsWith(path)) {
-          Path subpath = imagePath.subpath(path.getNameCount() - 1, imagePath.getNameCount());
-          ImageTag metadata = getMetadata(image, subpath);
-          Group group1 = groupDao.insertOneWithReturnGroup(stringListEntry.getKey());
-          if (metadata != null) {
-            imageTags.add(new ImageTag(
-                new Image(metadata.getImage().getName(), metadata.getImage().getPath(),
-                    group1.getId()), metadata.getTags()));
-          }
-          return;
+  private GroupPathSet getGroup(File file) {
+    for (Entry<String, List<Path>> paths : pathsMap.entrySet()) {
+      for (Path path : paths.getValue()) {
+        if (file.toPath().startsWith(path)) {
+          return new GroupPathSet(groupDao.insertOneWithReturnGroup(paths.getKey()), path);
+
         }
       }
     }
+    return new GroupPathSet(new Group("default"), file.toPath());
   }
 
-  protected ImageTag getMetadata(File image, Path subpath) {
+  protected void scanImage(File image, GroupPathSet group) {
+    Path imagePath = image.toPath();
+    Path subpath = imagePath.subpath(group.getPath().getNameCount() - 1, imagePath.getNameCount());
+
+    Image imageObject = getMetadata2(image, subpath);
+    if (imageObject == null) {
+      return;
+    }
+    imageObject.getMetadata().add(group.getGroup());
+    imageObject.setGroup(group.getGroup().getId());
+    images.add(imageObject);
+
+  }
+
+  protected Image getMetadata2(File image, Path subpath) {
     try {
       ImageMetadata metadata = Imaging.getMetadata(image);
       if (metadata == null) {
-        log.trace("not metadata");
         return null;
       }
       if (!(metadata instanceof JpegImageMetadata)) {
@@ -123,14 +133,17 @@ public class ImageScanner {
         log.trace("no keywords");
         return null;
       }
-
       String[] tags = keywords.getValue().toString().split("[; ,]");
       List<Tag> tagList = new ArrayList<>();
       for (String tag : tags) {
         tagList.add(new Tag(tag));
       }
       Image image1 = new Image(image.getName(), subpath.toString());
-      return new ImageTag(image1, tagList);
+      Tags tagObject = new Tags();
+      tagObject.addAll(tagList);
+      image1.getMetadata().add(tagObject);
+      return image1;
+
     } catch (ImageReadException | IOException | IllegalArgumentException e) {
       log.warn(e);
       log.warn("image:" + image);
@@ -160,5 +173,25 @@ public class ImageScanner {
 
   public void setFolder(String folder) {
     this.folder = folder;
+  }
+
+  private static class GroupPathSet {
+
+    private final Group group;
+
+    private final Path path;
+
+    public GroupPathSet(Group group, Path path) {
+      this.group = group;
+      this.path = path;
+    }
+
+    public Group getGroup() {
+      return group;
+    }
+
+    public Path getPath() {
+      return path;
+    }
   }
 }

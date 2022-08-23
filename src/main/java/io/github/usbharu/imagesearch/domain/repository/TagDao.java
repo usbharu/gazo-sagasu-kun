@@ -1,5 +1,8 @@
 package io.github.usbharu.imagesearch.domain.repository;
 
+import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseTag;
+import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseTags;
+
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.TagCount;
 import java.util.ArrayList;
@@ -22,28 +25,19 @@ public class TagDao {
 
   public List<Tag> findAll() {
     List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT * FROM tag");
-    List<Tag> result = new ArrayList<>();
-    for (Map<String, Object> map : maps) {
-      result.add(new Tag(((Integer) map.get("id")), (String) map.get("name")));
-    }
-    return result;
+    return parseTags(maps);
   }
 
   public Tag findById(int id) {
     Map<String, Object> maps = jdbcTemplate.queryForMap("SELECT * FROM tag WHERE id = ?", id);
-
-    return new Tag(((Integer) maps.get("id")), (String) maps.get("name"));
+    return parseTag(maps);
 
   }
 
   public List<Tag> findByName(String name) {
     List<Map<String, Object>> maps =
         jdbcTemplate.queryForList("SELECT * FROM tag WHERE name = ?", name);
-    List<Tag> result = new ArrayList<>();
-    for (Map<String, Object> map : maps) {
-      result.add(new Tag(((Integer) map.get("id")), (String) map.get("name")));
-    }
-    return result;
+    return parseTags(maps);
   }
 
   public int insertOne(String tag) {
@@ -57,7 +51,7 @@ public class TagDao {
     insertOne(tag);
     Map<String, Object> stringObjectMap =
         jdbcTemplate.queryForMap("SELECT id,name FROM tag WHERE name = ?;", tag);
-    return new Tag(((Integer) stringObjectMap.get("id")), (String) stringObjectMap.get("name"));
+    return parseTag(stringObjectMap);
   }
 
   public int deleteOne(Tag tag) {
@@ -75,7 +69,7 @@ public class TagDao {
   public Tag selectRandomOne() {
     Map<String, Object> stringObjectMap =
         jdbcTemplate.queryForMap("SELECT id,name FROM tag ORDER BY RANDOM() LIMIT 1");
-    return new Tag(((Integer) stringObjectMap.get("id")), (String) stringObjectMap.get("name"));
+    return parseTag(stringObjectMap);
   }
 
   public List<TagCount> tagCount() {

@@ -1,5 +1,8 @@
 package io.github.usbharu.imagesearch.domain.repository;
 
+import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImage;
+import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImages;
+
 import io.github.usbharu.imagesearch.domain.model.Image;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +22,9 @@ public class ImageDao {
 
   public List<Image> findAll() {
     log.debug("findAll");
-    List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT * FROM image");
-    List<Image> result = parseMapList(maps);
+    List<Map<String, Object>> maps = jdbcTemplate.queryForList(
+        "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image");
+    List<Image> result = parseImages(maps);
     log.debug("Success to findAll : " + result.size());
     return result;
   }
@@ -28,8 +32,8 @@ public class ImageDao {
   public List<Image> findAllOrderByNameAsc() {
     log.debug("findAllOrderByNameAsc");
     List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList("SELECT * FROM image ORDER BY name ASC");
-    List<Image> result = parseMapList(maps);
+        jdbcTemplate.queryForList("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image ORDER BY name ASC");
+    List<Image> result = parseImages(maps);
     log.debug("Success to findAllOrderByNameAsc : " + result.size());
     return result;
   }
@@ -37,8 +41,8 @@ public class ImageDao {
   public List<Image> findAllOrderByNameDesc() {
     log.debug("findAllOrderByNameDesc");
     List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList("SELECT * FROM image ORDER BY name DESC");
-    List<Image> result = parseMapList(maps);
+        jdbcTemplate.queryForList("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image ORDER BY name DESC");
+    List<Image> result = parseImages(maps);
     log.debug("Success to findAllOrderByNameDesc : " + result.size());
     return result;
   }
@@ -46,8 +50,8 @@ public class ImageDao {
   public List<Image> findAllOrderByIdDesc() {
     log.debug("findAllOrderByIdDesc");
     List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList("SELECT * FROM image ORDER BY id DESC");
-    List<Image> result = parseMapList(maps);
+        jdbcTemplate.queryForList("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image ORDER BY id DESC");
+    List<Image> result = parseImages(maps);
     log.debug("Success to findAllOrderByIdDesc : " + result.size());
     return result;
   }
@@ -55,16 +59,16 @@ public class ImageDao {
   public List<Image> findByName(String name) {
     log.debug("findByName name:" + name);
     List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList("SELECT * FROM image WHERE name = ?", name);
-    List<Image> result = parseMapList(maps);
+        jdbcTemplate.queryForList("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE name = ?", name);
+    List<Image> result = parseImages(maps);
     log.debug("Success to findByName : " + result.size());
     return result;
   }
 
   public Image findByUrl(String url) {
     log.debug("findByUrl url:" + url);
-    Map<String, Object> maps = jdbcTemplate.queryForMap("SELECT * FROM image WHERE path = ?", url);
-    Image image = parseMap(maps);
+    Map<String, Object> maps = jdbcTemplate.queryForMap("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE path = ?", url);
+    Image image = parseImage(maps);
     log.debug("Success to findByUrl : " + image);
     return image;
   }
@@ -72,8 +76,8 @@ public class ImageDao {
   public Image findById(int id) {
     log.debug("findById id:" + id);
     Map<String, Object> stringObjectMap =
-        jdbcTemplate.queryForMap("SELECT * FROM image WHERE id = ?", id);
-    Image image = parseMap(stringObjectMap);
+        jdbcTemplate.queryForMap("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE id = ?", id);
+    Image image = parseImage(stringObjectMap);
     log.debug("Success to findById id:" + image);
     return image;
   }
@@ -92,7 +96,7 @@ public class ImageDao {
     insertOne(image);
     Map<String, Object> stringObjectMap =
         jdbcTemplate.queryForMap("SELECT id,name,path FROM image WHERE path = ?", image.getPath());
-    Image result = parseMap(stringObjectMap);
+    Image result = parseImage(stringObjectMap);
     log.debug("Success to insertOneWithReturnImage : " + result);
     return result;
   }
@@ -108,18 +112,4 @@ public class ImageDao {
     log.debug("Success to deleteOne : " + update);
     return update;
   }
-
-
-  private List<Image> parseMapList(List<Map<String, Object>> mapList) {
-    List<Image> result = new ArrayList<>();
-    for (Map<String, Object> stringObjectMap : mapList) {
-      result.add(parseMap(stringObjectMap));
-    }
-    return result;
-  }
-
-  private Image parseMap(Map<String, Object> map) {
-    return new Image((Integer) map.get("id"), (String) map.get("name"), (String) map.get("path"));
-  }
-
 }

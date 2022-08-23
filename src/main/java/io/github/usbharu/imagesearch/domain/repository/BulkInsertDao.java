@@ -1,18 +1,24 @@
 package io.github.usbharu.imagesearch.domain.repository;
 
+import static io.github.usbharu.imagesearch.util.ImageTagUtil.getTagsNoNull;
+import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImages;
+
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.ImageMetadata;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
+import io.github.usbharu.imagesearch.util.ImageTagUtil;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+/**
+ * データベースにまとめてインサートするDAO
+ */
 @Repository
 public class BulkInsertDao {
 
@@ -22,6 +28,13 @@ public class BulkInsertDao {
 
   private final GroupDao groupDao;
 
+  /**
+   * Autowired用のコンストラクタ
+   *
+   * @param jdbcTemplate jdbcテンプレート
+   * @param tagDao       タグのDAO
+   * @param groupDao     グループのDAO
+   */
   @Autowired
   public BulkInsertDao(JdbcTemplate jdbcTemplate, TagDao tagDao, GroupDao groupDao) {
     this.jdbcTemplate = jdbcTemplate;
@@ -29,15 +42,20 @@ public class BulkInsertDao {
     this.groupDao = groupDao;
   }
 
-  private Logger logger = LoggerFactory.getLogger(BulkInsertDao.class);
+  private final Logger logger = LoggerFactory.getLogger(BulkInsertDao.class);
 
-  public void insert2(List<Image> images) {
+  /**
+   * まとめてインサートする。
+   *
+   * @param images インサートする画像のリスト
+   */
+  public void insert(List<Image> images) {
     if (images.isEmpty()) {
       return;
     }
     List<Tag> tagList = new ArrayList<>();
     for (Image image : images) {
-      Tags tags = getTags(image);
+      Tags tags = ImageTagUtil.getTagsNoNull(image);
 
       tagList.addAll(tags);
 
@@ -59,13 +77,13 @@ public class BulkInsertDao {
     }
     imageSql.deleteCharAt(imageSql.length() - 1);
     imageSql.append("RETURNING id,name,path,groupId");
-    List<Image> updatedImageList = parseImage(jdbcTemplate.queryForList(imageSql.toString()));
+    List<Image> updatedImageList = parseImages(jdbcTemplate.queryForList(imageSql.toString()));
 
     logger.debug("{} images have been updated.",updatedImageList.size());
 
     StringBuilder imageTagSql = new StringBuilder();
     imageTagSql.append("INSERT OR IGNORE INTO image_tag(image_id,tag_id) VALUES");
-    List<Image> imageList = parseImage(jdbcTemplate.queryForList("SELECT id,name,path,groupId FROM main.image"));
+    List<Image> imageList = parseImages(jdbcTemplate.queryForList("SELECT id,name,path,groupId FROM main.image"));
     if (imageList.isEmpty()) {
       return;
     }
@@ -77,7 +95,7 @@ public class BulkInsertDao {
         }
       }
 
-      List<Tag> tags =  getTags(getTags(image));
+      List<Tag> tags =  getTagsFromDB(getTagsNoNull(image));
       for (Tag tag : tags) {
         imageTagSql.append("(").append(id).append(",").append(tag.getId()).append("),");
       }
@@ -87,27 +105,7 @@ public class BulkInsertDao {
     jdbcTemplate.update(imageTagSql.toString());
 
   }
-
-
-  private List<Tag> parseTag(List<Map<String, Object>> maps) {
-    List<Tag> result = new ArrayList<>();
-    for (Map<String, Object> map : maps) {
-      result.add(new Tag(((Integer) map.get("id")), (String) map.get("name")));
-    }
-    return result;
-  }
-
-  private List<Image> parseImage(List<Map<String, Object>> maps) {
-    List<Image> result = new ArrayList<>();
-    for (Map<String, Object> map : maps) {
-      result.add(
-          new Image(((Integer) map.get("id")), (String) map.get("name"), (String) map.get("path"),
-              (Integer) map.get("groupId")));
-    }
-    return result;
-  }
-
-  private List<Tag> getTags(List<Tag> tags) {
+  private List<Tag> getTagsFromDB(List<Tag> tags) {
     StringBuilder sb = new StringBuilder();
     sb.append("SELECT id,name FROM tag WHERE name IN (");
     for (Tag tag : tags) {
@@ -115,16 +113,6 @@ public class BulkInsertDao {
     }
     sb.deleteCharAt(sb.length() - 1);
     sb.append(")");
-    return parseTag(jdbcTemplate.queryForList(sb.toString()));
-  }
-
-  private Tags getTags(Image image) {
-    for (ImageMetadata metadatum : image.getMetadata()) {
-      if (metadatum instanceof Tags) {
-        return ((Tags) metadatum);
-      }
-    }
-    return new Tags();
-
+    return ImageTagUtil.parseTags(jdbcTemplate.queryForList(sb.toString()));
   }
 }

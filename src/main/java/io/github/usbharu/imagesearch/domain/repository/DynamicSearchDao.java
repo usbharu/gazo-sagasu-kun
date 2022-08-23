@@ -1,5 +1,7 @@
 package io.github.usbharu.imagesearch.domain.repository;
 
+import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImage;
+
 import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.Tag;
@@ -67,8 +69,7 @@ public class DynamicSearchDao {
 
     List<Image> images = new ArrayList<>();
     for (Map<String, Object> map : maps) {
-      Image image = new Image((Integer) map.get("image_id"), (String) map.get("image_name"),
-          (String) map.get("image_path"), (Integer) map.get("image_group"));
+      Image image = parseImage(map);
       image.getMetadata()
           .add(new Group((Integer) map.get("image_group"), (String) map.get("group_name")));
       Tags tags = new Tags();

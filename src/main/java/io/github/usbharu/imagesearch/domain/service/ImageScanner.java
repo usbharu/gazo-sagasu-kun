@@ -24,6 +24,8 @@ import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.constants.MicrosoftTagConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -37,7 +39,7 @@ public class ImageScanner {
   private final Map<String, List<Path>> pathsMap = new HashMap<>();
   private final List<Image> images = new ArrayList<>();
   private final BulkInsertDao bulkInsertDao;
-  Log log = LogFactory.getLog(ImageScanner.class);
+  Logger logger = LoggerFactory.getLogger(ImageScanner.class);
   private Map<String, String> group;
   private int depth = 3;
   private String folder = "";
@@ -62,21 +64,20 @@ public class ImageScanner {
       pathsMap.put(stringStringEntry.getKey(), paths);
     }
     if (!file.isDirectory()) {
-      log.warn(folder + " is not directory");
+      logger.warn("{} is not directory",folder);
     }
     images.clear();
     scanFolder(file, 0);
-    log.info("endScan");
-    log.debug("map:" + pathsMap);
-    log.debug(images.get(0));
+    logger.info("endScan");
+    logger.debug("{} pathsMap",pathsMap);
     bulkInsertDao.insert(images);
 //    bulkInsertDao.insert(imageTags);
   }
 
   private void scanFolder(File file, int depth) {
-    log.debug("depth:" + depth + " , file:" + file);
+    logger.debug("depth: {} , file: {}",depth,file);
     GroupPathSet group1 = getGroup(file);
-    log.debug("group:" + group1);
+    logger.debug("group: {}",group1);
     if (depth >= this.depth) {
       return;
     }
@@ -123,14 +124,14 @@ public class ImageScanner {
         return null;
       }
       if (!(metadata instanceof JpegImageMetadata)) {
-        log.trace("not jpeg metadata");
+        logger.trace("not jpeg metadata");
         return null;
       }
       JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
       TiffField keywords =
           jpegMetadata.findEXIFValueWithExactMatch(MicrosoftTagConstants.EXIF_TAG_XPKEYWORDS);
       if (keywords == null) {
-        log.trace("no keywords");
+        logger.trace("no keywords");
         return null;
       }
       String[] tags = keywords.getValue().toString().split("[; ,]");
@@ -145,8 +146,8 @@ public class ImageScanner {
       return image1;
 
     } catch (ImageReadException | IOException | IllegalArgumentException e) {
-      log.warn(e);
-      log.warn("image:" + image);
+      logger.warn(e.getMessage(),e);
+      logger.warn("image:" + image);
     }
     return null;
   }

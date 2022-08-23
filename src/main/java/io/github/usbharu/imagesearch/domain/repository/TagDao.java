@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,7 +20,7 @@ import org.springframework.stereotype.Repository;
 public class TagDao {
 
 
-  Log log = LogFactory.getLog(TagDao.class);
+  Logger logger = LoggerFactory.getLogger(TagDao.class);
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
@@ -41,7 +43,7 @@ public class TagDao {
   }
 
   public int insertOne(String tag) {
-    log.debug("insertOne: " + tag);
+    logger.debug("insertOne: {}", tag);
     return jdbcTemplate.update(
         "INSERT INTO tag (name) SELECT ? WHERE NOT EXISTS(SELECT 1 FROM tag WHERE name = ?)", tag,
         tag);

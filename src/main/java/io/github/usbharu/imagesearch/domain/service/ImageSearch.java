@@ -10,13 +10,15 @@ import io.github.usbharu.imagesearch.domain.repository.TagDao;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ImageSearch {
 
-  Log log = LogFactory.getLog(ImageSearch.class);
+  Logger logger = LoggerFactory.getLogger(ImageSearch.class);
 
   @Autowired
   private TagDao tagDao;

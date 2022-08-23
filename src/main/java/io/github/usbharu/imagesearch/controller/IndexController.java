@@ -8,6 +8,8 @@ import io.github.usbharu.imagesearch.domain.service.TagService;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 public class IndexController {
 
-  Log log = LogFactory.getLog(IndexController.class);
+  Logger logger = LoggerFactory.getLogger(IndexController.class);
 
   private final ImageSearch imageSearch;
 
@@ -45,7 +47,7 @@ public class IndexController {
 
   @GetMapping("/")
   public String index(Model model) {
-    log.trace("Access to Index");
+    logger.trace("Access to Index");
     model.addAttribute("message", imageSearch.randomTag().getName());
     model.addAttribute("groups", groupService.getGroupsAndAll());
     return "index";

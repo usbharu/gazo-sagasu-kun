@@ -20,7 +20,7 @@
 <th:block th:each="metadata : ${image.metadata}">
   <p th:text="${metadata.type}"></p>
   <th:block th:each="value : ${metadata.values}">
-    <a th:href="'search?'+${metadata.type}+'='+${value}" th:text="${value}"></a>
+    <a th:href="'/search?'+${metadata.type}+'='+${value}" th:text="${value}"></a>
   </th:block>
 </th:block>
 </body>

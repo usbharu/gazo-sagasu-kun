@@ -24,6 +24,10 @@ body {
   color: whitesmoke;
 }
 
+.images p{
+  margin: 0;
+}
+
 .tag p {
   margin: 0;
 }

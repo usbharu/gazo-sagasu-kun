@@ -24,28 +24,10 @@
     <th:block th:each="image : ${images}">
       <div class="images">
         <hr>
-        <a target="_blank" th:href="${httpUrl}+${image.path}">
-          <img th:alt="${image.name}" th:src="${httpUrl}+${image.path}" width="80%">
+        <a target="_blank" th:href="'/image/'+${image.id}">
+          <img th:alt="${image.name}" th:src="${httpUrl}+${image.path}" width="100%">
         </a>
         <p th:text="${image.name}"></p>
-        <th:block th:each="metadata : ${image.metadata}">
-          <p th:text="${metadata.type}"></p>
-          <th:block th:each="value : ${metadata.values}">
-            <a th:href="'search?'+${metadata.type}+'='+${value}" th:text="${value}"></a>
-          </th:block>
-        </th:block>
-
-
-        <!--        <div class="tags">-->
-        <!--          <th:block th:each="tag : ${image.tags}">-->
-        <!--            <div class="tag">-->
-
-        <!--              <a th:href="${'searched?tags=' + tag.name}">-->
-        <!--                <p th:text="'#'+${tag.name}"></p>-->
-        <!--              </a>-->
-        <!--            </div>-->
-        <!--          </th:block>-->
-        <!--        </div>-->
       </div>
     </th:block>
   </section>

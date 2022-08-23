@@ -3,6 +3,7 @@ package io.github.usbharu.imagesearch.controller;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.service.GroupService;
 import io.github.usbharu.imagesearch.domain.service.ImageSearch;
+import io.github.usbharu.imagesearch.domain.service.ImageService;
 import io.github.usbharu.imagesearch.domain.service.TagService;
 import java.util.List;
 import org.apache.commons.logging.Log;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 
@@ -27,12 +29,15 @@ public class IndexController {
 
   private final GroupService groupService;
 
+  private final ImageService imageService;
+
   @Autowired
   public IndexController(ImageSearch imageSearch, TagService tagService,
-      GroupService groupService) {
+      GroupService groupService, ImageService imageService) {
     this.imageSearch = imageSearch;
     this.tagService = tagService;
     this.groupService = groupService;
+    this.imageService = imageService;
   }
 
   @Value("${imagesearch.scan.http.folder:}")
@@ -75,5 +80,13 @@ public class IndexController {
     model.addAttribute("httpUrl", httpFolder);
     model.addAttribute("groups", groupService.getGroupsAndAll());
     return "search";
+  }
+
+  @GetMapping("/image/{id}")
+  public String image(@PathVariable("id") Integer id, Model model) {
+    Image image = imageService.findById(id);
+    model.addAttribute("image", image);
+    model.addAttribute("httpUrl",httpFolder);
+    return "image";
   }
 }

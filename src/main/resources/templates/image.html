@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title th:title="${image.name}"></title>
+  <lind rel="stylesheet" th:href="@{/css/style.css}" type="text/css"/>
+  <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta content="width=device-width" name="viewport">
+</head>
+<body>
+<div>
+  <a href="/" style="color: inherit;">
+    <h1>イラスト検索</h1>
+  </a>
+</div>
+<a target="_self" th:href="${httpUrl}+${image.path}">
+  <img th:alt="${image.name}" th:src="${httpUrl}+${image.path}" width="100%">
+</a>
+<th:block th:each="metadata : ${image.metadata}">
+  <p th:text="${metadata.type}"></p>
+  <th:block th:each="value : ${metadata.values}">
+    <a th:href="'search?'+${metadata.type}+'='+${value}" th:text="${value}"></a>
+  </th:block>
+</th:block>
+</body>
+</html>

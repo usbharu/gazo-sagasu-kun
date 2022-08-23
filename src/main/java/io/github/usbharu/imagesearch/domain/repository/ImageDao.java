@@ -67,7 +67,15 @@ public class ImageDao {
     Image image = parseMap(maps);
     log.debug("Success to findByUrl : " + image);
     return image;
+  }
 
+  public Image findById(int id) {
+    log.debug("findById id:" + id);
+    Map<String, Object> stringObjectMap =
+        jdbcTemplate.queryForMap("SELECT * FROM image WHERE id = ?", id);
+    Image image = parseMap(stringObjectMap);
+    log.debug("Success to findById id:" + image);
+    return image;
   }
 
   public int insertOne(Image image) {

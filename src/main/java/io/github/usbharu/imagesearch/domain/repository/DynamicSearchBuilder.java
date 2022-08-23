@@ -11,6 +11,8 @@ public class DynamicSearchBuilder {
   private String order = "ASC";
   private String orderType = "image_id";
 
+  private int id = -1;
+
   public DynamicSearchBuilder setTags(List<String> tags) {
     List<String> list = new ArrayList<>();
     for (String tag : tags) {
@@ -40,7 +42,12 @@ public class DynamicSearchBuilder {
     return this;
   }
 
+  public DynamicSearchBuilder setId(int id) {
+    this.id = id;
+    return this;
+  }
+
   public DynamicSearch createDynamicSearch() {
-    return new DynamicSearch(tags, group, order, orderType);
+    return new DynamicSearch(tags, group, order, orderType, id);
   }
 }

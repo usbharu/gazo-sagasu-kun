@@ -75,6 +75,9 @@ public class IndexController {
       @ModelAttribute("sort") String sort,
       @ModelAttribute("order") String order,
       Model model) {
+    if (!groupService.validation(group)) {
+      group="";
+    }
     List<Image> images = imageSearch.search3(tags.split("[; ,]"), group, sort, order);
     model.addAttribute("tagCount", tagService.tagOrderOfMostUsedLimit(20));
     model.addAttribute("message", tags);

@@ -3,15 +3,21 @@ package io.github.usbharu.imagesearch.domain.service;
 import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
 import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GroupService {
-
+private final Environment environment;
   private final GroupDao groupDao;
-
-  public GroupService(GroupDao groupDao) {
+  public GroupService(GroupDao groupDao, Environment environment) {
     this.groupDao = groupDao;
+    this.environment = environment;
   }
 
   public List<Group> getGroups() {
@@ -24,4 +30,7 @@ public class GroupService {
     return all;
   }
 
+  public boolean validation(String group) {
+    return environment.getProperty("imagesearch.scan.group." + group) != null;
+  }
 }

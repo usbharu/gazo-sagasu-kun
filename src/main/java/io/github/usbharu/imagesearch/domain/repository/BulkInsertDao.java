@@ -76,14 +76,14 @@ public class BulkInsertDao {
           .append("',").append(image.getGroup()).append("),");
     }
     imageSql.deleteCharAt(imageSql.length() - 1);
-    imageSql.append("RETURNING id,name,path,groupId");
+    imageSql.append("RETURNING id as image_id,name as image_name,path as image_path,groupId as image_group");
     List<Image> updatedImageList = parseImages(jdbcTemplate.queryForList(imageSql.toString()));
 
     logger.debug("{} images have been updated.",updatedImageList.size());
 
     StringBuilder imageTagSql = new StringBuilder();
     imageTagSql.append("INSERT OR IGNORE INTO image_tag(image_id,tag_id) VALUES");
-    List<Image> imageList = parseImages(jdbcTemplate.queryForList("SELECT id,name,path,groupId FROM main.image"));
+    List<Image> imageList = parseImages(jdbcTemplate.queryForList("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM main.image"));
     if (imageList.isEmpty()) {
       return;
     }

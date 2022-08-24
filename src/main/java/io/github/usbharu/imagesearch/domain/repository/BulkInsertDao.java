@@ -4,7 +4,6 @@ import static io.github.usbharu.imagesearch.util.ImageTagUtil.getTagsNoNull;
 import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImages;
 
 import io.github.usbharu.imagesearch.domain.model.Image;
-import io.github.usbharu.imagesearch.domain.model.ImageMetadata;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
 import io.github.usbharu.imagesearch.util.ImageTagUtil;
@@ -27,6 +26,7 @@ public class BulkInsertDao {
   private final TagDao tagDao;
 
   private final GroupDao groupDao;
+  private final Logger logger = LoggerFactory.getLogger(BulkInsertDao.class);
 
   /**
    * Autowired用のコンストラクタ
@@ -41,8 +41,6 @@ public class BulkInsertDao {
     this.tagDao = tagDao;
     this.groupDao = groupDao;
   }
-
-  private final Logger logger = LoggerFactory.getLogger(BulkInsertDao.class);
 
   /**
    * まとめてインサートする。
@@ -76,14 +74,16 @@ public class BulkInsertDao {
           .append("',").append(image.getGroup()).append("),");
     }
     imageSql.deleteCharAt(imageSql.length() - 1);
-    imageSql.append("RETURNING id as image_id,name as image_name,path as image_path,groupId as image_group");
+    imageSql.append(
+        "RETURNING id as image_id,name as image_name,path as image_path,groupId as image_group");
     List<Image> updatedImageList = parseImages(jdbcTemplate.queryForList(imageSql.toString()));
 
-    logger.debug("{} images have been updated.",updatedImageList.size());
+    logger.debug("{} images have been updated.", updatedImageList.size());
 
     StringBuilder imageTagSql = new StringBuilder();
     imageTagSql.append("INSERT OR IGNORE INTO image_tag(image_id,tag_id) VALUES");
-    List<Image> imageList = parseImages(jdbcTemplate.queryForList("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM main.image"));
+    List<Image> imageList = parseImages(jdbcTemplate.queryForList(
+        "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM main.image"));
     if (imageList.isEmpty()) {
       return;
     }
@@ -95,16 +95,17 @@ public class BulkInsertDao {
         }
       }
 
-      List<Tag> tags =  getTagsFromDB(getTagsNoNull(image));
+      List<Tag> tags = getTagsFromDB(getTagsNoNull(image));
       for (Tag tag : tags) {
         imageTagSql.append("(").append(id).append(",").append(tag.getId()).append("),");
       }
     }
-    imageTagSql.deleteCharAt(imageTagSql.length()-1);
+    imageTagSql.deleteCharAt(imageTagSql.length() - 1);
 
     jdbcTemplate.update(imageTagSql.toString());
 
   }
+
   private List<Tag> getTagsFromDB(List<Tag> tags) {
     StringBuilder sb = new StringBuilder();
     sb.append("SELECT id,name FROM tag WHERE name IN (");

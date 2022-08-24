@@ -9,17 +9,13 @@ import org.springframework.stereotype.Component;
 //@ConfigurationProperties("imagesearch")
 @Component
 public class ImageFileNameUtil {
-  private ImageFileNameUtil(){}
-
-
-
-@Value("${imagesearch.httpImageFolder}")
-public void setFilePath(String filePath) {
-  ImageFileNameUtil.filePath = filePath;
-}
 
   @Value("${imagesearch.httpImageFolder}")
   public static String filePath;
+
+
+  private ImageFileNameUtil() {
+  }
 
   @Deprecated
   public static String getURL(File file) throws UnknownHostException {
@@ -30,5 +26,10 @@ public void setFilePath(String filePath) {
 
   public static boolean isJpg(String name) {
     return name.toUpperCase().endsWith("JPG") || name.toUpperCase().endsWith("JPEG");
+  }
+
+  @Value("${imagesearch.httpImageFolder}")
+  public void setFilePath(String filePath) {
+    ImageFileNameUtil.filePath = filePath;
   }
 }

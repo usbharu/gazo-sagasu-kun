@@ -6,8 +6,6 @@ import io.github.usbharu.imagesearch.domain.service.ImageSearch;
 import io.github.usbharu.imagesearch.domain.service.ImageService;
 import io.github.usbharu.imagesearch.domain.service.TagService;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +20,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 public class IndexController {
 
-  Logger logger = LoggerFactory.getLogger(IndexController.class);
-
   private final ImageSearch imageSearch;
-
-
   private final TagService tagService;
-
   private final GroupService groupService;
-
   private final ImageService imageService;
+  Logger logger = LoggerFactory.getLogger(IndexController.class);
+  @Value("${imagesearch.scan.http.folder:}")
+  private String httpFolder = "";
 
   @Autowired
   public IndexController(ImageSearch imageSearch, TagService tagService,
@@ -41,9 +36,6 @@ public class IndexController {
     this.groupService = groupService;
     this.imageService = imageService;
   }
-
-  @Value("${imagesearch.scan.http.folder:}")
-  private String httpFolder = "";
 
   @GetMapping("/")
   public String index(Model model) {
@@ -76,7 +68,7 @@ public class IndexController {
       @ModelAttribute("order") String order,
       Model model) {
     if (!groupService.validation(group)) {
-      group="";
+      group = "";
     }
     List<Image> images = imageSearch.search3(tags.split("[; ,]"), group, sort, order);
     model.addAttribute("tagCount", tagService.tagOrderOfMostUsedLimit(20));
@@ -91,7 +83,7 @@ public class IndexController {
   public String image(@PathVariable("id") Integer id, Model model) {
     Image image = imageService.findById(id);
     model.addAttribute("image", image);
-    model.addAttribute("httpUrl",httpFolder);
+    model.addAttribute("httpUrl", httpFolder);
     return "image";
   }
 }

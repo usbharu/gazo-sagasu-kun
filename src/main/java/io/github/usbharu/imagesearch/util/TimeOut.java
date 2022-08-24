@@ -14,7 +14,7 @@ public class TimeOut {
 
   public static void with(Runnable runnable)
       throws ExecutionException, InterruptedException, TimeoutException {
-    with(runnable,1000);
+    with(runnable, 1000);
   }
 
   public static void with(Runnable runnable, long timeout) throws InterruptedException,
@@ -22,7 +22,8 @@ public class TimeOut {
     with(runnable, timeout, TimeUnit.MILLISECONDS);
   }
 
-  public static void with(Runnable runnable, long timeout, TimeUnit unit) throws InterruptedException,
+  public static void with(Runnable runnable, long timeout, TimeUnit unit)
+      throws InterruptedException,
       ExecutionException, TimeoutException {
     ExecutorService es = Executors.newSingleThreadExecutor();
     Future<?> future = es.submit(runnable);

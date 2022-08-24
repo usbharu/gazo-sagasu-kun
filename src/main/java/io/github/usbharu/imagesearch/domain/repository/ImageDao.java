@@ -6,8 +6,6 @@ import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImages;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +31,8 @@ public class ImageDao {
   public List<Image> findAllOrderByNameAsc() {
     logger.debug("findAllOrderByNameAsc");
     List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image ORDER BY name ASC");
+        jdbcTemplate.queryForList(
+            "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image ORDER BY name ASC");
     List<Image> result = parseImages(maps);
     logger.debug("Success to findAllOrderByNameAsc : " + result.size());
     return result;
@@ -42,7 +41,8 @@ public class ImageDao {
   public List<Image> findAllOrderByNameDesc() {
     logger.debug("findAllOrderByNameDesc");
     List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image ORDER BY name DESC");
+        jdbcTemplate.queryForList(
+            "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image ORDER BY name DESC");
     List<Image> result = parseImages(maps);
     logger.debug("Success to findAllOrderByNameDesc : " + result.size());
     return result;
@@ -51,7 +51,8 @@ public class ImageDao {
   public List<Image> findAllOrderByIdDesc() {
     logger.debug("findAllOrderByIdDesc");
     List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image ORDER BY id DESC");
+        jdbcTemplate.queryForList(
+            "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image ORDER BY id DESC");
     List<Image> result = parseImages(maps);
     logger.debug("Success to findAllOrderByIdDesc : " + result.size());
     return result;
@@ -60,7 +61,9 @@ public class ImageDao {
   public List<Image> findByName(String name) {
     logger.debug("findByName name:" + name);
     List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE name = ?", name);
+        jdbcTemplate.queryForList(
+            "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE name = ?",
+            name);
     List<Image> result = parseImages(maps);
     logger.debug("Success to findByName : " + result.size());
     return result;
@@ -68,7 +71,9 @@ public class ImageDao {
 
   public Image findByUrl(String url) {
     logger.debug("findByUrl url:" + url);
-    Map<String, Object> maps = jdbcTemplate.queryForMap("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE path = ?", url);
+    Map<String, Object> maps = jdbcTemplate.queryForMap(
+        "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE path = ?",
+        url);
     Image image = parseImage(maps);
     logger.debug("Success to findByUrl : " + image);
     return image;
@@ -77,7 +82,9 @@ public class ImageDao {
   public Image findById(int id) {
     logger.debug("findById id:" + id);
     Map<String, Object> stringObjectMap =
-        jdbcTemplate.queryForMap("SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE id = ?", id);
+        jdbcTemplate.queryForMap(
+            "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE id = ?",
+            id);
     Image image = parseImage(stringObjectMap);
     logger.debug("Success to findById id:" + image);
     return image;

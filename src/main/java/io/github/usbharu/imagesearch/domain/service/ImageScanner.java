@@ -62,20 +62,20 @@ public class ImageScanner {
       pathsMap.put(stringStringEntry.getKey(), paths);
     }
     if (!file.isDirectory()) {
-      logger.warn("{} is not directory",folder);
+      logger.warn("{} is not directory", folder);
     }
     images.clear();
     scanFolder(file, 0);
     logger.info("endScan");
-    logger.debug("{} pathsMap",pathsMap);
+    logger.debug("{} pathsMap", pathsMap);
     bulkInsertDao.insert(images);
 //    bulkInsertDao.insert(imageTags);
   }
 
   private void scanFolder(File file, int depth) {
-    logger.debug("depth: {} , file: {}",depth,file);
+    logger.debug("depth: {} , file: {}", depth, file);
     GroupPathSet group1 = getGroup(file);
-    logger.debug("group: {}",group1);
+    logger.debug("group: {}", group1);
     if (depth >= this.depth) {
       return;
     }
@@ -144,7 +144,7 @@ public class ImageScanner {
       return image1;
 
     } catch (ImageReadException | IOException | IllegalArgumentException e) {
-      logger.warn(e.getMessage(),e);
+      logger.warn(e.getMessage(), e);
       logger.warn("image:" + image);
     }
     return null;

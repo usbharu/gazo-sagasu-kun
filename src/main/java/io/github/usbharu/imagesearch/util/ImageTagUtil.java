@@ -5,7 +5,6 @@ import io.github.usbharu.imagesearch.domain.model.ImageMetadata;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +38,7 @@ public class ImageTagUtil {
     return images;
   }
 
-  public static List<Image> parseImagesWithMetadata(List<Map<String,Object>> maps){
+  public static List<Image> parseImagesWithMetadata(List<Map<String, Object>> maps) {
     List<Image> images = new ArrayList<>();
     for (Map<String, Object> map : maps) {
       images.add(parseImageWithMetadata(map));

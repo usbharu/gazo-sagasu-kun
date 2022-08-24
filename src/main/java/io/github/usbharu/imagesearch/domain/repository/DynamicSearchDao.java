@@ -45,7 +45,7 @@ public class DynamicSearchDao {
 
     String groupSql = "AND group_name = '" + dynamicSearch.group + "'\n";
 
-    String idSql = "AND image_id = "+dynamicSearch.id+"\n";
+    String idSql = "AND image_id = " + dynamicSearch.id + "\n";
 
     String sql = "SELECT image_id,\n"
         + "       image.name             as image_name,\n"
@@ -61,7 +61,7 @@ public class DynamicSearchDao {
         + "WHERE TRUE\n"
         + (dynamicSearch.tags.isEmpty() ? "\n" : tagsSql)
         + (dynamicSearch.group == null || dynamicSearch.group.isBlank() ? "\n" : groupSql)
-        + (dynamicSearch.id<=1?"\n":idSql)
+        + (dynamicSearch.id <= 1 ? "\n" : idSql)
         + "GROUP BY image_id\n"
         + "ORDER BY " + dynamicSearch.orderType + " " + dynamicSearch.order;
 
@@ -94,6 +94,7 @@ public class DynamicSearchDao {
     private final String orderType;
 
     private final int id;
+
     public DynamicSearch(List<String> tags, String group, String order, String orderType, int id) {
       this.tags = tags;
       this.group = group;

@@ -14,7 +14,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class ImageSearchApplication {
 
-  @Value("${imagesearch.imageFolder}") private String imageFolder;
+  @Value("${imagesearch.imageFolder}")
+  private String imageFolder;
 
   public static void main(String[] args) {
     ConfigurableApplicationContext ctx = SpringApplication.run(ImageSearchApplication.class, args);
@@ -24,7 +25,7 @@ public class ImageSearchApplication {
     app.firstScan();
   }
 
-  public void firstScan(){
+  public void firstScan() {
 //    imageScan.scan(Paths.get(imageFolder));
 //    imageScan.scan(Paths.get("K:\\Documents\\GitHub\\ImageSearch\\src\\test\\resources\\testData"));
 //    imageScan.scan(Paths.get("Y:\\資料\\趣味\\クッキークリッカー\\しょぼいマフィンベーカリー"));

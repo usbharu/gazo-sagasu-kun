@@ -9,10 +9,6 @@ public enum ImageTagDaoOrder {
     this.sql = sql;
   }
 
-  public String getSql() {
-    return sql;
-  }
-
   public static ImageTagDaoOrder fromString(String value) {
     for (ImageTagDaoOrder order : values()) {
       if (order.getSql().equalsIgnoreCase(value)) {
@@ -20,5 +16,9 @@ public enum ImageTagDaoOrder {
       }
     }
     return ASC;
+  }
+
+  public String getSql() {
+    return sql;
   }
 }

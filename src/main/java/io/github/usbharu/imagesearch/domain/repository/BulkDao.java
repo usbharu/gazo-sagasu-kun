@@ -112,6 +112,8 @@ public class BulkDao {
     jdbcTemplate.update("DELETE FROM main.groupId NOT INDEXED ");
     jdbcTemplate.update("DELETE FROM main.image_tag NOT INDEXED ");
     jdbcTemplate.update("DELETE FROM main.tag NOT INDEXED ");
+    jdbcTemplate.update("DELETE FROM main.sqlite_sequence NOT INDEXED ");
+
     logger.info("complete delete all");
   }
 

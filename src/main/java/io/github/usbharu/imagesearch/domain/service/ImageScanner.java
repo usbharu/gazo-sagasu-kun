@@ -4,7 +4,7 @@ import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
-import io.github.usbharu.imagesearch.domain.repository.BulkInsertDao;
+import io.github.usbharu.imagesearch.domain.repository.BulkDao;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
 import io.github.usbharu.imagesearch.util.ImageFileNameUtil;
 import java.io.File;
@@ -36,19 +36,20 @@ public class ImageScanner {
   private final GroupDao groupDao;
   private final Map<String, List<Path>> pathsMap = new HashMap<>();
   private final List<Image> images = new ArrayList<>();
-  private final BulkInsertDao bulkInsertDao;
+  private final BulkDao bulkDao;
   Logger logger = LoggerFactory.getLogger(ImageScanner.class);
   private Map<String, String> group;
   private int depth = 3;
   private String folder = "";
 
   @Autowired
-  public ImageScanner(BulkInsertDao bulkInsertDao, GroupDao groupDao) {
-    this.bulkInsertDao = bulkInsertDao;
+  public ImageScanner(BulkDao bulkDao, GroupDao groupDao) {
+    this.bulkDao = bulkDao;
     this.groupDao = groupDao;
   }
 
   public void startScan() {
+    bulkDao.delete();
     File file = Paths.get(folder).toFile();
     for (Entry<String, String> stringStringEntry : group.entrySet()) {
       String value = stringStringEntry.getValue();
@@ -68,7 +69,7 @@ public class ImageScanner {
     scanFolder(file, 0);
     logger.info("endScan");
     logger.debug("{} pathsMap", pathsMap);
-    bulkInsertDao.insert(images);
+    bulkDao.insert(images);
 //    bulkInsertDao.insert(imageTags);
   }
 

@@ -19,14 +19,14 @@ import org.springframework.stereotype.Repository;
  * データベースにまとめてインサートするDAO
  */
 @Repository
-public class BulkInsertDao {
+public class BulkDao {
 
   private final JdbcTemplate jdbcTemplate;
 
   private final TagDao tagDao;
 
   private final GroupDao groupDao;
-  private final Logger logger = LoggerFactory.getLogger(BulkInsertDao.class);
+  private final Logger logger = LoggerFactory.getLogger(BulkDao.class);
 
   /**
    * Autowired用のコンストラクタ
@@ -36,7 +36,7 @@ public class BulkInsertDao {
    * @param groupDao     グループのDAO
    */
   @Autowired
-  public BulkInsertDao(JdbcTemplate jdbcTemplate, TagDao tagDao, GroupDao groupDao) {
+  public BulkDao(JdbcTemplate jdbcTemplate, TagDao tagDao, GroupDao groupDao) {
     this.jdbcTemplate = jdbcTemplate;
     this.tagDao = tagDao;
     this.groupDao = groupDao;
@@ -104,6 +104,15 @@ public class BulkInsertDao {
 
     jdbcTemplate.update(imageTagSql.toString());
 
+  }
+
+  public void delete() {
+    logger.info("delete all");
+    jdbcTemplate.update("DELETE FROM main.image NOT INDEXED ");
+    jdbcTemplate.update("DELETE FROM main.groupId NOT INDEXED ");
+    jdbcTemplate.update("DELETE FROM main.image_tag NOT INDEXED ");
+    jdbcTemplate.update("DELETE FROM main.tag NOT INDEXED ");
+    logger.info("complete delete all");
   }
 
   private List<Tag> getTagsFromDB(List<Tag> tags) {

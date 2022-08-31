@@ -69,7 +69,7 @@ public class ImageScanner {
     scanFolder(file, 0);
     logger.info("endScan");
     logger.debug("{} pathsMap", pathsMap);
-    bulkDao.insert(images);
+    bulkDao.insertSplit(images);
 //    bulkInsertDao.insert(imageTags);
   }
 

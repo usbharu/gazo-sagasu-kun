@@ -27,37 +27,6 @@ public class ImageDao {
     logger.debug("Success to findAll : " + result.size());
     return result;
   }
-
-  public List<Image> findAllOrderByNameAsc() {
-    logger.debug("findAllOrderByNameAsc");
-    List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList(
-            "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image ORDER BY name ASC");
-    List<Image> result = parseImages(maps);
-    logger.debug("Success to findAllOrderByNameAsc : " + result.size());
-    return result;
-  }
-
-  public List<Image> findAllOrderByNameDesc() {
-    logger.debug("findAllOrderByNameDesc");
-    List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList(
-            "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image ORDER BY name DESC");
-    List<Image> result = parseImages(maps);
-    logger.debug("Success to findAllOrderByNameDesc : " + result.size());
-    return result;
-  }
-
-  public List<Image> findAllOrderByIdDesc() {
-    logger.debug("findAllOrderByIdDesc");
-    List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList(
-            "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image ORDER BY id DESC");
-    List<Image> result = parseImages(maps);
-    logger.debug("Success to findAllOrderByIdDesc : " + result.size());
-    return result;
-  }
-
   public List<Image> findByName(String name) {
     logger.debug("findByName name:" + name);
     List<Map<String, Object>> maps =

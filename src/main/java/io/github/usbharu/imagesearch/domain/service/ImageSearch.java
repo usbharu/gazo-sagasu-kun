@@ -31,7 +31,6 @@ public class ImageSearch {
   }
 
   public Tag randomTag() {
-
     return tagDao.selectRandomOne();
   }
 }

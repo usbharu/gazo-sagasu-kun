@@ -108,7 +108,7 @@ public class ImageScanner {
 
     Image imageObject = getMetadata2(image, subpath);
     if (imageObject == null) {
-      return;
+      imageObject = new Image(image.getName(), subpath.toString());
     }
     imageObject.getMetadata().add(group.getGroup());
     imageObject.setGroup(group.getGroup().getId());

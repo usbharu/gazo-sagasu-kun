@@ -27,6 +27,7 @@ public class BulkDao {
 
   private final GroupDao groupDao;
   private final Logger logger = LoggerFactory.getLogger(BulkDao.class);
+  private final Tag none = new Tag(1, "NONE");
 
   /**
    * Autowired用のコンストラクタ
@@ -60,6 +61,7 @@ public class BulkDao {
     }
     StringBuilder tagSql = new StringBuilder();
     tagSql.append("INSERT OR IGNORE INTO tag(name) VALUES");
+    tagSql.append("('NONE'),");
     for (Tag tag : tagList) {
       tagSql.append("('").append(tag.getName()).append("'),");
     }
@@ -118,6 +120,9 @@ public class BulkDao {
   }
 
   private List<Tag> getTagsFromDB(List<Tag> tags) {
+    if (tags.isEmpty()) {
+      return List.of(none);
+    }
     StringBuilder sb = new StringBuilder();
     sb.append("SELECT id,name FROM tag WHERE name IN (");
     for (Tag tag : tags) {

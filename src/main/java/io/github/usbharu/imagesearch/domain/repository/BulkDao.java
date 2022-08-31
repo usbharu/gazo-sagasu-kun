@@ -89,7 +89,8 @@ public class BulkDao {
     if (imageList.isEmpty()) {
       return;
     }
-    for (Image image : images) {
+    for (int i = 0, imagesSize = images.size(); i < imagesSize; i++) {
+      Image image = images.get(i);
       int id = -1;
       for (Image image1 : imageList) {
         if (image1.getPath().equals(image.getPath())) {
@@ -100,6 +101,10 @@ public class BulkDao {
       List<Tag> tags = getTagsFromDB(getTagsNoNull(image));
       for (Tag tag : tags) {
         imageTagSql.append("(").append(id).append(",").append(tag.getId()).append("),");
+      }
+      if(i%100==0){
+        imageTagSql.deleteCharAt(imageTagSql.length()-1);
+        imageTagSql.append(";").append("INSERT OR IGNORE INTO image_tag(image_id,tag_id) VALUES");
       }
     }
     imageTagSql.deleteCharAt(imageTagSql.length() - 1);

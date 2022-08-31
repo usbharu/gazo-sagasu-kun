@@ -23,9 +23,6 @@ public class BulkDao {
 
   private final JdbcTemplate jdbcTemplate;
 
-  private final TagDao tagDao;
-
-  private final GroupDao groupDao;
   private final Logger logger = LoggerFactory.getLogger(BulkDao.class);
   private final Tag none = new Tag(1, "NONE");
 
@@ -39,16 +36,29 @@ public class BulkDao {
   @Autowired
   public BulkDao(JdbcTemplate jdbcTemplate, TagDao tagDao, GroupDao groupDao) {
     this.jdbcTemplate = jdbcTemplate;
-    this.tagDao = tagDao;
-    this.groupDao = groupDao;
   }
 
-  public void insertSplit(List<Image> images){
-    logger.info("Images :{}",images.size());
-    for (int i = 0; i < images.size() / 100; i++) {
-      logger.info("insert range: {}-{}",100*i,100*(i+1));
-      insert(images.subList(100*i, Math.min(images.size()-1,100 * (i+1))));
+  /**
+   * 指定数ごとに分割した後まとめてインサートします。
+   *
+   * @param images インサートする画像
+   * @param split  分割する枚数画像のリスト
+   */
+  public void insertSplit(List<Image> images, int split) {
+    logger.info("Images :{} split:{}", images.size(), split);
+    for (int i = 0; i < images.size() / split; i++) {
+      logger.debug("insert range: {}-{}", split * i, split * (i + 1));
+      insert(images.subList(split * i, Math.min(images.size() - 1, split * (i + 1))));
     }
+  }
+
+  /**
+   * 100枚ごと二分割したものをまとめてインサートします。
+   *
+   * @param images インサートする画像のリスト
+   */
+  public void insertSplit(List<Image> images) {
+    insertSplit(images, 100);
   }
 
   /**

@@ -2,13 +2,10 @@ package io.github.usbharu.imagesearch.domain.service;
 
 import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.model.Image;
-import io.github.usbharu.imagesearch.domain.model.Tag;
-import io.github.usbharu.imagesearch.domain.model.Tags;
 import io.github.usbharu.imagesearch.domain.repository.BulkDao;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
-import io.github.usbharu.imagesearch.util.ImageFileNameUtil;
+import io.github.usbharu.imagesearch.image.Scanner;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -16,12 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
-import org.apache.commons.imaging.common.ImageMetadata;
-import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
-import org.apache.commons.imaging.formats.tiff.TiffField;
-import org.apache.commons.imaging.formats.tiff.constants.MicrosoftTagConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +33,14 @@ public class ImageScanner {
   private int depth = 3;
   private String folder = "";
 
+  final
+  Scanner imageScanner;
+
   @Autowired
-  public ImageScanner(BulkDao bulkDao, GroupDao groupDao) {
+  public ImageScanner(BulkDao bulkDao, GroupDao groupDao, Scanner imageScanner) {
     this.bulkDao = bulkDao;
     this.groupDao = groupDao;
+    this.imageScanner = imageScanner;
   }
 
   public void startScan() {
@@ -69,7 +64,7 @@ public class ImageScanner {
     scanFolder(file, 0);
     logger.info("endScan");
     logger.debug("{} pathsMap", pathsMap);
-    bulkDao.insertSplit(images);
+    bulkDao.insertSplit(images,500);
 //    bulkInsertDao.insert(imageTags);
   }
 
@@ -84,7 +79,7 @@ public class ImageScanner {
     for (File listFile : file.listFiles()) {
       if (listFile.isDirectory()) {
         scanFolder(listFile, depth + 1);
-      } else if (ImageFileNameUtil.isJpg(listFile.getName())) {
+      } else if (imageScanner.isSupported(listFile)) {
         scanImage(listFile, group1);
       }
     }
@@ -106,49 +101,17 @@ public class ImageScanner {
     Path imagePath = image.toPath();
     Path subpath = imagePath.subpath(group.getPath().getNameCount() - 1, imagePath.getNameCount());
 
-    Image imageObject = getMetadata2(image, subpath);
+    Image imageObject = imageScanner.getMetadata(image, subpath);
     if (imageObject == null) {
-      imageObject = new Image(image.getName(), subpath.toString());
+
+      throw new IllegalStateException("????");
+//      imageObject = new Image(image.getName(), subpath.toString());
     }
     imageObject.getMetadata().add(group.getGroup());
     imageObject.setGroup(group.getGroup().getId());
+    logger.debug(imageObject.toString());
     images.add(imageObject);
 
-  }
-
-  protected Image getMetadata2(File image, Path subpath) {
-    try {
-      ImageMetadata metadata = Imaging.getMetadata(image);
-      if (metadata == null) {
-        return null;
-      }
-      if (!(metadata instanceof JpegImageMetadata)) {
-        logger.trace("not jpeg metadata");
-        return null;
-      }
-      JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
-      TiffField keywords =
-          jpegMetadata.findEXIFValueWithExactMatch(MicrosoftTagConstants.EXIF_TAG_XPKEYWORDS);
-      if (keywords == null) {
-        logger.trace("no keywords");
-        return null;
-      }
-      String[] tags = keywords.getValue().toString().split("[; ,]");
-      List<Tag> tagList = new ArrayList<>();
-      for (String tag : tags) {
-        tagList.add(new Tag(tag));
-      }
-      Image image1 = new Image(image.getName(), subpath.toString());
-      Tags tagObject = new Tags();
-      tagObject.addAll(tagList);
-      image1.getMetadata().add(tagObject);
-      return image1;
-
-    } catch (ImageReadException | IOException | IllegalArgumentException e) {
-      logger.warn(e.getMessage(), e);
-      logger.warn("image:" + image);
-    }
-    return null;
   }
 
   public int getDepth() {

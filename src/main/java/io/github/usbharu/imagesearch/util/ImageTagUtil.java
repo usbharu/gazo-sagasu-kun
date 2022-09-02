@@ -58,12 +58,13 @@ public class ImageTagUtil {
   }
 
   public static Tags getTags(Image image) {
+    Tags tags = new Tags();
     for (ImageMetadata metadatum : image.getMetadata()) {
       if (metadatum instanceof Tags) {
-        return ((Tags) metadatum);
+        tags.addAll((Tags) metadatum);
       }
     }
-    return null;
+    return tags;
   }
 
   public static Tags getTagsNoNull(Image image) {

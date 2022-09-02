@@ -15,4 +15,9 @@ public class Tags extends ArrayList<Tag> implements ImageMetadata {
   public List<String> getValues() {
     return this.stream().map(Tag::getName).collect(Collectors.toList());
   }
+
+  @Override
+  public String toString() {
+    return "Tags{} " + super.toString();
+  }
 }

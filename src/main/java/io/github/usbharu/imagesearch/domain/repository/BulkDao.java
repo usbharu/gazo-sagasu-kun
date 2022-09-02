@@ -46,7 +46,9 @@ public class BulkDao {
    */
   public void insertSplit(List<Image> images, int split) {
     logger.info("Images :{} split:{}", images.size(), split);
-    for (int i = 0; i < images.size() / split; i++) {
+    int len = (images.size() / split);
+    len += images.size()%split==0?0:1;
+    for (int i = 0; i < len; i++) {
       logger.debug("insert range: {}-{}", split * i, split * (i + 1));
       insert(images.subList(split * i, Math.min(images.size() - 1, split * (i + 1))));
     }
@@ -73,10 +75,11 @@ public class BulkDao {
     List<Tag> tagList = new ArrayList<>();
     for (Image image : images) {
       Tags tags = ImageTagUtil.getTagsNoNull(image);
-
+      logger.debug("tag list : {}",tags);
       tagList.addAll(tags);
 
     }
+    logger.info("tags list :{}",tagList);
     StringBuilder tagSql = new StringBuilder();
     tagSql.append("INSERT OR IGNORE INTO tag(name) VALUES");
     tagSql.append("('NONE'),");
@@ -112,6 +115,7 @@ public class BulkDao {
       for (Image image1 : imageList) {
         if (image1.getPath().equals(image.getPath())) {
           id = image1.getId();
+          break;
         }
       }
 

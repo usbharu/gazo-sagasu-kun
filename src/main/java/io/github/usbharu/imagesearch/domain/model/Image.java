@@ -51,8 +51,10 @@ public class Image {
     for (ImageMetadata metadatum : getMetadata()) {
       if (metadatum.getType().equals(metadata.getType())) {
         metadatum.getValues().addAll(metadata.getValues());
+        return;
       }
     }
+    getMetadata().add(metadata);
   }
 
   public String getName() {

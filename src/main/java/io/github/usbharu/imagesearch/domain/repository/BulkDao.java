@@ -75,11 +75,9 @@ public class BulkDao {
     List<Tag> tagList = new ArrayList<>();
     for (Image image : images) {
       Tags tags = ImageTagUtil.getTagsNoNull(image);
-      logger.debug("tag list : {}",tags);
       tagList.addAll(tags);
 
     }
-    logger.info("tags list :{}",tagList);
     StringBuilder tagSql = new StringBuilder();
     tagSql.append("INSERT OR IGNORE INTO tag(name) VALUES");
     tagSql.append("('NONE'),");

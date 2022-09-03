@@ -2,6 +2,8 @@ package io.github.usbharu.imagesearch.pixiv;
 
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.ImageMetadata;
+import io.github.usbharu.imagesearch.domain.model.Tag;
+import io.github.usbharu.imagesearch.domain.model.Tags;
 import io.github.usbharu.imagesearch.image.DefaultJpegScanner;
 import io.github.usbharu.imagesearch.image.Scanner;
 import java.io.File;
@@ -36,7 +38,11 @@ public class PixivBatchDownloaderPluginScanner extends DefaultJpegScanner implem
 
     if (imageFileNameUtil.isPixivTypeFileName(imageFile.getName())) {
       image.getMetadata().addAll(getPixivImageMetadata(imageFile));
-      logger.debug(image.toString());
+      Tags metadata = new Tags();
+      metadata.add(new Tag("__"+imageFileNameUtil.getPixivTypeFileBaseName(imageFile.getName())+"__"));
+      metadata.add(new Tag("__Pixiv__"));
+      image.addMetadata(metadata);
+      logger.trace(image.toString());
     }
     return image;
   }

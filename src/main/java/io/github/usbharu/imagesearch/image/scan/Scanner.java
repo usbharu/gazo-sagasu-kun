@@ -1,4 +1,4 @@
-package io.github.usbharu.imagesearch.image;
+package io.github.usbharu.imagesearch.image.scan;
 
 import io.github.usbharu.imagesearch.domain.model.Image;
 import java.io.File;

@@ -47,7 +47,7 @@ public class Image {
     return metadata;
   }
 
-  public void addMetadata(ImageMetadata metadata){
+  public void addMetadata(ImageMetadata metadata) {
     for (ImageMetadata metadatum : getMetadata()) {
       if (metadatum.getType().equals(metadata.getType())) {
         metadatum.getValues().addAll(metadata.getValues());
@@ -78,12 +78,7 @@ public class Image {
 
   @Override
   public String toString() {
-    return "Image{" +
-        "id=" + id +
-        ", name='" + name + '\'' +
-        ", path='" + path + '\'' +
-        ", metadata=" + metadata +
-        ", group=" + group +
-        '}';
+    return "Image{" + "id=" + id + ", name='" + name + '\'' + ", path='" + path + '\''
+        + ", metadata=" + metadata + ", group=" + group + '}';
   }
 }

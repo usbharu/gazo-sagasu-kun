@@ -20,7 +20,7 @@ public class PixivMetadataParser {
     try (BufferedReader bufferedReader = Files.newBufferedReader(file.toPath())) {
       String text;
       while ((text = bufferedReader.readLine()) != null) {
-        final ImageMetadata imageMetadata = switchData(text, bufferedReader);
+        final ImageMetadata imageMetadata = parseData(text, bufferedReader);
         if (imageMetadata != null) {
           imageMetadataList.add(imageMetadata);
         }
@@ -31,14 +31,13 @@ public class PixivMetadataParser {
     return imageMetadataList;
   }
 
-  private static ImageMetadata switchData(String text, BufferedReader bufferedReader) throws IOException {
+  private static ImageMetadata parseData(String text, BufferedReader bufferedReader) throws IOException {
     logger.debug("text: {}",text);
     if (text.startsWith("Tags")) {
       logger.debug("Find Tags");
       return tags(bufferedReader);
-    } else {
-//      bufferedReader.readLine();
     }
+
     return null;
   }
 

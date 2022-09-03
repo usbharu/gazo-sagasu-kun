@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'io.github.usbharu'
-version = '0.0.3-SNAPSHOT'
+version = '0.0.4'
 sourceCompatibility = '11'
 
 repositories {

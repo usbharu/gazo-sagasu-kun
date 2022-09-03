@@ -59,13 +59,13 @@ public class ImageScanner {
     }
     if (!file.isDirectory()) {
       logger.warn("{} is not directory", folder);
+      return;
     }
     images.clear();
     scanFolder(file, 0);
     logger.info("endScan");
     logger.debug("{} pathsMap", pathsMap);
     bulkDao.insertSplit(images, 500);
-//    bulkInsertDao.insert(imageTags);
   }
 
   private void scanFolder(File file, int depth) {

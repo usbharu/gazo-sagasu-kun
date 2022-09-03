@@ -68,14 +68,22 @@ public class TagDao {
 
   public Tag selectRandomOne() {
     Map<String, Object> stringObjectMap =
-        jdbcTemplate.queryForMap("SELECT id,name FROM tag ORDER BY RANDOM() LIMIT 1");
+        jdbcTemplate.queryForMap(
+            "SELECT id,name FROM tag WHERE NOT name LIKE '__%__' ORDER BY RANDOM() LIMIT 1");
     return parseTag(stringObjectMap);
   }
 
   public List<TagCount> tagCount() {
     List<TagCount> result = new ArrayList<>();
     List<Map<String, Object>> maps = jdbcTemplate.queryForList(
-        "SELECT tag_id,tag.name as tag_name,COUNT(tag_id) as tag_count from image_tag JOIN tag on tag_id = tag.id GROUP BY tag_id ORDER BY COUNT(tag_id) DESC");
+        "SELECT tag_id, tag.name as tag_name, COUNT(tag_id) as tag_count\n"
+            + "from image_tag\n"
+            + "         JOIN tag on tag_id = tag.id\n"
+            + "WHERE NOT tag_name LIKE '__%__'\n"
+            + "  AND NOT 'NONE'\n"
+            +
+            "GROUP BY tag_id\n"
+            + "ORDER BY COUNT(tag_id) DESC");
     for (Map<String, Object> map : maps) {
       result.add(new TagCount((Integer) map.get("tag_count"),
           new Tag(((Integer) map.get("tag_id")), (String) map.get("tag_name"))));
@@ -86,7 +94,15 @@ public class TagDao {
   public List<TagCount> tagCount(int limit) {
     List<TagCount> result = new ArrayList<>();
     List<Map<String, Object>> maps = jdbcTemplate.queryForList(
-        "SELECT tag_id,tag.name as tag_name,COUNT(tag_id) as tag_count from image_tag JOIN tag on tag_id = tag.id GROUP BY tag_id ORDER BY COUNT(tag_id) DESC LIMIT ?",
+        "SELECT tag_id, tag.name as tag_name, COUNT(tag_id) as tag_count\n"
+            + "from image_tag\n"
+            + "         JOIN tag on tag_id = tag.id\n"
+            + "WHERE tag_name NOT LIKE '__%__'\n"
+            + "  AND NOT 'NONE'\n"
+            +
+            "GROUP BY tag_id\n"
+            + "ORDER BY COUNT(tag_id) DESC\n"
+            + "LIMIT ?",
         limit);
     for (Map<String, Object> map : maps) {
       result.add(new TagCount((Integer) map.get("tag_count"),

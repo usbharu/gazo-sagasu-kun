@@ -36,10 +36,6 @@ public class PixivBatchDownloaderPluginScanner extends DefaultJpegScanner implem
 
     if (imageFileNameUtil.isPixivTypeFileName(imageFile.getName())) {
       image.getMetadata().addAll(getPixivImageMetadata(imageFile));
-//      List<ImageMetadata> pixivImageMetadata = getPixivImageMetadata(imageFile);
-//      for (ImageMetadata pixivImageMetadatum : pixivImageMetadata) {
-//        image.addMetadata(pixivImageMetadatum);
-//      }
       logger.debug(image.toString());
     }
     return image;

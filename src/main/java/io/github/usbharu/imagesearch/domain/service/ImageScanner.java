@@ -64,7 +64,7 @@ public class ImageScanner {
     scanFolder(file, 0);
     logger.info("endScan");
     logger.debug("{} pathsMap", pathsMap);
-    bulkDao.insertSplit(images,500);
+    bulkDao.insertSplit(images, 500);
 //    bulkInsertDao.insert(imageTags);
   }
 
@@ -103,9 +103,7 @@ public class ImageScanner {
 
     Image imageObject = imageScanner.getMetadata(image, subpath);
     if (imageObject == null) {
-
-      throw new IllegalStateException("????");
-//      imageObject = new Image(image.getName(), subpath.toString());
+      imageObject = new Image(image.getName(), subpath.toString());
     }
     imageObject.getMetadata().add(group.getGroup());
     imageObject.setGroup(group.getGroup().getId());

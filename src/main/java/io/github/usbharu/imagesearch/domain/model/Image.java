@@ -50,7 +50,10 @@ public class Image {
   public void addMetadata(ImageMetadata metadata) {
     for (ImageMetadata metadatum : getMetadata()) {
       if (metadatum.getType().equals(metadata.getType())) {
-        metadatum.getValues().addAll(metadata.getValues());
+        boolean b = metadatum.addMetadata(metadata);
+        if (!b){
+          System.out.println("Rejected add Metadata. :"+ this);
+        }
         return;
       }
     }

@@ -50,7 +50,7 @@ public class BulkDao {
     len += images.size()%split==0?0:1;
     for (int i = 0; i < len; i++) {
       logger.debug("insert range: {}-{}", split * i, split * (i + 1));
-      insert(images.subList(split * i, Math.min(images.size() - 1, split * (i + 1))));
+      insert(images.subList(split * i, Math.min(images.size(), split * (i + 1))));
     }
   }
 
@@ -69,6 +69,7 @@ public class BulkDao {
    * @param images インサートする画像のリスト
    */
   public void insert(List<Image> images) {
+    logger.debug("Insert Image :{}",images.size());
     if (images.isEmpty()) {
       return;
     }
@@ -76,7 +77,6 @@ public class BulkDao {
     for (Image image : images) {
       Tags tags = ImageTagUtil.getTagsNoNull(image);
       tagList.addAll(tags);
-
     }
     StringBuilder tagSql = new StringBuilder();
     tagSql.append("INSERT OR IGNORE INTO tag(name) VALUES");

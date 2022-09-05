@@ -8,7 +8,9 @@ public interface ImageMetadata {
     return "";
   }
 
-  default List<String> getValues() {
-    return List.of();
-  }
+  List<String> getValues();
+
+  boolean addMetadata(ImageMetadata metadata);
+
+
 }

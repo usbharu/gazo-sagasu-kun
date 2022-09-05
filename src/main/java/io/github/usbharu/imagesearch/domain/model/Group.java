@@ -36,6 +36,11 @@ public class Group implements ImageMetadata {
   }
 
   @Override
+  public boolean addMetadata(ImageMetadata metadata) {
+    return false;
+  }
+
+  @Override
   public String toString() {
     return "Group{" +
         "id=" + id +

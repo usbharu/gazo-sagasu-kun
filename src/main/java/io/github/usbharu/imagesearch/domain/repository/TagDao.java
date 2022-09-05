@@ -67,7 +67,6 @@ public class TagDao {
   }
 
   public Tag selectRandomOne() {
-    System.out.println("findAll() = " + findAll());
     Map<String, Object> stringObjectMap =
         jdbcTemplate.queryForMap(
             "SELECT id, name\n"

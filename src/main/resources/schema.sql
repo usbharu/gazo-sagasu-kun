@@ -1,14 +1,14 @@
 CREATE TABLE IF NOT EXISTS image(
                                     id      INTEGER PRIMARY KEY AUTOINCREMENT,
-                                    name    TEXT        NOT NULL,
-                                    path    TEXT UNIQUE NOT NULL,
+                                    name    TEXT        NOT NULL COLLATE NOCASE,
+                                    path    TEXT UNIQUE NOT NULL COLLATE NOCASE,
                                     groupId INTEGER     NOT NULL,
                                     FOREIGN KEY (groupId) REFERENCES groupId(id)
 );
 CREATE TABLE IF NOT EXISTS tag
 (
     id   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE ,
-    name TEXT UNIQUE NOT NULL
+    name TEXT UNIQUE NOT NULL COLLATE NOCASE
 );
 CREATE TABLE IF NOT EXISTS image_tag
 (
@@ -21,5 +21,5 @@ CREATE TABLE IF NOT EXISTS image_tag
 CREATE TABLE IF NOT EXISTS groupId
 (
     id   INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE ,
-    name TEXT NOT NULL UNIQUE
+    name TEXT NOT NULL UNIQUE COLLATE NOCASE
 );

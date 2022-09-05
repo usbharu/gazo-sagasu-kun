@@ -67,9 +67,18 @@ public class TagDao {
   }
 
   public Tag selectRandomOne() {
+    System.out.println("findAll() = " + findAll());
     Map<String, Object> stringObjectMap =
         jdbcTemplate.queryForMap(
-            "SELECT id,name FROM tag WHERE NOT name LIKE '__%__' ORDER BY RANDOM() LIMIT 1");
+            "SELECT id, name\n"
+                + "FROM tag\n"
+                + "WHERE NOT name LIKE '--%--"
+                + "'\n"
+                + "  AND NOT 'NON"
+                + "E'\n"
+                + "ORDER BY RANDOM"
+                + "()\n"
+                + "LIMIT 1");
     return parseTag(stringObjectMap);
   }
 
@@ -79,7 +88,7 @@ public class TagDao {
         "SELECT tag_id, tag.name as tag_name, COUNT(tag_id) as tag_count\n"
             + "from image_tag\n"
             + "         JOIN tag on tag_id = tag.id\n"
-            + "WHERE NOT tag_name LIKE '__%__'\n"
+            + "WHERE NOT tag_name LIKE '--%--'\n"
             + "  AND NOT 'NONE'\n"
             +
             "GROUP BY tag_id\n"
@@ -97,7 +106,7 @@ public class TagDao {
         "SELECT tag_id, tag.name as tag_name, COUNT(tag_id) as tag_count\n"
             + "from image_tag\n"
             + "         JOIN tag on tag_id = tag.id\n"
-            + "WHERE tag_name NOT LIKE '__%__'\n"
+            + "WHERE tag_name NOT LIKE '--%--'\n"
             + "  AND NOT 'NONE'\n"
             +
             "GROUP BY tag_id\n"

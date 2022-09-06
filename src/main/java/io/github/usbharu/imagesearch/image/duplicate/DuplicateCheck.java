@@ -45,7 +45,6 @@ public class DuplicateCheck {
   }
 
   public void addAllImage() {
-    System.out.println("Start add All Image");
     synchronized (jdbcTemplate) {
       imageDao.findAll().forEach(this::addImage);
     }

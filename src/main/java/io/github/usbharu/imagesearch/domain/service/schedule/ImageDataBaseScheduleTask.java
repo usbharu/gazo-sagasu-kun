@@ -1,4 +1,4 @@
-package io.github.usbharu.imagesearch.schedule;
+package io.github.usbharu.imagesearch.domain.service.schedule;
 
 import io.github.usbharu.imagesearch.domain.service.ImageScanner;
 import org.slf4j.Logger;

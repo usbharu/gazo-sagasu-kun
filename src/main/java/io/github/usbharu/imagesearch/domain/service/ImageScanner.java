@@ -4,7 +4,7 @@ import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.repository.custom.BulkDao;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
-import io.github.usbharu.imagesearch.image.scan.Scanner;
+import io.github.usbharu.imagesearch.domain.service.scan.Scanner;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;

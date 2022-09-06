@@ -1,4 +1,4 @@
-package io.github.usbharu.imagesearch.image.duplicate;
+package io.github.usbharu.imagesearch.domain.service.duplicate;
 
 import dev.brachtendorf.jimagehash.hash.Hash;
 import dev.brachtendorf.jimagehash.hashAlgorithms.DifferenceHash;

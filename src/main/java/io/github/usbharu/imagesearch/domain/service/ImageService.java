@@ -4,7 +4,7 @@ import io.github.usbharu.imagesearch.domain.model.DuplicateImages;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchBuilder;
 import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchDao;
-import io.github.usbharu.imagesearch.image.duplicate.DuplicateCheck;
+import io.github.usbharu.imagesearch.domain.service.duplicate.DuplicateCheck;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

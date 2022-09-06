@@ -1,4 +1,4 @@
-package io.github.usbharu.imagesearch.image.scan;
+package io.github.usbharu.imagesearch.domain.service.scan;
 
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.Tag;

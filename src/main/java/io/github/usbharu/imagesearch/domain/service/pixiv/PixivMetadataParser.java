@@ -1,4 +1,4 @@
-package io.github.usbharu.imagesearch.pixiv;
+package io.github.usbharu.imagesearch.domain.service.pixiv;
 
 import io.github.usbharu.imagesearch.domain.model.ImageMetadata;
 import io.github.usbharu.imagesearch.domain.model.Tag;

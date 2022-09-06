@@ -22,20 +22,5 @@ public class ImageSearchApplication {
     scanner.startScan();
     DuplicateCheck duplicateCheck = ctx.getBean(DuplicateCheck.class);
     duplicateCheck.addAllImage();
-//    System.out.println("Check all");
-//    extracted(duplicateCheck.checkAll());
-//    System.out.println("Check all2");
-//    extracted(duplicateCheck.checkAll2());
   }
-
-  private static void extracted( List<List<Image>> lists) {
-    for (List<Image> list : lists) {
-      StringBuilder sb = new StringBuilder();
-      for (Image image : list) {
-        sb.append(image.getId()).append(" , ");
-      }
-      System.out.println(sb);
-    }
-  }
-
 }

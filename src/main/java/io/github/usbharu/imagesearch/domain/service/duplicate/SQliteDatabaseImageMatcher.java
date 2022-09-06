@@ -45,7 +45,7 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
   }
 
   @Override
-  protected void initialize(Connection conn) throws SQLException {
+  protected void initialize(Connection conn) {
     this.conn = conn;
   }
 
@@ -71,7 +71,7 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
   }
 
   @Override
-  protected boolean doesTableExist(String tableName) throws SQLException {
+  protected boolean doesTableExist(String tableName) {
     try {
       jdbcTemplate.queryForMap(
           "SELECT name FROM main.sqlite_master WHERE tbl_name = ? AND type = 'table'", tableName);
@@ -97,7 +97,7 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
   }
 
   @Override
-  public boolean doesEntryExist(String uniqueId, HashingAlgorithm hashAlgo) throws SQLException {
+  public boolean doesEntryExist(String uniqueId, HashingAlgorithm hashAlgo) {
     try {
       jdbcTemplate.queryForMap("SELECT * FROM " + resolveTableName(hashAlgo) + " WHERE URL = ?",
           uniqueId);
@@ -110,7 +110,7 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
 
   @Override
   protected List<Result<String>> getSimilarImages(Hash targetHash, int maxDistance,
-      HashingAlgorithm hasher) throws SQLException {
+      HashingAlgorithm hasher) {
     String tableName = resolveTableName(hasher);
     List<Result<String>> uniqueIds = new ArrayList<>();
     List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT url,hash FROM " + tableName);
@@ -128,7 +128,7 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
   }
 
   @Override
-  public Map<String, PriorityQueue<Result<String>>> getAllMatchingImages() throws SQLException {
+  public Map<String, PriorityQueue<Result<String>>> getAllMatchingImages() {
     Map<String, PriorityQueue<Result<String>>> result = new HashMap<>();
 
     HashingAlgorithm algorithm = steps.keySet().iterator().next();
@@ -173,7 +173,7 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
   }
 
   @Override
-  protected void createHashTable(HashingAlgorithm hasher) throws SQLException {
+  protected void createHashTable(HashingAlgorithm hasher) {
     String tableName = resolveTableName(hasher);
 
     if (doesTableExist(tableName)) {

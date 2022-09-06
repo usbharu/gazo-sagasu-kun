@@ -7,6 +7,7 @@ import io.github.usbharu.imagesearch.domain.model.Tags;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ImageTagUtil {
 
@@ -14,6 +15,7 @@ public class ImageTagUtil {
   }
 
   public static Tags parseTags(List<Map<String, Object>> maps) {
+    Objects.requireNonNull(maps,"Maps is Null");
     Tags tags = new Tags();
     for (Map<String, Object> map : maps) {
       tags.add(parseTag(map));
@@ -22,15 +24,18 @@ public class ImageTagUtil {
   }
 
   public static Tag parseTag(Map<String, Object> map) {
+    Objects.requireNonNull(map,"Map is Null");
     return new Tag((Integer) map.get("id"), (String) map.get("name"));
   }
 
   public static Image parseImage(Map<String, Object> map) {
+    Objects.requireNonNull(map,"Map is Null");
     return new Image((Integer) map.get("image_id"), (String) map.get("image_name"),
         (String) map.get("image_path"), (Integer) map.get("image_group"));
   }
 
   public static List<Image> parseImages(List<Map<String, Object>> maps) {
+    Objects.requireNonNull(maps,"Maps is Null");
     List<Image> images = new ArrayList<>();
     for (Map<String, Object> map : maps) {
       images.add(parseImage(map));
@@ -39,6 +44,7 @@ public class ImageTagUtil {
   }
 
   public static List<Image> parseImagesWithMetadata(List<Map<String, Object>> maps) {
+    Objects.requireNonNull(maps,"Maps is Null");
     List<Image> images = new ArrayList<>();
     for (Map<String, Object> map : maps) {
       images.add(parseImageWithMetadata(map));
@@ -47,6 +53,7 @@ public class ImageTagUtil {
   }
 
   public static Image parseImageWithMetadata(Map<String, Object> map) {
+    Objects.requireNonNull(map,"Map is Null");
     Image image = parseImage(map);
     Tags tags = getTagsNoNull(image);
     tags.add(getTag(map));
@@ -54,10 +61,12 @@ public class ImageTagUtil {
   }
 
   public static Tag getTag(Map<String, Object> map) {
+    Objects.requireNonNull(map,"Map is Null");
     return new Tag((Integer) map.get("id"), (String) map.get("name"));
   }
 
   public static Tags getTags(Image image) {
+    Objects.requireNonNull(image,"Image is Null");
     Tags tags = new Tags();
     for (ImageMetadata metadatum : image.getMetadata()) {
       if (metadatum instanceof Tags) {
@@ -68,14 +77,12 @@ public class ImageTagUtil {
   }
 
   public static Tags getTagsNoNull(Image image) {
-    Tags tags = getTags(image);
-    if (tags == null) {
-      return new Tags();
-    }
-    return tags;
+    Objects.requireNonNull(image,"Image is Null");
+    return getTags(image);
   }
 
   public static Tags getTags(List<ImageMetadata> metadataList) {
+    Objects.requireNonNull(metadataList,"MetadataList is Null");
     for (ImageMetadata imageMetadata : metadataList) {
       Tags tagsNoNull = getTagsNoNull(imageMetadata);
       if (tagsNoNull.isEmpty()) {
@@ -87,6 +94,7 @@ public class ImageTagUtil {
   }
 
   public static Tags getTagsNoNull(List<ImageMetadata> metadataList) {
+    Objects.requireNonNull(metadataList,"MetadataList is Null");
     Tags tags = getTags(metadataList);
     if (tags == null) {
       return new Tags();
@@ -95,6 +103,7 @@ public class ImageTagUtil {
   }
 
   public static Tags getTags(ImageMetadata metadata) {
+    Objects.requireNonNull(metadata,"Metadata is Null");
     if (metadata instanceof Tags) {
       return (Tags) metadata;
     }
@@ -102,6 +111,7 @@ public class ImageTagUtil {
   }
 
   public static Tags getTagsNoNull(ImageMetadata metadata) {
+    Objects.requireNonNull(metadata,"Metadata is Null");
     if (getTags(metadata) == null) {
       return new Tags();
     }

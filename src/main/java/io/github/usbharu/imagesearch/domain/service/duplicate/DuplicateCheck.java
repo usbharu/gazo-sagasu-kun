@@ -8,12 +8,15 @@ import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.repository.ImageDao;
 import io.github.usbharu.imagesearch.util.ImageFileNameUtil;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,9 +33,13 @@ public class DuplicateCheck {
   final JdbcTemplate jdbcTemplate;
   DatabaseImageMatcher databaseImageMatcher;
 
-  public DuplicateCheck(JdbcTemplate jdbcTemplate, ImageFileNameUtil imageFileNameUtil,
+  public DuplicateCheck(JdbcTemplate jdbcTemplate,
+      ImageFileNameUtil imageFileNameUtil,
       ImageDao imageDao)
       throws SQLException {
+    Objects.requireNonNull(jdbcTemplate, "JdbcTemplate is Null");
+    Objects.requireNonNull(imageFileNameUtil, "ImageFileNameUtil is Null");
+    Objects.requireNonNull(imageDao, "ImageDao is Null");
     this.jdbcTemplate = jdbcTemplate;
     synchronized (this.jdbcTemplate) {
       databaseImageMatcher =
@@ -51,11 +58,10 @@ public class DuplicateCheck {
   }
 
   public void addImage(Image image) {
+    Objects.requireNonNull(image, "Image is Null");
     try {
-
       databaseImageMatcher.addImage(String.valueOf(image.getId()),
           new File(imageFileNameUtil.getFullPath(image.getPath())));
-
     } catch (IOException | SQLException e) {
       e.printStackTrace();
     }
@@ -85,18 +91,29 @@ public class DuplicateCheck {
   }
 
   public List<Image> check(Image image) {
+    Objects.requireNonNull(image, "Image is Null");
     return check(new File(imageFileNameUtil.getFullPath(image.getPath())));
   }
 
   public List<Image> check(File image) {
+    Objects.requireNonNull(image, "Image is Null");
+    if (!image.exists()) {
+      throw new UncheckedIOException("Image is not found", new FileNotFoundException());
+
+    }
+    if (!image.isFile()) {
+      throw new IllegalArgumentException("Image is not File");
+    }
     List<Image> result = new ArrayList<>();
     try {
       PriorityQueue<Result<String>> matchingImages = databaseImageMatcher.getMatchingImages(image);
       for (Result<String> matchingImage : matchingImages) {
         result.add(imageDao.findById(Integer.parseInt(matchingImage.value)));
       }
-    } catch (SQLException | IOException e) {
-      e.printStackTrace();
+    } catch (SQLException ignored) {
+      // SQLite実装では発生しない
+    } catch (IOException e) {
+      throw new UncheckedIOException("Image has problem", e);
     }
     return result;
   }

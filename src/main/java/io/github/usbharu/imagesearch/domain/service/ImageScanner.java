@@ -1,11 +1,13 @@
 package io.github.usbharu.imagesearch.domain.service;
 
+import io.github.usbharu.imagesearch.domain.exceptions.IllegalPropertyValueException;
 import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.model.Image;
-import io.github.usbharu.imagesearch.domain.repository.custom.BulkDao;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
+import io.github.usbharu.imagesearch.domain.repository.custom.BulkDao;
 import io.github.usbharu.imagesearch.domain.service.scan.Scanner;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -13,10 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 @ConfigurationProperties("imagesearch.scan")
@@ -38,14 +42,23 @@ public class ImageScanner {
 
   @Autowired
   public ImageScanner(BulkDao bulkDao, GroupDao groupDao, Scanner imageScanner) {
+    Objects.requireNonNull(bulkDao, "BulkDao is Null");
+    Objects.requireNonNull(groupDao, "GroupDao is Null");
+    Objects.requireNonNull(imageScanner, "Scanner is Null");
     this.bulkDao = bulkDao;
     this.groupDao = groupDao;
     this.imageScanner = imageScanner;
   }
 
   public void startScan() {
-    bulkDao.delete();
+    validateProperties();
     File file = Paths.get(folder).toFile();
+    if (!file.isDirectory()) {
+      logger.warn("{} is not directory", folder);
+      return;
+    }
+    logger.info("Scan folder :{} folder from  {} ", depth, file);
+    bulkDao.delete();
     for (Entry<String, String> stringStringEntry : group.entrySet()) {
       String value = stringStringEntry.getValue();
       List<Path> paths = new ArrayList<>();
@@ -57,25 +70,42 @@ public class ImageScanner {
       }
       pathsMap.put(stringStringEntry.getKey(), paths);
     }
-    if (!file.isDirectory()) {
-      logger.warn("{} is not directory", folder);
-      return;
+    logger.debug("Groups :{}", pathsMap);
+    synchronized (images) {
+      logger.trace("images clear");
+      images.clear();
+      scanFolder(file, 0);
+      logger.info(" Successful scan");
+      bulkDao.insertSplit(images, 500);
     }
-    images.clear();
-    scanFolder(file, 0);
-    logger.info("endScan");
-    logger.debug("{} pathsMap", pathsMap);
-    bulkDao.insertSplit(images, 500);
+  }
+
+  private void validateProperties() {
+    Objects.requireNonNull(folder, "imagesearch.scan.folder is Null");
+    Objects.requireNonNull(group, "imagesearch.scan.group is Null");
+    if (depth <= 0) {
+      throw new IllegalPropertyValueException("imagesearch.scan.depth is Negative or Zero depth :"+depth);
+    }
   }
 
   private void scanFolder(File file, int depth) {
-    logger.debug("depth: {} , file: {}", depth, file);
-    GroupPathSet group1 = getGroup(file);
-    logger.debug("group: {}", group1);
     if (depth >= this.depth) {
       return;
     }
-    // TODO: 2022/08/22 ここでグループの判定したほうがループがすくなると思う
+    Objects.requireNonNull(file);
+    if (!file.exists()) {
+      throw new IllegalArgumentException("File is NotFound",
+          new FileNotFoundException(file.toString()));
+    }
+    if (!file.isDirectory()) {
+      throw new IllegalArgumentException("File is not Directory " + file);
+    }
+    if (file.listFiles() == null) {
+      throw new IllegalStateException("File has not sub directory or files "+file);
+    }
+
+    GroupPathSet group1 = getGroup(file);
+    logger.debug("Current depth: {} , group {} , file: {}", depth, group1, file);
     for (File listFile : file.listFiles()) {
       if (listFile.isDirectory()) {
         scanFolder(listFile, depth + 1);
@@ -86,10 +116,19 @@ public class ImageScanner {
   }
 
   private GroupPathSet getGroup(File file) {
+    Objects.requireNonNull(file);
+    if (!file.isDirectory()) {
+      throw new IllegalArgumentException("File is not Directory "+ file);
+    }
     for (Entry<String, List<Path>> paths : pathsMap.entrySet()) {
       for (Path path : paths.getValue()) {
         if (file.toPath().startsWith(path)) {
-          return new GroupPathSet(groupDao.insertOneWithReturnGroup(paths.getKey()), path);
+          try {
+            return new GroupPathSet(groupDao.insertOneWithReturnGroup(paths.getKey()), path);
+          }catch (EmptyResultDataAccessException e){
+            logger.warn("Database Select result is 0",e);
+            logger.warn("INSERTした直後のSELECTなのでデータベースに異常がある可能性が高い");
+          }
 
         }
       }
@@ -98,6 +137,13 @@ public class ImageScanner {
   }
 
   protected void scanImage(File image, GroupPathSet group) {
+    Objects.requireNonNull(image,"Image is Null");
+    Objects.requireNonNull(group,"GroupPathSet is Null");
+
+    if (!image.isFile()) {
+      throw new IllegalArgumentException("Image is not File :"+image);
+    }
+
     Path imagePath = image.toPath();
     Path subpath = imagePath.subpath(group.getPath().getNameCount() - 1, imagePath.getNameCount());
 
@@ -108,8 +154,10 @@ public class ImageScanner {
     imageObject.getMetadata().add(group.getGroup());
     imageObject.setGroup(group.getGroup().getId());
     logger.trace(imageObject.toString());
-    images.add(imageObject);
 
+    logger.trace("Add Images :{}",imageObject);
+
+    images.add(imageObject);
   }
 
   public int getDepth() {
@@ -117,6 +165,9 @@ public class ImageScanner {
   }
 
   public void setDepth(int depth) {
+    if (depth <= 0){
+      throw new IllegalArgumentException("Depth is Negative or Zero  Depth :"+depth);
+    }
     this.depth = depth;
   }
 
@@ -125,6 +176,7 @@ public class ImageScanner {
   }
 
   public void setGroup(Map<String, String> group) {
+    Objects.requireNonNull(group,"Group is Null");
     this.group = group;
   }
 
@@ -133,6 +185,7 @@ public class ImageScanner {
   }
 
   public void setFolder(String folder) {
+    Objects.requireNonNull(folder,"Folder is Null");
     this.folder = folder;
   }
 
@@ -143,6 +196,8 @@ public class ImageScanner {
     private final Path path;
 
     public GroupPathSet(Group group, Path path) {
+      Objects.requireNonNull(group,"Group is Null");
+      Objects.requireNonNull(path,"Path is Null");
       this.group = group;
       this.path = path;
     }

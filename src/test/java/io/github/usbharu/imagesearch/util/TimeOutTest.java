@@ -2,6 +2,7 @@ package io.github.usbharu.imagesearch.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -42,5 +43,11 @@ class TimeOutTest {
   @Test
   void with_withNoOption_fail() {
     assertThrows(TimeoutException.class, () -> TimeOut.with(dontRunnable));
+  }
+
+  @Test
+  void with_withNegativeTime_fail()
+      throws ExecutionException, InterruptedException, TimeoutException {
+    TimeOut.with(runnable,-1000);
   }
 }

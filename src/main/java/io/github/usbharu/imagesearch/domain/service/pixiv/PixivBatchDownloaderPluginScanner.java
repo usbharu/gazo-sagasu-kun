@@ -7,8 +7,11 @@ import io.github.usbharu.imagesearch.domain.model.Tags;
 import io.github.usbharu.imagesearch.domain.service.scan.DefaultJpegScanner;
 import io.github.usbharu.imagesearch.domain.service.scan.Scanner;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -22,11 +25,25 @@ public class PixivBatchDownloaderPluginScanner extends DefaultJpegScanner implem
 
   @Override
   public boolean isSupported(File file) {
+    if (file == null) {
+      logger.warn("File is Null");
+      return false;
+    }
     return imageFileNameUtil.isJpg(file.getName()) || file.getName().toUpperCase().endsWith("PNG");
   }
 
   @Override
   public Image getMetadata(File imageFile, Path subpath) {
+    Objects.requireNonNull(imageFile,"ImageFile is Null");
+    Objects.requireNonNull(subpath,"Subpath is Null");
+    if (!imageFile.exists()) {
+      throw new UncheckedIOException("ImageFile is not found",new FileNotFoundException());
+    }
+    if (!imageFile.isFile()) {
+      throw new IllegalArgumentException("ImageFile is not file");
+    }
+
+
     Image image = null;
     if (imageFileNameUtil.isJpg(imageFile.getName())) {
       image = super.getMetadata(imageFile, subpath);

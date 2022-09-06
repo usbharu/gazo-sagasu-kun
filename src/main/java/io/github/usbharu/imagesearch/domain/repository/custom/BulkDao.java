@@ -11,6 +11,7 @@ import io.github.usbharu.imagesearch.domain.repository.TagDao;
 import io.github.usbharu.imagesearch.util.ImageTagUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +27,16 @@ public class BulkDao {
   private final JdbcTemplate jdbcTemplate;
 
   private final Logger logger = LoggerFactory.getLogger(BulkDao.class);
-  private final Tag none = new Tag(1, "NONE");
+  private static final Tag none = new Tag(1, "NONE");
 
   /**
    * Autowired用のコンストラクタ
    *
    * @param jdbcTemplate jdbcテンプレート
-   * @param tagDao       タグのDAO
-   * @param groupDao     グループのDAO
    */
   @Autowired
-  public BulkDao(JdbcTemplate jdbcTemplate, TagDao tagDao, GroupDao groupDao) {
+  public BulkDao(JdbcTemplate jdbcTemplate) {
+    Objects.requireNonNull(jdbcTemplate,"JdbcTemplate is Null");
     this.jdbcTemplate = jdbcTemplate;
   }
 
@@ -49,10 +49,10 @@ public class BulkDao {
   public void insertSplit(List<Image> images, int split) {
     logger.info("Images :{} split:{}", images.size(), split);
     int len = (images.size() / split);
-    len += images.size()%split==0?0:1;
+    len += images.size() % split == 0 ? 0 : 1;
     for (int i = 0; i < len; i++) {
       logger.debug("insert range: {}-{}", split * i, split * (i + 1));
-      insert(images.subList(split * i, Math.min(images.size(), split * (i + 1))));
+      internalInsert(images.subList(split * i, Math.min(images.size(), split * (i + 1))));
     }
   }
 
@@ -71,7 +71,12 @@ public class BulkDao {
    * @param images インサートする画像のリスト
    */
   public void insert(List<Image> images) {
-    logger.debug("Insert Image :{}",images.size());
+    logger.debug("Insert Image :{}", images.size());
+    internalInsert(images);
+  }
+
+  protected void internalInsert(List<Image> images) {
+    Objects.requireNonNull(images,"Images is Null");
     if (images.isEmpty()) {
       return;
     }
@@ -127,23 +132,33 @@ public class BulkDao {
     imageTagSql.deleteCharAt(imageTagSql.length() - 1);
 
     jdbcTemplate.update(imageTagSql.toString());
-
   }
 
   public void delete() {
     logger.info("delete all");
-    synchronized (jdbcTemplate){
+    synchronized (jdbcTemplate) {
+      logger.debug("Delete image");
       jdbcTemplate.update("DELETE FROM main.image NOT INDEXED ");
+      logger.debug("Deleted image");
+      logger.debug("Delete groupId");
       jdbcTemplate.update("DELETE FROM main.groupId NOT INDEXED ");
+      logger.debug("Deleted groupId");
+      logger.debug("Delete image_tag");
       jdbcTemplate.update("DELETE FROM main.image_tag NOT INDEXED ");
+      logger.debug("Deleted image_tag");
+      logger.debug("Delete tag");
       jdbcTemplate.update("DELETE FROM main.tag NOT INDEXED ");
+      logger.debug("Deleted tag");
+      logger.debug("Delete sqlite_sequence");
       jdbcTemplate.update("DELETE FROM main.sqlite_sequence NOT INDEXED ");
+      logger.debug("Deleted sqlite_sequence");
     }
 
     logger.info("complete delete all");
   }
 
   private List<Tag> getTagsFromDB(List<Tag> tags) {
+    logger.trace("Get tags {}",tags);
     if (tags.isEmpty()) {
       return List.of(none);
     }

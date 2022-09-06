@@ -4,10 +4,12 @@ import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseTag;
 import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseTags;
 
 import io.github.usbharu.imagesearch.domain.model.Tag;
-import io.github.usbharu.imagesearch.domain.model.TagCount;
+import io.github.usbharu.imagesearch.domain.model.custom.TagCount;
+import io.github.usbharu.imagesearch.domain.validation.StringValidation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +37,14 @@ public class TagDao {
   }
 
   public List<Tag> findByName(String name) {
+    StringValidation.requireNonNullAndNonBlank(name, "name is null or blank");
     List<Map<String, Object>> maps =
         jdbcTemplate.queryForList("SELECT * FROM tag WHERE name = ?", name);
     return parseTags(maps);
   }
 
   public int insertOne(String tag) {
+    StringValidation.requireNonNullAndNonBlank(tag, "Tag is null or blank");
     logger.debug("insertOne: {}", tag);
     return jdbcTemplate.update(
         "INSERT INTO tag (name) SELECT ? WHERE NOT EXISTS(SELECT 1 FROM tag WHERE name = ?)", tag,
@@ -48,6 +52,7 @@ public class TagDao {
   }
 
   public Tag insertOneWithReturnTag(String tag) {
+    StringValidation.requireNonNullAndNonBlank(tag, "Tag is Null or blank");
     insertOne(tag);
     Map<String, Object> stringObjectMap =
         jdbcTemplate.queryForMap("SELECT id,name FROM tag WHERE name = ?;", tag);
@@ -55,6 +60,7 @@ public class TagDao {
   }
 
   public int deleteOne(Tag tag) {
+    Objects.requireNonNull(tag, "Tag is Null");
     return jdbcTemplate.update("DELETE FROM tag WHERE id = ?", tag.getId());
   }
 
@@ -63,6 +69,7 @@ public class TagDao {
   }
 
   public int deleteByName(String name) {
+    StringValidation.requireNonNullAndNonBlank(name, "Name is null or blank");
     return jdbcTemplate.update("DELETE FROM tag WHERE name = ?", name);
   }
 
@@ -100,6 +107,9 @@ public class TagDao {
   }
 
   public List<TagCount> tagCount(int limit) {
+    if (limit <= 0) {
+      throw new IllegalArgumentException("Limit is negative or zero limit :" + limit);
+    }
     List<TagCount> result = new ArrayList<>();
     List<Map<String, Object>> maps = jdbcTemplate.queryForList(
         "SELECT tag_id, tag.name as tag_name, COUNT(tag_id) as tag_count\n"

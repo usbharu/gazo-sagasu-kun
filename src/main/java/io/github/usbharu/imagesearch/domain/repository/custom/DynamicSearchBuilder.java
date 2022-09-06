@@ -3,17 +3,19 @@ package io.github.usbharu.imagesearch.domain.repository.custom;
 import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchDao.DynamicSearch;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DynamicSearchBuilder {
 
   private List<String> tags = new ArrayList<>();
-  private String group = null;
+  private String group = "";
   private String order = "ASC";
   private String orderType = "image_id";
 
   private int id = -1;
 
   public DynamicSearchBuilder setTags(List<String> tags) {
+    Objects.requireNonNull(tags, "Tags is Null");
     List<String> list = new ArrayList<>();
     for (String tag : tags) {
       if (!tag.isBlank()) {
@@ -25,7 +27,7 @@ public class DynamicSearchBuilder {
   }
 
   public DynamicSearchBuilder setGroup(String group) {
-    if (group.equals("all")) {
+    if (group == null || group.isBlank() || group.equals("all")) {
       return this;
     }
     this.group = group;
@@ -33,11 +35,13 @@ public class DynamicSearchBuilder {
   }
 
   public DynamicSearchBuilder setOrder(ImageTagDaoOrder order) {
+    Objects.requireNonNull(order,"ImageTagDaoOrder is Null");
     this.order = order.getSql();
     return this;
   }
 
   public DynamicSearchBuilder setOrderType(ImageTagDaoOrderType imageTagDaoOrderType) {
+    Objects.requireNonNull(imageTagDaoOrderType,"ImageTagDaoOrderType is Null");
     orderType = imageTagDaoOrderType.getSql();
     return this;
   }

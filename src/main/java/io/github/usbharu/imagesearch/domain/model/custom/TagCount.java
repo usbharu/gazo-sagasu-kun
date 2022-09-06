@@ -1,4 +1,6 @@
-package io.github.usbharu.imagesearch.domain.model;
+package io.github.usbharu.imagesearch.domain.model.custom;
+
+import io.github.usbharu.imagesearch.domain.model.Tag;
 
 public class TagCount {
 

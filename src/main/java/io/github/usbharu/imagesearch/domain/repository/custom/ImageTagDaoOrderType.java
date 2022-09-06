@@ -1,4 +1,4 @@
-package io.github.usbharu.imagesearch.domain.repository;
+package io.github.usbharu.imagesearch.domain.repository.custom;
 
 public enum ImageTagDaoOrderType {
 

@@ -1,8 +1,8 @@
 package io.github.usbharu.imagesearch.domain.service;
 
 import io.github.usbharu.imagesearch.domain.model.Image;
-import io.github.usbharu.imagesearch.domain.repository.DynamicSearchBuilder;
-import io.github.usbharu.imagesearch.domain.repository.DynamicSearchDao;
+import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchBuilder;
+import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchDao;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

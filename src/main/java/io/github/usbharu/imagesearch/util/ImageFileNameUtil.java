@@ -1,9 +1,11 @@
 package io.github.usbharu.imagesearch.util;
 
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,9 @@ public class ImageFileNameUtil {
 
   private Pattern isPixivTypeFileName;
   private Pattern getPixivTypeFileBaseName;
+
+  @Value(value = "${imagesearch.scan.folder}")
+  private String scanFolder = "";
 
   private Logger logger = LoggerFactory.getLogger(ImageFileNameUtil.class);
 
@@ -44,6 +49,10 @@ public class ImageFileNameUtil {
       return  matcher.group();
     }
     return null;
+  }
+
+  public String getFullPath(String path){
+    return scanFolder + File.separator + path;
   }
 
 }

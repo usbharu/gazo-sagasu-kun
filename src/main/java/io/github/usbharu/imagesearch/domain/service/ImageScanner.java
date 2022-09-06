@@ -2,7 +2,7 @@ package io.github.usbharu.imagesearch.domain.service;
 
 import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.model.Image;
-import io.github.usbharu.imagesearch.domain.repository.BulkDao;
+import io.github.usbharu.imagesearch.domain.repository.custom.BulkDao;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
 import io.github.usbharu.imagesearch.image.scan.Scanner;
 import java.io.File;

@@ -2,10 +2,10 @@ package io.github.usbharu.imagesearch.domain.service;
 
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.Tag;
-import io.github.usbharu.imagesearch.domain.repository.DynamicSearchBuilder;
-import io.github.usbharu.imagesearch.domain.repository.DynamicSearchDao;
-import io.github.usbharu.imagesearch.domain.repository.ImageTagDaoOrder;
-import io.github.usbharu.imagesearch.domain.repository.ImageTagDaoOrderType;
+import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchBuilder;
+import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchDao;
+import io.github.usbharu.imagesearch.domain.repository.custom.ImageTagDaoOrder;
+import io.github.usbharu.imagesearch.domain.repository.custom.ImageTagDaoOrderType;
 import io.github.usbharu.imagesearch.domain.repository.TagDao;
 import java.util.List;
 import org.slf4j.Logger;

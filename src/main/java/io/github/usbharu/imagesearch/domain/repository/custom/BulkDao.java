@@ -1,4 +1,4 @@
-package io.github.usbharu.imagesearch.domain.repository;
+package io.github.usbharu.imagesearch.domain.repository.custom;
 
 import static io.github.usbharu.imagesearch.util.ImageTagUtil.getTagsNoNull;
 import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImages;
@@ -6,6 +6,8 @@ import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImages;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
+import io.github.usbharu.imagesearch.domain.repository.GroupDao;
+import io.github.usbharu.imagesearch.domain.repository.TagDao;
 import io.github.usbharu.imagesearch.util.ImageTagUtil;
 import java.util.ArrayList;
 import java.util.List;

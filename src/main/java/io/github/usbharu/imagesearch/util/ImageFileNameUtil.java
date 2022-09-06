@@ -20,7 +20,7 @@ public class ImageFileNameUtil {
   private Pattern isPixivTypeFileName;
   private Pattern getPixivTypeFileBaseName;
 
-  @Value(value = "${imagesearch.scan.folder}")
+  @Value(value = "${imagesearch.scan.folder:}")
   private String scanFolder = "";
 
   private Logger logger = LoggerFactory.getLogger(ImageFileNameUtil.class);

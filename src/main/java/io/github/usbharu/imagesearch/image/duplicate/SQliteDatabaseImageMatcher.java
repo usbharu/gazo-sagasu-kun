@@ -22,7 +22,7 @@ import java.util.PriorityQueue;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class SQLLiteDatabaseMatcher extends DatabaseImageMatcher {
+public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
 
   private final JdbcTemplate jdbcTemplate;
 
@@ -36,7 +36,7 @@ public class SQLLiteDatabaseMatcher extends DatabaseImageMatcher {
    *                             the {@code setLoginTimeout} method has been exceeded and has at
    *                             least tried to cancel the current database connection attempt
    */
-  public SQLLiteDatabaseMatcher(Connection connection, JdbcTemplate jdbcTemplate)
+  public SQliteDatabaseImageMatcher(Connection connection, JdbcTemplate jdbcTemplate)
       throws SQLException {
     super(connection);
     this.jdbcTemplate = jdbcTemplate;
@@ -72,8 +72,12 @@ public class SQLLiteDatabaseMatcher extends DatabaseImageMatcher {
 
   @Override
   protected boolean doesTableExist(String tableName) throws SQLException {
-    jdbcTemplate.queryForMap(
-        "SELECT name FROM main.sqlite_master WHERE tbl_name = ? AND type = 'table'", tableName);
+    try {
+      jdbcTemplate.queryForMap(
+          "SELECT name FROM main.sqlite_master WHERE tbl_name = ? AND type = 'table'", tableName);
+    } catch (EmptyResultDataAccessException e) {
+      return false;
+    }
     return true;
   }
 
@@ -166,5 +170,16 @@ public class SQLLiteDatabaseMatcher extends DatabaseImageMatcher {
       result.put(uniqueId, results);
     }
     return result;
+  }
+
+  @Override
+  protected void createHashTable(HashingAlgorithm hasher) throws SQLException {
+    String tableName = resolveTableName(hasher);
+
+    if (doesTableExist(tableName)) {
+      return;
+    }
+    jdbcTemplate.update(
+        "CREATE TABLE IF NOT EXISTS " + tableName + " (url TEXT PRIMARY KEY , hash BLOB )");
   }
 }

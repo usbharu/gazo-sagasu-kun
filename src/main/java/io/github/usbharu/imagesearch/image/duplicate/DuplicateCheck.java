@@ -36,7 +36,7 @@ public class DuplicateCheck {
     this.jdbcTemplate = jdbcTemplate;
     synchronized (this.jdbcTemplate) {
       databaseImageMatcher =
-          new SQLLiteDatabaseMatcher(null,
+          new SQliteDatabaseImageMatcher(null,
               this.jdbcTemplate);
       this.imageFileNameUtil = imageFileNameUtil;
       databaseImageMatcher.addHashingAlgorithm(new DifferenceHash(32, Precision.Simple), 0.1);

@@ -107,7 +107,7 @@ public class ImageScanner {
     }
     imageObject.getMetadata().add(group.getGroup());
     imageObject.setGroup(group.getGroup().getId());
-    logger.debug(imageObject.toString());
+    logger.trace(imageObject.toString());
     images.add(imageObject);
 
   }

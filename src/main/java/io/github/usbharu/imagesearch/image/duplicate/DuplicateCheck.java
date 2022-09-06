@@ -12,7 +12,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.PriorityQueue;
+import java.util.stream.Collectors;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -24,26 +27,66 @@ public class DuplicateCheck {
 
   final
   ImageFileNameUtil imageFileNameUtil;
-  JdbcTemplate jdbcTemplate;
+  final JdbcTemplate jdbcTemplate;
   DatabaseImageMatcher databaseImageMatcher;
 
   public DuplicateCheck(JdbcTemplate jdbcTemplate, ImageFileNameUtil imageFileNameUtil,
       ImageDao imageDao)
       throws SQLException {
     this.jdbcTemplate = jdbcTemplate;
-    databaseImageMatcher = new SQLLiteDatabaseMatcher(jdbcTemplate.getDataSource().getConnection());
-    this.imageFileNameUtil = imageFileNameUtil;
-    databaseImageMatcher.addHashingAlgorithm(new DifferenceHash(32, Precision.Simple), 0.4);
+    synchronized (this.jdbcTemplate) {
+      databaseImageMatcher =
+          new SQLLiteDatabaseMatcher(null,
+              this.jdbcTemplate);
+      this.imageFileNameUtil = imageFileNameUtil;
+      databaseImageMatcher.addHashingAlgorithm(new DifferenceHash(32, Precision.Simple), 0.1);
+    }
     this.imageDao = imageDao;
+  }
+
+  public void addAllImage() {
+    System.out.println("Start add All Image");
+    synchronized (jdbcTemplate) {
+      imageDao.findAll().forEach(this::addImage);
+    }
   }
 
   public void addImage(Image image) {
     try {
+
       databaseImageMatcher.addImage(String.valueOf(image.getId()),
           new File(imageFileNameUtil.getFullPath(image.getPath())));
+
     } catch (IOException | SQLException e) {
       e.printStackTrace();
     }
+  }
+
+  public List<List<Image>> checkAll() {
+    return imageDao.findAll().stream().map(this::check).collect(Collectors.toList());
+  }
+
+  public List<List<Image>> checkAll2() {
+    List<List<Image>> result = new ArrayList<>();
+    try {
+      Map<String, PriorityQueue<Result<String>>> allMatchingImages =
+          databaseImageMatcher.getAllMatchingImages();
+      List<Image> images = new ArrayList<>();
+      for (Entry<String, PriorityQueue<Result<String>>> stringPriorityQueueEntry : allMatchingImages.entrySet()) {
+        images.clear();
+        for (Result<String> stringResult : stringPriorityQueueEntry.getValue()) {
+          images.add(imageDao.findById(Integer.parseInt(stringResult.value)));
+        }
+        result.add(images);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return result;
+  }
+
+  public List<Image> check(Image image) {
+    return check(new File(imageFileNameUtil.getFullPath(image.getPath())));
   }
 
   public List<Image> check(File image) {

@@ -132,11 +132,13 @@ public class BulkDao {
 
   public void delete() {
     logger.info("delete all");
-    jdbcTemplate.update("DELETE FROM main.image NOT INDEXED ");
-    jdbcTemplate.update("DELETE FROM main.groupId NOT INDEXED ");
-    jdbcTemplate.update("DELETE FROM main.image_tag NOT INDEXED ");
-    jdbcTemplate.update("DELETE FROM main.tag NOT INDEXED ");
-    jdbcTemplate.update("DELETE FROM main.sqlite_sequence NOT INDEXED ");
+    synchronized (jdbcTemplate){
+      jdbcTemplate.update("DELETE FROM main.image NOT INDEXED ");
+      jdbcTemplate.update("DELETE FROM main.groupId NOT INDEXED ");
+      jdbcTemplate.update("DELETE FROM main.image_tag NOT INDEXED ");
+      jdbcTemplate.update("DELETE FROM main.tag NOT INDEXED ");
+      jdbcTemplate.update("DELETE FROM main.sqlite_sequence NOT INDEXED ");
+    }
 
     logger.info("complete delete all");
   }

@@ -1,5 +1,6 @@
 package io.github.usbharu.imagesearch.domain.service;
 
+import io.github.usbharu.imagesearch.domain.model.DuplicateImages;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchBuilder;
@@ -7,9 +8,11 @@ import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchDao;
 import io.github.usbharu.imagesearch.domain.repository.custom.ImageTagDaoOrder;
 import io.github.usbharu.imagesearch.domain.repository.custom.ImageTagDaoOrderType;
 import io.github.usbharu.imagesearch.domain.repository.TagDao;
+import io.github.usbharu.imagesearch.image.duplicate.DuplicateCheck;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,15 +22,27 @@ public class ImageSearch {
   final DynamicSearchDao dynamicSearchDao;
   private final TagDao tagDao;
 
-  public ImageSearch(DynamicSearchDao dynamicSearchDao, TagDao tagDao) {
+  final
+  DuplicateCheck duplicateCheck;
+
+  public ImageSearch(DynamicSearchDao dynamicSearchDao, TagDao tagDao,
+      DuplicateCheck duplicateCheck) {
     this.dynamicSearchDao = dynamicSearchDao;
     this.tagDao = tagDao;
+    this.duplicateCheck = duplicateCheck;
   }
 
   public List<Image> search3(String[] tags, String group, String orderType, String order) {
-    return dynamicSearchDao.search(new DynamicSearchBuilder().setTags(List.of(tags)).setGroup(group)
-        .setOrderType(ImageTagDaoOrderType.fromString(orderType))
-        .setOrder(ImageTagDaoOrder.fromString(order)).createDynamicSearch());
+    List<Image> search =
+        dynamicSearchDao.search(new DynamicSearchBuilder().setTags(List.of(tags)).setGroup(group)
+            .setOrderType(ImageTagDaoOrderType.fromString(orderType))
+            .setOrder(ImageTagDaoOrder.fromString(order)).createDynamicSearch());
+    for (Image image : search) {
+      DuplicateImages metadata = new DuplicateImages();
+      metadata.addAll(duplicateCheck.check(image));
+      image.addMetadata(metadata);
+    }
+    return search;
   }
 
   public Tag randomTag() {

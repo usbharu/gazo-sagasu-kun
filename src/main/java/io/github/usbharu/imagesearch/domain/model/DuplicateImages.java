@@ -10,12 +10,12 @@ public class DuplicateImages extends ArrayList<Image>
 
   @Override
   public String getType() {
-    return "Duplicate";
+    return "duplicate";
   }
 
   @Override
   public List<String> getValues() {
-    return this.stream().map(Image::getName).collect(Collectors.toList());
+    return this.stream().map((Image image) -> String.valueOf(image.getId()) ).collect(Collectors.toList());
   }
 
   @Override

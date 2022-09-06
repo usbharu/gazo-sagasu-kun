@@ -33,16 +33,9 @@ public class ImageSearch {
   }
 
   public List<Image> search3(String[] tags, String group, String orderType, String order) {
-    List<Image> search =
-        dynamicSearchDao.search(new DynamicSearchBuilder().setTags(List.of(tags)).setGroup(group)
-            .setOrderType(ImageTagDaoOrderType.fromString(orderType))
-            .setOrder(ImageTagDaoOrder.fromString(order)).createDynamicSearch());
-    for (Image image : search) {
-      DuplicateImages metadata = new DuplicateImages();
-      metadata.addAll(duplicateCheck.check(image));
-      image.addMetadata(metadata);
-    }
-    return search;
+    return dynamicSearchDao.search(new DynamicSearchBuilder().setTags(List.of(tags)).setGroup(group)
+        .setOrderType(ImageTagDaoOrderType.fromString(orderType))
+        .setOrder(ImageTagDaoOrder.fromString(order)).createDynamicSearch());
   }
 
   public Tag randomTag() {

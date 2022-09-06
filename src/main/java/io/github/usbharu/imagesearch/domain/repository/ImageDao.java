@@ -20,11 +20,11 @@ public class ImageDao {
   private JdbcTemplate jdbcTemplate;
 
   public List<Image> findAll() {
-    logger.debug("findAll");
+    logger.trace("findAll");
     List<Map<String, Object>> maps = jdbcTemplate.queryForList(
         "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image");
     List<Image> result = parseImages(maps);
-    logger.debug("Success to findAll : " + result.size());
+    logger.trace("Success to findAll : " + result.size());
     return result;
   }
   public List<Image> findByName(String name) {
@@ -49,13 +49,13 @@ public class ImageDao {
   }
 
   public Image findById(int id) {
-    logger.debug("findById id:" + id);
+    logger.trace("findById id:" + id);
     Map<String, Object> stringObjectMap =
         jdbcTemplate.queryForMap(
             "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE id = ?",
             id);
     Image image = parseImage(stringObjectMap);
-    logger.debug("Success to findById id:" + image);
+    logger.trace("Success to findById id:" + image);
     return image;
   }
 

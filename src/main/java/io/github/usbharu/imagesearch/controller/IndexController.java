@@ -66,10 +66,17 @@ public class IndexController {
       @ModelAttribute("group") String group,
       @ModelAttribute("sort") String sort,
       @ModelAttribute("order") String order,
+      @ModelAttribute("duplicate") String duplicate,
       Model model) {
+
+    if (duplicate != null && !duplicate.isBlank()) {
+      return "redirect:/image/" + duplicate;
+    }
+
     if (!groupService.validation(group)) {
       group = "";
     }
+
     List<Image> images = imageSearch.search3(tags.split("[; ,]"), group, sort, order);
     model.addAttribute("tagCount", tagService.tagOrderOfMostUsedLimit(20));
     model.addAttribute("message", tags);

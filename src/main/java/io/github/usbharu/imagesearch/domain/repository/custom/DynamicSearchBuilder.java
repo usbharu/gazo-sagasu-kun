@@ -1,6 +1,6 @@
-package io.github.usbharu.imagesearch.domain.repository;
+package io.github.usbharu.imagesearch.domain.repository.custom;
 
-import io.github.usbharu.imagesearch.domain.repository.DynamicSearchDao.DynamicSearch;
+import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchDao.DynamicSearch;
 import java.util.ArrayList;
 import java.util.List;
 

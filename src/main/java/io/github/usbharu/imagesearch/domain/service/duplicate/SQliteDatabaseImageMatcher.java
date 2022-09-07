@@ -109,7 +109,7 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
   }
 
   @Override
-  protected List<Result<String>> getSimilarImages(Hash targetHash, int maxDistance,
+  public List<Result<String>> getSimilarImages(Hash targetHash, int maxDistance,
       HashingAlgorithm hasher) {
     String tableName = resolveTableName(hasher);
     List<Result<String>> uniqueIds = new ArrayList<>();
@@ -181,5 +181,16 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
     }
     jdbcTemplate.update(
         "CREATE TABLE IF NOT EXISTS " + tableName + " (url TEXT PRIMARY KEY , hash BLOB )");
+  }
+
+  @Override
+  public Hash reconstructHashFromDatabase(HashingAlgorithm hasher, byte[] bytes) {
+    return super.reconstructHashFromDatabase(hasher, bytes);
+  }
+
+  public byte[] findById(int id,HashingAlgorithm algorithm){
+    Map<String, Object> stringObjectMap =
+        jdbcTemplate.queryForMap("SELECT hash FROM "+resolveTableName(algorithm)+" WHERE url = ?", id);
+    return (byte[]) stringObjectMap.get("hash");
   }
 }

@@ -12,5 +12,8 @@
 
 <h1 th:text="${message}" style="text-align: center"></h1>
 <div th:include="search-form :: search-form(${message},${order},${sort},${groups},${group})"></div>
+<footer>
+  <p th:text="'App version is '+${version}"></p>
+</footer>
 </body>
 </html>

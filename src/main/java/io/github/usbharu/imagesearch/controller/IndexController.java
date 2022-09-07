@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,13 +29,17 @@ public class IndexController {
   @Value("${imagesearch.scan.http.folder:}")
   private String httpFolder = "";
 
+  final
+  BuildProperties buildProperties;
+
   @Autowired
   public IndexController(ImageSearch imageSearch, TagService tagService,
-      GroupService groupService, ImageService imageService) {
+      GroupService groupService, ImageService imageService, BuildProperties buildProperties) {
     this.imageSearch = imageSearch;
     this.tagService = tagService;
     this.groupService = groupService;
     this.imageService = imageService;
+    this.buildProperties = buildProperties;
   }
 
   @GetMapping("/")
@@ -42,6 +47,7 @@ public class IndexController {
     logger.trace("Access to Index");
     model.addAttribute("message", imageSearch.randomTag().getName());
     model.addAttribute("groups", groupService.getGroupsAndAll());
+    model.addAttribute("version",buildProperties.getVersion());
     return "index";
   }
 
@@ -83,6 +89,7 @@ public class IndexController {
     model.addAttribute("images", images);
     model.addAttribute("httpUrl", httpFolder);
     model.addAttribute("groups", groupService.getGroupsAndAll());
+    model.addAttribute("version",buildProperties.getVersion());
     return "search";
   }
 
@@ -91,6 +98,7 @@ public class IndexController {
     Image image = imageService.findById(id);
     model.addAttribute("image", image);
     model.addAttribute("httpUrl", httpFolder);
+    model.addAttribute("version",buildProperties.getVersion());
     return "image";
   }
 }

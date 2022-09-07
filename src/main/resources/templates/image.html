@@ -23,5 +23,8 @@
     <a th:href="'/search?'+${metadata.type}+'='+${value}" th:text="${value}"></a>
   </th:block>
 </th:block>
+<footer>
+  <p th:text="'App version is '+${version}"></p>
+</footer>
 </body>
 </html>

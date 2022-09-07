@@ -32,7 +32,6 @@ public class GroupService {
   }
 
   public boolean validation(String group) {
-    StringValidation.requireNonNullAndNonBlank(group,"Group is null or blank");
     return environment.getProperty("imagesearch.scan.group." + group) != null;
   }
 }

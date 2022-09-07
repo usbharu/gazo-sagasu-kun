@@ -99,8 +99,12 @@ HashDao hashDao;
 
     List<Image> result = new ArrayList<>();
     try {
+      byte[] byId = databaseImageMatcher.findById(image.getId(), algo);
+      if (byId == null) {
+        return result;
+      }
       Hash targetHash = databaseImageMatcher.reconstructHashFromDatabase(algo,
-          databaseImageMatcher.findById(image.getId(),algo));
+          byId);
       List<Result<String>> similarImages = databaseImageMatcher.getSimilarImages(targetHash,
           (int) (targetHash.getBitResolution() * 0.1), algo);
       for (Result<String> similarImage : similarImages) {

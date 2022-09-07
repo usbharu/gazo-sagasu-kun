@@ -19,12 +19,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
 
   private final JdbcTemplate jdbcTemplate;
+
+  Logger logger = LoggerFactory.getLogger(SQliteDatabaseImageMatcher.class);
 
   /**
    * Attempts to establish a connection to the given database using the supplied connection object.
@@ -189,8 +193,14 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
   }
 
   public byte[] findById(int id,HashingAlgorithm algorithm){
-    Map<String, Object> stringObjectMap =
-        jdbcTemplate.queryForMap("SELECT hash FROM "+resolveTableName(algorithm)+" WHERE url = ?", id);
-    return (byte[]) stringObjectMap.get("hash");
+    try {
+
+      Map<String, Object> stringObjectMap =
+          jdbcTemplate.queryForMap("SELECT hash FROM "+resolveTableName(algorithm)+" WHERE url = ?", id);
+      return (byte[]) stringObjectMap.get("hash");
+    }catch (EmptyResultDataAccessException e){
+      logger.warn(id+" was not found",e);
+      return null;
+    }
   }
 }

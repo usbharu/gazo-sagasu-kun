@@ -74,7 +74,6 @@ public class IndexController {
       @ModelAttribute("order") String order,
       @ModelAttribute("duplicate") String duplicate,
       Model model) {
-logger.info("tags :{} group :{} sort :{} order :{} duplicate :{}",tags,group,sort,order,duplicate);
     if (duplicate != null && !duplicate.isBlank()) {
       return "redirect:/image/" + duplicate;
     }

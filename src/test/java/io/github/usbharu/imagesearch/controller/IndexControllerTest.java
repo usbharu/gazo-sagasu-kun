@@ -61,17 +61,14 @@ class IndexControllerTest {
   @Autowired
   WebApplicationContext webApplicationContext;
 
-  @BeforeEach
-  void setUp() {
-    mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-  }
-
   @Test
   void index_get_return200() throws Exception {
 
     when(imageSearch.randomTag()).thenReturn(new Tag(1, "test"));
 
-    this.mockMvc.perform(get("/")).andExpect(model().attribute("message","test")).andDo(print())
+    this.mockMvc.perform(get("/"))
+        .andDo(print())
+        .andExpect(model().attribute("message","test"))
         .andExpect(status().isOk());
   }
 

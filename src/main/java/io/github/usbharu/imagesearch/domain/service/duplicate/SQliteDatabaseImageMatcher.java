@@ -5,6 +5,7 @@ import dev.brachtendorf.jimagehash.hash.Hash;
 import dev.brachtendorf.jimagehash.hashAlgorithms.HashingAlgorithm;
 import dev.brachtendorf.jimagehash.matcher.persistent.database.DatabaseImageMatcher;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PipedInputStream;
@@ -88,6 +89,8 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
   @Override
   protected void addImage(HashingAlgorithm hashAlgo, String url, BufferedImage image)
       throws SQLException {
+    System.out.println("addddddddddddddddddddddddddddddd");
+
     String tableName = resolveTableName(hashAlgo);
 
     if (!doesTableExist(tableName)) {
@@ -95,12 +98,11 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
     }
 
     Hash hash = hashAlgo.hash(image);
-
     jdbcTemplate.update("INSERT OR REPLACE INTO " + tableName + " (url,hash) VALUES (?,?)", url,
         hash.toByteArray());
   }
 
-  @Override
+    @Override
   public boolean doesEntryExist(String uniqueId, HashingAlgorithm hashAlgo) {
     try {
       jdbcTemplate.queryForMap("SELECT * FROM " + resolveTableName(hashAlgo) + " WHERE URL = ?",
@@ -109,7 +111,7 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
       return false;
     }
 
-    return true;
+    return false;
   }
 
   @Override

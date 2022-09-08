@@ -34,11 +34,14 @@ public class ImageSearch {
   }
 
   public List<Image> search3(String[] tags, String group, String orderType, String order) {
+    logger.info("Search : tags = {}, group = {}, orderType = {}, order = {}", tags, group, orderType,
+        order);
     return dynamicSearchDao.search(new DynamicSearchBuilder().setTags(List.of(tags)).setGroup(group)
         .setOrderType(ImageTagDaoOrderType.fromString(orderType))
         .setOrder(ImageTagDaoOrder.fromString(order)).createDynamicSearch());
   }
 
+  // TODO: 2022/09/08 randomTagの位置がおかしい
   public Tag randomTag() {
     Tag tag = tagDao.selectRandomOne();
     if (tag == null) {

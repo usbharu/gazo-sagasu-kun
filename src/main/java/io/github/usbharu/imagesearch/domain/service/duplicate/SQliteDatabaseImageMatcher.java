@@ -89,7 +89,6 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
   @Override
   protected void addImage(HashingAlgorithm hashAlgo, String url, BufferedImage image)
       throws SQLException {
-    System.out.println("addddddddddddddddddddddddddddddd");
 
     String tableName = resolveTableName(hashAlgo);
 

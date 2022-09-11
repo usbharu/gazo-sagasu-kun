@@ -36,7 +36,6 @@ public class GroupService {
   }
 
   public boolean validation(String group) {
-    require().nonNullAndNonBlank(group);
     return environment.getProperty("imagesearch.scan.group." + group) != null;
   }
 }

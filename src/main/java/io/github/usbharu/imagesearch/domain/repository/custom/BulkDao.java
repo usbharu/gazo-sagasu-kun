@@ -80,6 +80,10 @@ public class BulkDao {
     if (images.isEmpty()) {
       return;
     }
+    for (Image image : images) {
+      image.setPath(image.getPath().replaceAll("\\\\","/"));
+    }
+
     List<Tag> tagList = new ArrayList<>();
     for (Image image : images) {
       Tags tags = ImageTagUtil.getTagsNoNull(image);

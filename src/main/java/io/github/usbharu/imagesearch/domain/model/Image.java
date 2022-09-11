@@ -7,7 +7,7 @@ public class Image {
 
   private final int id;
   private final String name;
-  private final String path;
+  private String path;
 
 
   private final List<ImageMetadata> metadata = new ArrayList<>();
@@ -76,6 +76,10 @@ public class Image {
     return group;
   }
 
+
+  public void setPath(String path) {
+    this.path = path;
+  }
 
   public void setGroup(int group) {
     this.group = group;

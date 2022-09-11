@@ -5,12 +5,19 @@ import io.github.usbharu.imagesearch.domain.service.GroupService;
 import io.github.usbharu.imagesearch.domain.service.ImageSearch;
 import io.github.usbharu.imagesearch.domain.service.ImageService;
 import io.github.usbharu.imagesearch.domain.service.TagService;
+import io.github.usbharu.imagesearch.util.ImageFileNameUtil;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 public class IndexController {
 
+  private final ImageFileNameUtil imageFileNameUtil;
   private final ImageSearch imageSearch;
   private final TagService tagService;
   private final GroupService groupService;
@@ -29,17 +37,21 @@ public class IndexController {
   @Value("${imagesearch.scan.http.folder:}")
   private String httpFolder = "";
 
+  @Value("${imagesearch.scan.folder:}")
+  private String folder = "";
   final
   BuildProperties buildProperties;
 
   @Autowired
   public IndexController(ImageSearch imageSearch, TagService tagService,
-      GroupService groupService, ImageService imageService, BuildProperties buildProperties) {
+      GroupService groupService, ImageService imageService, BuildProperties buildProperties,
+      ImageFileNameUtil imageFileNameUtil) {
     this.imageSearch = imageSearch;
     this.tagService = tagService;
     this.groupService = groupService;
     this.imageService = imageService;
     this.buildProperties = buildProperties;
+    this.imageFileNameUtil = imageFileNameUtil;
   }
 
   @GetMapping("/")
@@ -47,7 +59,7 @@ public class IndexController {
     logger.trace("Access to Index");
     model.addAttribute("message", imageSearch.randomTag().getName());
     model.addAttribute("groups", groupService.getGroupsAndAll());
-    model.addAttribute("version",buildProperties.getVersion());
+    model.addAttribute("version", buildProperties.getVersion());
     return "index";
   }
 
@@ -88,7 +100,7 @@ public class IndexController {
     model.addAttribute("images", images);
     model.addAttribute("httpUrl", httpFolder);
     model.addAttribute("groups", groupService.getGroupsAndAll());
-    model.addAttribute("version",buildProperties.getVersion());
+    model.addAttribute("version", buildProperties.getVersion());
     return "search";
   }
 
@@ -97,7 +109,26 @@ public class IndexController {
     Image image = imageService.findById(id);
     model.addAttribute("image", image);
     model.addAttribute("httpUrl", httpFolder);
-    model.addAttribute("version",buildProperties.getVersion());
+    model.addAttribute("version", buildProperties.getVersion());
     return "image";
+  }
+
+  @GetMapping("/image/file")
+  public HttpEntity<byte[]> image(@ModelAttribute("path") String path, Model model) {
+    File file = new File(folder + File.separator + path);
+    byte[] byteImg = null;
+    HttpHeaders httpHeaders = null;
+    try {
+      byteImg = Files.readAllBytes(file.toPath());
+      httpHeaders = new HttpHeaders();
+      if (imageFileNameUtil.isJpg(file.getName())) {
+        httpHeaders.setContentType(MediaType.IMAGE_JPEG);
+      }else if (imageFileNameUtil.isPng(file.getName())){
+        httpHeaders.setContentLength(byteImg.length);
+      }
+    }catch (IOException e){
+      return null;
+    }
+    return new HttpEntity<>(byteImg,httpHeaders);
   }
 }

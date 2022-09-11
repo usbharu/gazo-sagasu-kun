@@ -46,18 +46,18 @@ class GroupServiceTest {
   }
 
   @Test
-  void validation_null_throwNullPointerException() {
-    assertThrows(NullPointerException.class, () -> groupService.validation(null));
+  void validation_null_returnFalse() {
+    assertFalse(groupService.validation(null));
   }
 
   @Test
   void validation_empty_throwIllegalArgumentException() {
-    assertThrows(IllegalArgumentException.class, () -> groupService.validation(""));
+    assertFalse(groupService.validation(""));
   }
 
   @Test
   void validation_blank_throwIllegalArgumentException() {
-    assertThrows(IllegalArgumentException.class, () -> groupService.validation(" "));
+    assertFalse(groupService.validation(" "));
   }
 
   @Test

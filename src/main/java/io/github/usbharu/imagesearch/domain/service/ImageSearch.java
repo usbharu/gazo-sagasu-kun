@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,8 +21,7 @@ public class ImageSearch {
   final DynamicSearchDao dynamicSearchDao;
   private final TagDao tagDao;
 
-  final
-  DuplicateCheck duplicateCheck;
+  final DuplicateCheck duplicateCheck;
 
   public ImageSearch(DynamicSearchDao dynamicSearchDao, TagDao tagDao,
       DuplicateCheck duplicateCheck) {
@@ -41,12 +39,12 @@ public class ImageSearch {
         .setOrder(ImageTagDaoOrder.fromString(order)).createDynamicSearch());
   }
 
+  // TODO: 2022/09/08 randomTagの位置がおかしい
   public Tag randomTag() {
-    try {
-      return tagDao.selectRandomOne();
-    } catch (EmptyResultDataAccessException e) {
-      logger.warn("Failed to retrieve random Tag", e);
+    Tag tag = tagDao.selectRandomOne();
+    if (tag == null) {
+      return new Tag("ERROR");
     }
-    return new Tag("ERROR");
+    return tag;
   }
 }

@@ -5,6 +5,7 @@ import dev.brachtendorf.jimagehash.hash.Hash;
 import dev.brachtendorf.jimagehash.hashAlgorithms.HashingAlgorithm;
 import dev.brachtendorf.jimagehash.matcher.persistent.database.DatabaseImageMatcher;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PipedInputStream;
@@ -19,12 +20,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
 
   private final JdbcTemplate jdbcTemplate;
+
+  Logger logger = LoggerFactory.getLogger(SQliteDatabaseImageMatcher.class);
 
   /**
    * Attempts to establish a connection to the given database using the supplied connection object.
@@ -84,6 +89,8 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
   @Override
   protected void addImage(HashingAlgorithm hashAlgo, String url, BufferedImage image)
       throws SQLException {
+    System.out.println("addddddddddddddddddddddddddddddd");
+
     String tableName = resolveTableName(hashAlgo);
 
     if (!doesTableExist(tableName)) {
@@ -91,12 +98,11 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
     }
 
     Hash hash = hashAlgo.hash(image);
-
     jdbcTemplate.update("INSERT OR REPLACE INTO " + tableName + " (url,hash) VALUES (?,?)", url,
         hash.toByteArray());
   }
 
-  @Override
+    @Override
   public boolean doesEntryExist(String uniqueId, HashingAlgorithm hashAlgo) {
     try {
       jdbcTemplate.queryForMap("SELECT * FROM " + resolveTableName(hashAlgo) + " WHERE URL = ?",
@@ -105,7 +111,7 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
       return false;
     }
 
-    return true;
+    return false;
   }
 
   @Override
@@ -189,8 +195,14 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
   }
 
   public byte[] findById(int id,HashingAlgorithm algorithm){
-    Map<String, Object> stringObjectMap =
-        jdbcTemplate.queryForMap("SELECT hash FROM "+resolveTableName(algorithm)+" WHERE url = ?", id);
-    return (byte[]) stringObjectMap.get("hash");
+    try {
+
+      Map<String, Object> stringObjectMap =
+          jdbcTemplate.queryForMap("SELECT hash FROM "+resolveTableName(algorithm)+" WHERE url = ?", id);
+      return (byte[]) stringObjectMap.get("hash");
+    }catch (EmptyResultDataAccessException e){
+      logger.warn(id+" was not found",e);
+      return null;
+    }
   }
 }

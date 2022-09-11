@@ -4,7 +4,6 @@ import dev.brachtendorf.jimagehash.datastructures.tree.Result;
 import dev.brachtendorf.jimagehash.hash.Hash;
 import dev.brachtendorf.jimagehash.hashAlgorithms.DifferenceHash;
 import dev.brachtendorf.jimagehash.hashAlgorithms.DifferenceHash.Precision;
-import dev.brachtendorf.jimagehash.matcher.persistent.database.DatabaseImageMatcher;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.repository.HashDao;
 import io.github.usbharu.imagesearch.domain.repository.ImageDao;
@@ -21,48 +20,37 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DuplicateCheck {
-final
-HashDao hashDao;
 
-  final
-  ImageDao imageDao;
+  final HashDao hashDao;
 
-  final
-  ImageFileNameUtil imageFileNameUtil;
-  final JdbcTemplate jdbcTemplate;
-  private final DifferenceHash algo;
+  final ImageDao imageDao;
+
+  final ImageFileNameUtil imageFileNameUtil;
+  final DifferenceHash algo;
   SQliteDatabaseImageMatcher databaseImageMatcher;
 
-  public DuplicateCheck(JdbcTemplate jdbcTemplate,
-      ImageFileNameUtil imageFileNameUtil,
-      ImageDao imageDao, HashDao hashDao)
-      throws SQLException {
-    Objects.requireNonNull(jdbcTemplate, "JdbcTemplate is Null");
+  public DuplicateCheck(ImageFileNameUtil imageFileNameUtil, ImageDao imageDao, HashDao hashDao,
+      SQLDatabaseImageMatcherWrapper databaseImageMatcherWrapper) throws SQLException {
     Objects.requireNonNull(imageFileNameUtil, "ImageFileNameUtil is Null");
     Objects.requireNonNull(imageDao, "ImageDao is Null");
-    this.jdbcTemplate = jdbcTemplate;
-    synchronized (this.jdbcTemplate) {
-      databaseImageMatcher =
-          new SQliteDatabaseImageMatcher(null,
-              this.jdbcTemplate);
-      this.imageFileNameUtil = imageFileNameUtil;
-      algo = new DifferenceHash(32, Precision.Simple);
-      databaseImageMatcher.addHashingAlgorithm(algo, 0.1);
-    }
+    databaseImageMatcher = databaseImageMatcherWrapper;
+    this.imageFileNameUtil = imageFileNameUtil;
+    algo = new DifferenceHash(32, Precision.Simple);
+    databaseImageMatcher.addHashingAlgorithm(algo, 0.1);
+
     this.imageDao = imageDao;
     this.hashDao = hashDao;
   }
 
   public void addAllImage() {
-    synchronized (jdbcTemplate) {
-      imageDao.findAll().forEach(this::addImage);
-    }
+    System.out.println("imageDao.findAll() = " + imageDao.findAll());
+
+    imageDao.findAll().forEach(this::addImage);
+
   }
 
   public void addImage(Image image) {
@@ -99,8 +87,11 @@ HashDao hashDao;
 
     List<Image> result = new ArrayList<>();
     try {
-      Hash targetHash = databaseImageMatcher.reconstructHashFromDatabase(algo,
-          databaseImageMatcher.findById(image.getId(),algo));
+      byte[] byId = databaseImageMatcher.findById(image.getId(), algo);
+      if (byId == null) {
+        return result;
+      }
+      Hash targetHash = databaseImageMatcher.reconstructHashFromDatabase(algo, byId);
       List<Result<String>> similarImages = databaseImageMatcher.getSimilarImages(targetHash,
           (int) (targetHash.getBitResolution() * 0.1), algo);
       for (Result<String> similarImage : similarImages) {

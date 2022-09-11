@@ -1,11 +1,8 @@
 package io.github.usbharu.imagesearch.domain.validation;
 
-public class StringValidation {
+public interface StringValidation {
 
-  private StringValidation() {
-  }
-
-  public static String requireNonNullAndNonBlank(String str, String message) {
+  default String nonNullAndNonBlank(String str, String message) {
     if (str == null) {
       throw new NullPointerException(message);
     }
@@ -15,7 +12,7 @@ public class StringValidation {
     return str;
   }
 
-  public static String requireNonNullAndNonBlank(String str) {
+  default String nonNullAndNonBlank(String str) {
     if (str == null) {
       throw new NullPointerException();
     }

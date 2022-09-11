@@ -1,8 +1,11 @@
 package io.github.usbharu.imagesearch.domain.service;
 
+import static io.github.usbharu.imagesearch.domain.validation.Validation.require;
+
 import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
 import io.github.usbharu.imagesearch.domain.validation.StringValidation;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.core.env.Environment;
@@ -26,12 +29,14 @@ public class GroupService {
   }
 
   public List<Group> getGroupsAndAll() {
-    List<Group> all = groupDao.findAll();
+
+    ArrayList<Group> all = new ArrayList<>(groupDao.findAll());
     all.add(new Group("all"));
     return all;
   }
 
   public boolean validation(String group) {
+    require().nonNullAndNonBlank(group);
     return environment.getProperty("imagesearch.scan.group." + group) != null;
   }
 }

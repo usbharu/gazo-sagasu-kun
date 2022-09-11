@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.2'
     id 'io.spring.dependency-management' version '1.0.12.RELEASE'
     id 'java'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
 group = 'io.github.usbharu'
@@ -25,10 +26,13 @@ dependencies {
     testImplementation 'org.dbunit:dbunit:2.7.3'
     testImplementation 'com.github.springtestdbunit:spring-test-dbunit:1.3.0'
 
+    testRuntimeOnly 'org.openjfx:javafx-graphics:11.0.2'
+    testRuntimeOnly 'org.openjfx:javafx-base:11.0.2'
+    testRuntimeOnly 'org.openjfx:javafx-swing:11.0.2'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
 
-    implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+//    implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
 
     implementation 'dev.brachtendorf:JImageHash:1.0.0'
 }
@@ -37,6 +41,11 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-springBoot{
+springBoot {
     buildInfo()
+}
+
+javafx {
+    version = "11"
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.base', 'javafx.swing', 'javafx.graphics']
 }

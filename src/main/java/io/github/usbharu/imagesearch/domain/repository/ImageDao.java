@@ -1,5 +1,6 @@
 package io.github.usbharu.imagesearch.domain.repository;
 
+import static io.github.usbharu.imagesearch.domain.validation.Validation.require;
 import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImage;
 import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImages;
 
@@ -11,6 +12,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -29,8 +31,9 @@ public class ImageDao {
     logger.trace("Success to findAll : " + result.size());
     return result;
   }
+
   public List<Image> findByName(String name) {
-    StringValidation.requireNonNullAndNonBlank(name,"name is null or blank");
+    require().nonNullAndNonBlank(name, "name is null or blank");
     logger.trace("findByName name:" + name);
     List<Map<String, Object>> maps =
         jdbcTemplate.queryForList(
@@ -42,25 +45,38 @@ public class ImageDao {
   }
 
   public Image findByUrl(String url) {
-    StringValidation.requireNonNullAndNonBlank(url,"url is null or blank");
+    require().nonNullAndNonBlank(url, "url is null or blank");
     logger.trace("findByUrl url:" + url);
-    Map<String, Object> maps = jdbcTemplate.queryForMap(
-        "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE path = ?",
-        url);
-    Image image = parseImage(maps);
-    logger.trace("Success to findByUrl : " + image);
-    return image;
+    try {
+
+      Map<String, Object> maps = jdbcTemplate.queryForMap(
+          "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE path = ?",
+          url);
+      Image image = parseImage(maps);
+      logger.trace("Success to findByUrl : " + image);
+      return image;
+    } catch (EmptyResultDataAccessException e) {
+      logger.warn(url + " was not found.", e);
+      return null;
+    }
   }
 
   public Image findById(int id) {
+    require().positive(id);
     logger.trace("findById id:" + id);
-    Map<String, Object> stringObjectMap =
-        jdbcTemplate.queryForMap(
-            "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE id = ?",
-            id);
-    Image image = parseImage(stringObjectMap);
-    logger.trace("Success to findById id:" + image);
-    return image;
+    try {
+
+      Map<String, Object> stringObjectMap =
+          jdbcTemplate.queryForMap(
+              "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE id = ?",
+              id);
+      Image image = parseImage(stringObjectMap);
+      logger.trace("Success to findById id:" + image);
+      return image;
+    } catch (EmptyResultDataAccessException e) {
+      logger.warn(id + " was not found", e);
+      return null;
+    }
   }
 
   public int insertOne(Image image) {
@@ -74,11 +90,13 @@ public class ImageDao {
   }
 
   public Image insertOneWithReturnImage(Image image) {
-    Objects.requireNonNull(image,"Image is null");
+    Objects.requireNonNull(image, "Image is null");
     logger.trace("insertOneWithReturnImage image:" + image);
     insertOne(image);
     Map<String, Object> stringObjectMap =
-        jdbcTemplate.queryForMap("SELECT id,name,path FROM image WHERE path = ?", image.getPath());
+        jdbcTemplate.queryForMap(
+            "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE path = ?",
+            image.getPath());
     Image result = parseImage(stringObjectMap);
     logger.trace("Success to insertOneWithReturnImage : " + result);
     return result;
@@ -89,7 +107,7 @@ public class ImageDao {
   }
 
   public int deleteOne(String url) {
-    StringValidation.requireNonNullAndNonBlank(url,"url is null or blank");
+    require().nonNullAndNonBlank(url, "url is null or blank");
     logger.trace("deleteOne url:" + url);
     int update = jdbcTemplate.update("DELETE FROM image WHERE path = ?", url);
     logger.trace("Success to deleteOne : " + update);

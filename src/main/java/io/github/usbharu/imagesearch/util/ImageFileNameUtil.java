@@ -1,5 +1,7 @@
 package io.github.usbharu.imagesearch.util;
 
+import static io.github.usbharu.imagesearch.domain.validation.Validation.require;
+
 import io.github.usbharu.imagesearch.domain.validation.StringValidation;
 import java.io.File;
 import java.util.Objects;
@@ -16,16 +18,16 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("imagesearch.util.filename")
 public class ImageFileNameUtil {
 
-  private String pixivTypeFileBaseName = "(\\d+)";
-  private String pixivTypeFileNumber = "_p\\d+\\.";
+  private final String pixivTypeFileBaseName = "(\\d+)";
+  private final String pixivTypeFileNumber = "_p\\d+\\.";
 
-  private Pattern isPixivTypeFileName;
-  private Pattern getPixivTypeFileBaseName;
+  private final Pattern isPixivTypeFileName;
+  private final Pattern getPixivTypeFileBaseName;
 
   @Value(value = "${imagesearch.scan.folder:}")
   private String scanFolder = "";
 
-  private Logger logger = LoggerFactory.getLogger(ImageFileNameUtil.class);
+  private final Logger logger = LoggerFactory.getLogger(ImageFileNameUtil.class);
 
   public ImageFileNameUtil() {
     isPixivTypeFileName = Pattern.compile(pixivTypeFileBaseName + pixivTypeFileNumber);
@@ -33,22 +35,22 @@ public class ImageFileNameUtil {
   }
 
   public boolean isJpg(String name) {
-    StringValidation.requireNonNullAndNonBlank(name,"Name is null or blank");
+    require().nonNullAndNonBlank(name,"Name is null or blank");
     return name.toUpperCase().endsWith("JPG") || name.toUpperCase().endsWith("JPEG");
   }
 
   public boolean isPng(String name) {
-    StringValidation.requireNonNullAndNonBlank(name,"Name is null or blank");
+    require().nonNullAndNonBlank(name,"Name is null or blank");
     return name.toUpperCase().endsWith("PNG");
   }
 
   public boolean isPixivTypeFileName(String name) {
-    StringValidation.requireNonNullAndNonBlank(name,"Name is null or blank");
+    require().nonNullAndNonBlank(name,"Name is null or blank");
     return isPixivTypeFileName.matcher(name).find();
   }
 
   public String getPixivTypeFileBaseName(String name) {
-    StringValidation.requireNonNullAndNonBlank(name,"Name is null or blank");
+    require().nonNullAndNonBlank(name,"Name is null or blank");
     logger.trace("get pixiv type file base name {}", name);
     final Matcher matcher = getPixivTypeFileBaseName.matcher(name);
     if (matcher.find()) {

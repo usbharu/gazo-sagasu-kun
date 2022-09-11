@@ -1,65 +1,117 @@
 package io.github.usbharu.imagesearch.controller;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.DbUnitConfiguration;
-import io.github.usbharu.imagesearch.ImageSearchApplication;
-import io.github.usbharu.imagesearch.db.test.CsvDataSetLoader;
-import org.junit.jupiter.api.AfterEach;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import io.github.usbharu.imagesearch.domain.model.Group;
+import io.github.usbharu.imagesearch.domain.model.Image;
+import io.github.usbharu.imagesearch.domain.model.Tag;
+import io.github.usbharu.imagesearch.domain.model.custom.TagCount;
+import io.github.usbharu.imagesearch.domain.service.GroupService;
+import io.github.usbharu.imagesearch.domain.service.ImageSearch;
+import io.github.usbharu.imagesearch.domain.service.ImageService;
+import io.github.usbharu.imagesearch.domain.service.TagService;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.jdbc.AutoConfigureDataJdbc;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@DbUnitConfiguration(dataSetLoader = CsvDataSetLoader.class)
-@AutoConfigureDataJdbc
-@TestExecutionListeners({
-    DependencyInjectionTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class
-})
-//@AutoConfigureMockMvc
-@SpringBootTest(classes = ImageSearchApplication.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 class IndexControllerTest {
 
-
+  @Autowired
   private MockMvc mockMvc;
-//
-//  @Mock
-//  private ImageSearch imageSearch;
-//
-//  @Mock private TagService tagService;
 
-//  @InjectMocks private IndexController indexController;
-  private AutoCloseable autoCloseable;
+  @MockBean
+  ImageService imageService;
 
-@Autowired IndexController indexController;
-  @BeforeEach
-  void setUp() {
-    autoCloseable = MockitoAnnotations.openMocks(this);
-    this.mockMvc = MockMvcBuilders.standaloneSetup(indexController).build();
-  }
-
-  @AfterEach
-  void tearDown() throws Exception {
-    autoCloseable.close();
-  }
+  @MockBean
+  TagService tagService;
 
 
-  @DatabaseSetup(value = "/tagDB/")
+  @MockBean
+  ImageSearch imageSearch;
+
+  @MockBean
+  GroupService groupService;
+
+  @InjectMocks
+  IndexController indexController;
+
+  @Autowired
+  WebApplicationContext webApplicationContext;
+
   @Test
   void index_get_return200() throws Exception {
-    this.mockMvc.perform(get("/")).andExpect(model().attributeExists("message")).andDo(print()).andExpect(status().isOk());
+
+    when(imageSearch.randomTag()).thenReturn(new Tag(1, "test"));
+
+    this.mockMvc.perform(get("/"))
+        .andDo(print())
+        .andExpect(model().attribute("message","test"))
+        .andExpect(status().isOk());
+  }
+
+  // TODO: 2022/09/08 テストが甘いので追加する
+  @Test
+  void search_getWithTags_returnImages() throws Exception {
+
+    when(imageSearch.search3(any(String[].class),any(),any(),any())).thenReturn(
+        List.of(new Image("0.jpg", "testData/1/0.jpg"), new Image("1.jpg", "testData/1/1.jpg"),
+            new Image("2.jpg", "testData/1/2.jpg")));
+
+    when(tagService.tagOrderOfMostUsedLimit(anyInt())).thenReturn(List.of(
+        new TagCount(37, new Tag(10, "tag8")),
+        new TagCount(33, new Tag(1, "tag1")),
+        new TagCount(28, new Tag(5, "tag2")),
+        new TagCount(23, new Tag(11, "tag7")),
+        new TagCount(22, new Tag(6, "tag11")),
+        new TagCount(22, new Tag(4, "tag4")),
+        new TagCount(19, new Tag(9, "tag9")),
+        new TagCount(19, new Tag(8, "tag3")),
+        new TagCount(18, new Tag(2, "tag6")),
+        new TagCount(17, new Tag(3, "tag5")),
+        new TagCount(12, new Tag(7, "tag10"))
+    ));
+
+    when(groupService.getGroupsAndAll()).thenReturn(List.of(new Group(1, "a"),
+        new Group(2, "b"),
+        new Group(3, "c"),
+        new Group("all")));
+
+    this.mockMvc.perform(get("/search").param("tags", "tag1"))
+        .andDo(print())
+        .andExpect(model().attribute("images", hasItem(hasProperty("name", is("0.jpg")))))
+        .andExpect(view().name("search")).andExpect(status().isOk());
+  }
+
+  @Test
+  void image_getImage_returnImage() throws Exception {
+
+    when(imageService.findById(anyInt())).thenReturn(new Image("0.jpg", "testData/1/0.jpg"));
+
+    this.mockMvc.perform(get("/image/1/")).andDo(print())
+        .andExpect(model().attribute("image", hasProperty("name", is("0.jpg"))))
+        .andExpect(view().name("image")).andExpect(status().isOk());
   }
 }

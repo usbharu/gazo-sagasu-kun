@@ -1,5 +1,6 @@
 package io.github.usbharu.imagesearch.domain.repository;
 
+import static io.github.usbharu.imagesearch.domain.validation.Validation.require;
 import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseTag;
 import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseTags;
 
@@ -13,6 +14,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -31,20 +33,21 @@ public class TagDao {
   }
 
   public Tag findById(int id) {
+    require().positive(id);
     Map<String, Object> maps = jdbcTemplate.queryForMap("SELECT * FROM tag WHERE id = ?", id);
     return parseTag(maps);
 
   }
 
   public List<Tag> findByName(String name) {
-    StringValidation.requireNonNullAndNonBlank(name, "name is null or blank");
+    require().nonNullAndNonBlank(name, "name is null or blank");
     List<Map<String, Object>> maps =
         jdbcTemplate.queryForList("SELECT * FROM tag WHERE name = ?", name);
     return parseTags(maps);
   }
 
   public int insertOne(String tag) {
-    StringValidation.requireNonNullAndNonBlank(tag, "Tag is null or blank");
+    require().nonNullAndNonBlank(tag, "Tag is null or blank");
     logger.debug("insertOne: {}", tag);
     return jdbcTemplate.update(
         "INSERT INTO tag (name) SELECT ? WHERE NOT EXISTS(SELECT 1 FROM tag WHERE name = ?)", tag,
@@ -52,7 +55,7 @@ public class TagDao {
   }
 
   public Tag insertOneWithReturnTag(String tag) {
-    StringValidation.requireNonNullAndNonBlank(tag, "Tag is Null or blank");
+    require().nonNullAndNonBlank(tag, "Tag is Null or blank");
     insertOne(tag);
     Map<String, Object> stringObjectMap =
         jdbcTemplate.queryForMap("SELECT id,name FROM tag WHERE name = ?;", tag);
@@ -61,31 +64,37 @@ public class TagDao {
 
   public int deleteOne(Tag tag) {
     Objects.requireNonNull(tag, "Tag is Null");
-    return jdbcTemplate.update("DELETE FROM tag WHERE id = ?", tag.getId());
+    return jdbcTemplate.update("DELETE FROM tag WHERE id = ? AND name = ?", tag.getId(),tag.getName());
   }
 
   public int deleteById(int id) {
+    require().positive(id,"Id is negative or zero");
     return jdbcTemplate.update("DELETE FROM tag WHERE id = ?", id);
   }
 
   public int deleteByName(String name) {
-    StringValidation.requireNonNullAndNonBlank(name, "Name is null or blank");
+    require().nonNullAndNonBlank(name, "Name is null or blank");
     return jdbcTemplate.update("DELETE FROM tag WHERE name = ?", name);
   }
 
   public Tag selectRandomOne() {
-    Map<String, Object> stringObjectMap =
-        jdbcTemplate.queryForMap(
-            "SELECT id, name\n"
-                + "FROM tag\n"
-                + "WHERE NOT name LIKE '--%--"
-                + "'\n"
-                + "  AND NOT 'NON"
-                + "E'\n"
-                + "ORDER BY RANDOM"
-                + "()\n"
-                + "LIMIT 1");
-    return parseTag(stringObjectMap);
+    try {
+      Map<String, Object> stringObjectMap =
+          jdbcTemplate.queryForMap(
+              "SELECT id, name\n"
+                  + "FROM tag\n"
+                  + "WHERE NOT name LIKE '--%--"
+                  + "'\n"
+                  + "  AND NOT 'NON"
+                  + "E'\n"
+                  + "ORDER BY RANDOM"
+                  + "()\n"
+                  + "LIMIT 1");
+      return parseTag(stringObjectMap);
+    }catch (EmptyResultDataAccessException e){
+      logger.warn("Failed to retrieve random Tag", e);
+      return null;
+    }
   }
 
   public List<TagCount> tagCount() {

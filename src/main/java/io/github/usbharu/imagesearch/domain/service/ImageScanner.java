@@ -33,33 +33,33 @@ public class ImageScanner {
   private final List<Image> images = new ArrayList<>();
   private final BulkDao bulkDao;
   Logger logger = LoggerFactory.getLogger(ImageScanner.class);
-  private Map<String, String> group;
-  private int depth = 3;
+  private Map<String, String> group = new HashMap<>();
+  private int depth = 4;
   private String folder = "";
 
   final
-  Scanner imageScanner;
+  Scanner scanner;
 
   @Autowired
-  public ImageScanner(BulkDao bulkDao, GroupDao groupDao, Scanner imageScanner) {
+  public ImageScanner(BulkDao bulkDao, GroupDao groupDao, Scanner scanner) {
     Objects.requireNonNull(bulkDao, "BulkDao is Null");
     Objects.requireNonNull(groupDao, "GroupDao is Null");
-    Objects.requireNonNull(imageScanner, "Scanner is Null");
+    Objects.requireNonNull(scanner, "Scanner is Null");
     this.bulkDao = bulkDao;
     this.groupDao = groupDao;
-    this.imageScanner = imageScanner;
+    this.scanner = scanner;
   }
 
   public void startScan() {
     validateProperties();
-    File file = Paths.get(folder).toFile();
+    File file = Paths.get(getFolder()).toFile();
     if (!file.isDirectory()) {
-      logger.warn("{} is not directory", folder);
+      logger.warn("{} is not directory", getFolder());
       return;
     }
-    logger.info("Scan folder :{} folder from  {} ", depth, file);
+    logger.info("Scan folder :{} folder from  {} ", getDepth(), file);
     bulkDao.delete();
-    for (Entry<String, String> stringStringEntry : group.entrySet()) {
+    for (Entry<String, String> stringStringEntry : getGroup().entrySet()) {
       String value = stringStringEntry.getValue();
       List<Path> paths = new ArrayList<>();
       for (String s : value.split("[;:]]")) {
@@ -81,15 +81,15 @@ public class ImageScanner {
   }
 
   private void validateProperties() {
-    Objects.requireNonNull(folder, "imagesearch.scan.folder is Null");
-    Objects.requireNonNull(group, "imagesearch.scan.group is Null");
-    if (depth <= 0) {
-      throw new IllegalPropertyValueException("imagesearch.scan.depth is Negative or Zero depth :"+depth);
+    Objects.requireNonNull(getFolder(), "imagesearch.scan.folder is Null");
+    Objects.requireNonNull(getGroup(), "imagesearch.scan.group is Null");
+    if (getDepth() <= 0) {
+      throw new IllegalPropertyValueException("imagesearch.scan.depth is Negative or Zero depth :"+getDepth());
     }
   }
 
   private void scanFolder(File file, int depth) {
-    if (depth >= this.depth) {
+    if (depth >= getDepth()) {
       return;
     }
     Objects.requireNonNull(file);
@@ -109,7 +109,7 @@ public class ImageScanner {
     for (File listFile : file.listFiles()) {
       if (listFile.isDirectory()) {
         scanFolder(listFile, depth + 1);
-      } else if (imageScanner.isSupported(listFile)) {
+      } else if (scanner.isSupported(listFile)) {
         scanImage(listFile, group1);
       }
     }
@@ -143,11 +143,11 @@ public class ImageScanner {
     if (!image.isFile()) {
       throw new IllegalArgumentException("Image is not File :"+image);
     }
-
+    logger.trace("Scan Image :{}", image);
     Path imagePath = image.toPath();
     Path subpath = imagePath.subpath(group.getPath().getNameCount() - 1, imagePath.getNameCount());
 
-    Image imageObject = imageScanner.getMetadata(image, subpath);
+    Image imageObject = scanner.getMetadata(image, subpath);
     if (imageObject == null) {
       imageObject = new Image(image.getName(), subpath.toString());
     }
@@ -208,6 +208,14 @@ public class ImageScanner {
 
     public Path getPath() {
       return path;
+    }
+
+    @Override
+    public String toString() {
+      return "GroupPathSet{" +
+          "group=" + group +
+          ", path=" + path +
+          '}';
     }
   }
 }

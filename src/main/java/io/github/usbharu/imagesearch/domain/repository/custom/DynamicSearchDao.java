@@ -94,16 +94,23 @@ public class DynamicSearchDao {
         + "ORDER BY "+ dynamicSearch.orderType + " " + dynamicSearch.order + "\n"
         + "LIMIT ?\n"
         + "OFFSET ?\n";
-    String countSql = "SELECT COUNT(image_id) as count\n"
-        + "FROM image_tag\n"
-        + "         JOIN image on image.id = image_tag.image_id\n"
-        + "         JOIN tag on tag.id = image_tag.tag_id\n"
-        + "         JOIN groupId on groupId = groupId.id\n"
+    String tagsSql2="\n";
+
+    if (!dynamicSearch.tags.isEmpty()) {
+      tagsSql2 = "AND tag.name IN ("+sb+")";
+    }
+
+    String countSql = "SELECT COUNT(image_id) as count,\n"
+        + "       groupId.name as group_name\n"
+        + "FROM image\n"
+        + "         JOIN image_tag ON image.id = image_tag.image_id\n"
+        + "         JOIN tag ON image_tag.tag_id = tag.id\n"
+        + "         JOIN groupId on image.groupId = groupId.id\n"
         + "WHERE TRUE\n"
-        + tagsSql
-        + groupSql
-        + idSql
-        + "GROUP BY image_id\n";
+        +  groupSql
+        +  idSql
+        +  tagsSql2;
+    System.out.println("countSql = " + countSql);
     Images images = new Images((Integer) jdbcTemplate.queryForMap(countSql).get("count"));
     try {
 

@@ -83,7 +83,7 @@ public class DynamicSearchBuilder {
   }
 
   public DynamicSearchBuilder setOrder(String order){
-    require().nonNullAndNonBlank(order,"Order is Null or Blank");
+    Objects.requireNonNull(order,"Order is Null");
     this.order = ImageTagDaoOrder.fromString(order).getSql();
     return this;
   }
@@ -101,7 +101,7 @@ public class DynamicSearchBuilder {
   }
 
   public DynamicSearchBuilder setOrderType(String orderType) {
-    require().nonNullAndNonBlank(orderType, "OrderType is Null or Blank.");
+    Objects.requireNonNull(orderType,"OrderType is Null.");
     this.orderType = ImageTagDaoOrderType.fromString(orderType).getSql();
     return this;
   }
@@ -124,7 +124,7 @@ public class DynamicSearchBuilder {
   }
 
   public DynamicSearchBuilder setPage(int page) {
-    require().positive(page,"Page is negative or zero");
+    require().positiveOrZero(page,"Page is negative");
     this.page = page;
     return this;
   }

@@ -1,7 +1,5 @@
 package io.github.usbharu.imagesearch.controller;
 
-import static io.github.usbharu.imagesearch.domain.validation.Validation.require;
-
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.custom.Images;
 import io.github.usbharu.imagesearch.domain.service.GroupService;
@@ -12,7 +10,6 @@ import io.github.usbharu.imagesearch.util.ImageFileNameUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,14 +79,15 @@ public class IndexController {
 //    return "searched";
 //  }
 
+  @SuppressWarnings("IntegerDivisionInFloatingPointContext")
   @GetMapping("/search")
   public String search(@ModelAttribute("tags") String tags,
       @ModelAttribute("group") String group,
       @ModelAttribute("sort") String sort,
       @ModelAttribute("order") String order,
       @ModelAttribute("duplicate") String duplicate,
-      @ModelAttribute("limit")int limit,
-      @ModelAttribute("page")int page,
+      @ModelAttribute("limit") String limitStr,
+      @ModelAttribute("page") String pageStr,
       Model model) {
     if (duplicate != null && !duplicate.isBlank()) {
       return "redirect:/image/" + duplicate;
@@ -99,15 +97,30 @@ public class IndexController {
       group = "";
     }
 
+    int limit = 100;
+    if (limitStr != null && !limitStr.isBlank()) {
+      limit = Integer.parseInt(limitStr);
+    }
+    int page = 0;
+    if (pageStr != null && !pageStr.isBlank()) {
 
-    Images images = imageSearch.search3(tags.split("[; ,]"), group, sort, order,limit,page);
+      page = Integer.parseInt(pageStr);
+    }
+
+
+    Images images = imageSearch.search3(tags.split("[; ,]"), group, sort, order, limit, page);
+    int pageCount = ((int) Math.ceil(images.getCount() / limit));
+    logger.debug("Page count: {}",pageCount);
     model.addAttribute("tagCount", tagService.tagOrderOfMostUsedLimit(20));
     model.addAttribute("message", tags);
     model.addAttribute("images", images);
     model.addAttribute("httpUrl", httpFolder);
     model.addAttribute("groups", groupService.getGroupsAndAll());
     model.addAttribute("version", buildProperties.getVersion());
-    model.addAttribute("count",images.getCount());
+    model.addAttribute("limit", limit);
+    model.addAttribute("page", page);
+    model.addAttribute("pageCount", pageCount );
+    model.addAttribute("count", images.getCount());
     return "search";
   }
 
@@ -130,12 +143,12 @@ public class IndexController {
       httpHeaders = new HttpHeaders();
       if (imageFileNameUtil.isJpg(file.getName())) {
         httpHeaders.setContentType(MediaType.IMAGE_JPEG);
-      }else if (imageFileNameUtil.isPng(file.getName())){
+      } else if (imageFileNameUtil.isPng(file.getName())) {
         httpHeaders.setContentLength(byteImg.length);
       }
-    }catch (IOException e){
+    } catch (IOException e) {
       return null;
     }
-    return new HttpEntity<>(byteImg,httpHeaders);
+    return new HttpEntity<>(byteImg, httpHeaders);
   }
 }

@@ -21,6 +21,11 @@
 
 
   <section class="main">
+    <th:block th:each="pageNumber : ${#numbers.sequence(0,pageCount)}">
+      <div class="paging">
+        <a th:href="${'search?tags=' + tags + '&order=' + order + '&sort=' + sort + '&group=' + group + '&page=' + pageNumber+ '&limit=' + limit}">[[${pageNumber}]]</a>
+      </div>
+    </th:block>
     <th:block th:each="image : ${images}">
       <div class="images">
         <hr>
@@ -28,6 +33,11 @@
           <img th:alt="${image.name}" th:src="${httpUrl}+${image.path}" width="100%">
         </a>
         <p th:text="${image.name}"></p>
+      </div>
+    </th:block>
+    <th:block th:each="pageNumber : ${#numbers.sequence(0, pageCount)}">
+      <div class="paging">
+        <a th:href="${'search?tags=' + tags + '&order=' + order + '&sort=' + sort + '&group=' + group + '&page=' + pageNumber+ '&limit=' + limit}">[[${pageNumber}]]</a>
       </div>
     </th:block>
   </section>

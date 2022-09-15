@@ -3,11 +3,13 @@ package io.github.usbharu.imagesearch.domain.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
 import io.github.usbharu.imagesearch.domain.repository.custom.BulkDao;
 import io.github.usbharu.imagesearch.domain.service.scan.Scanner;
@@ -56,7 +58,7 @@ class ImageScannerTest {
 
     doNothing().when(bulkDao).insertSplit(any(),anyInt());
     doNothing().when(bulkDao).delete();
-
+    when(groupDao.insertOneWithReturnGroup(eq("default"))).thenReturn(new Group(286,"default"));
     when(scanner.isSupported(any())).thenReturn(true);
 
     imageScanner.startScan();

@@ -133,7 +133,7 @@ public class ImageScanner {
         }
       }
     }
-    return new GroupPathSet(new Group("default"), file.toPath());
+    return new GroupPathSet(groupDao.insertOneWithReturnGroup("default"), Paths.get(folder));
   }
 
   protected void scanImage(File image, GroupPathSet group) {
@@ -145,7 +145,8 @@ public class ImageScanner {
     }
     logger.trace("Scan Image :{}", image);
     Path imagePath = image.toPath();
-    Path subpath = imagePath.subpath(group.getPath().getNameCount() - 1, imagePath.getNameCount());
+    Path subpath = imagePath.subpath(Paths.get(folder).getNameCount(), imagePath.getNameCount());
+    logger.debug("Group name: {}  count: {} subpath: {} image path: {}",group.getPath(),group.getPath().getNameCount(),subpath,imagePath);
 
     Image imageObject = scanner.getMetadata(image, subpath);
     if (imageObject == null) {

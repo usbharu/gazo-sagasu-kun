@@ -78,8 +78,10 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
   @Override
   protected boolean doesTableExist(String tableName) {
     try {
-      jdbcTemplate.queryForMap(
-          "SELECT name FROM main.sqlite_master WHERE tbl_name = ? AND type = 'table'", tableName);
+      synchronized (jdbcTemplate) {
+        jdbcTemplate.queryForMap(
+            "SELECT name FROM main.sqlite_master WHERE tbl_name = ? AND type = 'table'", tableName);
+      }
     } catch (EmptyResultDataAccessException e) {
       return false;
     }
@@ -97,8 +99,10 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
     }
 
     Hash hash = hashAlgo.hash(image);
-    jdbcTemplate.update("INSERT OR REPLACE INTO " + tableName + " (url,hash) VALUES (?,?)", url,
-        hash.toByteArray());
+    synchronized (jdbcTemplate) {
+      jdbcTemplate.update("INSERT OR REPLACE INTO " + tableName + " (url,hash) VALUES (?,?)", url,
+          hash.toByteArray());
+    }
   }
 
     @Override
@@ -118,15 +122,17 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
       HashingAlgorithm hasher) {
     String tableName = resolveTableName(hasher);
     List<Result<String>> uniqueIds = new ArrayList<>();
-    List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT url,hash FROM " + tableName);
-    for (Map<String, Object> map : maps) {
-      byte[] bytes = (byte[]) map.get("hash");
-      Hash h = reconstructHashFromDatabase(hasher, bytes);
-      int distance = targetHash.hammingDistanceFast(h);
-      double normalizedDistance = distance / (double) targetHash.getBitResolution();
-      if (distance <= maxDistance) {
-        String url = (String) map.get("url");
-        uniqueIds.add(new Result<String>(url, distance, normalizedDistance));
+    synchronized (jdbcTemplate) {
+      List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT url,hash FROM " + tableName);
+      for (Map<String, Object> map : maps) {
+        byte[] bytes = (byte[]) map.get("hash");
+        Hash h = reconstructHashFromDatabase(hasher, bytes);
+        int distance = targetHash.hammingDistanceFast(h);
+        double normalizedDistance = distance / (double) targetHash.getBitResolution();
+        if (distance <= maxDistance) {
+          String url = (String) map.get("url");
+          uniqueIds.add(new Result<String>(url, distance, normalizedDistance));
+        }
       }
     }
     return uniqueIds;

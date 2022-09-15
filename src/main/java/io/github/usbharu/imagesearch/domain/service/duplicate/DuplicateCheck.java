@@ -20,10 +20,14 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DuplicateCheck {
+
+  Logger logger = LoggerFactory.getLogger(DuplicateCheck.class);
 
   final HashDao hashDao;
 
@@ -59,7 +63,7 @@ public class DuplicateCheck {
       databaseImageMatcher.addImage(String.valueOf(image.getId()),
           new File(imageFileNameUtil.getFullPath(image.getPath())));
     } catch (IOException | SQLException e) {
-      e.printStackTrace();
+      logger.warn("Failed add image. Image: "+image,e);
     }
   }
 

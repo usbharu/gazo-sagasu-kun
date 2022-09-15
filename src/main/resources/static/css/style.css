@@ -24,13 +24,14 @@ body {
   color: whitesmoke;
 }
 
-.images p{
+.images p {
   margin: 0;
 }
 
 .tag p {
   margin: 0;
 }
+
 @media (prefers-color-scheme: dark) {
   body {
     background: #1f1f1f;
@@ -89,6 +90,15 @@ form * {
   }
 }
 
-footer{
+footer {
   text-align: center;
+}
+
+.paging {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.paging a{
+  margin: 2px;
 }

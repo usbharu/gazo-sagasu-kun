@@ -60,8 +60,7 @@ public class GroupDao {
   public int insertOne(String name) {
     require().nonNullAndNonBlank(name,"Name is Null or blank");
     return jdbcTemplate.update(
-        "INSERT INTO groupId (name) SELECT ? WHERE NOT EXISTS(SELECT 1 FROM groupId WHERE name = ?)",
-        name, name);
+        "INSERT OR IGNORE INTO groupId(name) VALUES (?)",name);
   }
 
   public Group insertOneWithReturnGroup(String name) {

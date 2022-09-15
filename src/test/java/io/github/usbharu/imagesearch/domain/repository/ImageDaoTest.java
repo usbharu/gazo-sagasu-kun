@@ -73,7 +73,7 @@ class ImageDaoTest {
   }
 
   @Test
-  @DatabaseSetup(value = "/imageDb/")
+  @DatabaseSetup(value = "/imageDB/")
   void findByUrl_findByIllegalUrl_returnNull() {
     assertNull(imageDao.findByUrl("xyk6i0g"));
   }

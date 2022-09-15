@@ -1,6 +1,9 @@
 package io.github.usbharu.imagesearch.controller;
 
+import static io.github.usbharu.imagesearch.domain.validation.Validation.require;
+
 import io.github.usbharu.imagesearch.domain.model.Image;
+import io.github.usbharu.imagesearch.domain.model.custom.Images;
 import io.github.usbharu.imagesearch.domain.service.GroupService;
 import io.github.usbharu.imagesearch.domain.service.ImageSearch;
 import io.github.usbharu.imagesearch.domain.service.ImageService;
@@ -85,6 +88,8 @@ public class IndexController {
       @ModelAttribute("sort") String sort,
       @ModelAttribute("order") String order,
       @ModelAttribute("duplicate") String duplicate,
+      @ModelAttribute("limit")int limit,
+      @ModelAttribute("page")int page,
       Model model) {
     if (duplicate != null && !duplicate.isBlank()) {
       return "redirect:/image/" + duplicate;
@@ -94,13 +99,15 @@ public class IndexController {
       group = "";
     }
 
-    List<Image> images = imageSearch.search3(tags.split("[; ,]"), group, sort, order);
+
+    Images images = imageSearch.search3(tags.split("[; ,]"), group, sort, order,limit,page);
     model.addAttribute("tagCount", tagService.tagOrderOfMostUsedLimit(20));
     model.addAttribute("message", tags);
     model.addAttribute("images", images);
     model.addAttribute("httpUrl", httpFolder);
     model.addAttribute("groups", groupService.getGroupsAndAll());
     model.addAttribute("version", buildProperties.getVersion());
+    model.addAttribute("count",images.getCount());
     return "search";
   }
 

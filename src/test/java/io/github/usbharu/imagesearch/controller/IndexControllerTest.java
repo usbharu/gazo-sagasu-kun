@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.Tag;
+import io.github.usbharu.imagesearch.domain.model.custom.Images;
 import io.github.usbharu.imagesearch.domain.model.custom.TagCount;
 import io.github.usbharu.imagesearch.domain.service.GroupService;
 import io.github.usbharu.imagesearch.domain.service.ImageSearch;
@@ -76,9 +77,12 @@ class IndexControllerTest {
   @Test
   void search_getWithTags_returnImages() throws Exception {
 
-    when(imageSearch.search3(any(String[].class),any(),any(),any())).thenReturn(
+    Images images = new Images(3);
+    List<Image> es =
         List.of(new Image("0.jpg", "testData/1/0.jpg"), new Image("1.jpg", "testData/1/1.jpg"),
-            new Image("2.jpg", "testData/1/2.jpg")));
+            new Image("2.jpg", "testData/1/2.jpg"));
+    images.addAll(es);
+    when(imageSearch.search3(any(String[].class),any(),any(),any(),500,0)).thenReturn(images);
 
     when(tagService.tagOrderOfMostUsedLimit(anyInt())).thenReturn(List.of(
         new TagCount(37, new Tag(10, "tag8")),

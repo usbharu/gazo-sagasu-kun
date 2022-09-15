@@ -20,6 +20,9 @@ import org.springframework.stereotype.Repository;
 
 /**
  * データベースにまとめてインサートするDAO
+ *
+ * @author usbharu
+ * @since 0.0.3
  */
 @Repository
 public class BulkDao {
@@ -138,6 +141,9 @@ public class BulkDao {
     jdbcTemplate.update(imageTagSql.toString());
   }
 
+  /**
+   * ImageHashテーブル以外のテーブルのデータを削除します。
+   */
   public void delete() {
     logger.info("delete all");
     synchronized (jdbcTemplate) {

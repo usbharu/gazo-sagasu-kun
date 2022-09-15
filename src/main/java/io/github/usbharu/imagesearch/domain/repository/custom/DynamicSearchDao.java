@@ -17,18 +17,32 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+/**
+ * 様々な情報から画像を検索するためのDao
+ *
+ * @author usbharu
+ * @since 0.0.3
+ */
 @Repository
 public class DynamicSearchDao {
 
   private final JdbcTemplate jdbcTemplate;
-
   Logger logger = LoggerFactory.getLogger(DynamicSearch.class);
+
   @Autowired
   public DynamicSearchDao(JdbcTemplate jdbcTemplate) {
     Objects.requireNonNull(jdbcTemplate, "JdbcTemplate is Null");
     this.jdbcTemplate = jdbcTemplate;
   }
 
+  /**
+   * {@link DynamicSearch}をもとにSQLを発行し、クエリを実行します。
+   * 画像データベースから検索をしますが、その他の情報を参照することもあります。
+   *
+   * @param dynamicSearch 実行する検索の内容
+   * @return 検索結果 {@code null} になることはない
+   */
+// TODO: 2022/09/15 分割するべき
   public List<Image> search(DynamicSearch dynamicSearch) {
     dynamicSearch = Objects.requireNonNullElse(dynamicSearch, new DynamicSearch());
     StringBuilder sb = new StringBuilder();
@@ -89,6 +103,12 @@ public class DynamicSearchDao {
     return images;
   }
 
+  /**
+   * 検索に使用されるデータをまとめるクラス
+   *
+   * @since 0.0.3
+   * @author usbharu
+   */
   public static class DynamicSearch {
 
     private final List<String> tags;
@@ -98,6 +118,15 @@ public class DynamicSearchDao {
 
     private final int id;
 
+    /**
+     * 検索に使用されるデータを初期化します。 専用のBuilder{@link DynamicSearchBuilder}を使ってください。
+     *
+     * @param tags      検索するタグのリスト
+     * @param group     検索するグループ
+     * @param order     並べ替え
+     * @param orderType 並べ替えのタイプ
+     * @param id        画像のid
+     */
     public DynamicSearch(List<String> tags, String group, String order, String orderType, int id) {
       Objects.requireNonNull(tags, "Tags is Null");
       Objects.requireNonNull(group, "Group is Null");
@@ -110,6 +139,9 @@ public class DynamicSearchDao {
       this.id = id;
     }
 
+    /**
+     * すべて初期値で初期化します。 専用のBuilder {@link DynamicSearchBuilder}を使ってください
+     */
     public DynamicSearch() {
       this.tags = new ArrayList<>();
       this.group = "";

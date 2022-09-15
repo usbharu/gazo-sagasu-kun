@@ -15,13 +15,62 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * PixivBatchDownloader用のメタデータパーサ.<br>
+ *
+ * <a href="https://github.com/xuejianxianzun/PixivBatchDownloader">https://github.com/xuejianxianzun/PixivBatchDownloader</a> でダウンロードされる以下のような形式のメタデータをパースします。
+ *
+ * <pre>
+ * {@code
+ *
+ * Id
+ * 123456
+ *
+ * Title
+ * This is test.
+ *
+ * User
+ * test-User
+ *
+ * UserId
+ * 54321
+ *
+ * URL
+ * https://www.pixiv.net/i/1
+ *
+ * Tags
+ * #test
+ * #test1
+ * #test2
+ * #pixiv
+ * #test1000users入り
+ *
+ * Date
+ * 2020-11-07T13:40:15+00:00
+ *
+ * Description
+ *
+ * This is test.This is test.
+ * }
+ * </pre>
+ *
+ * @since 0.0.4
+ * @author usbharu
+ */
 public class PixivMetadataParser {
 
   private final static Logger logger = LoggerFactory.getLogger(PixivMetadataParser.class);
+
+  /**
+   * メタデータをパースします。
+   *
+   * @param metaFile パースするメタデータのファイル
+   * @return パースされたメタデータのリスト. Nullが帰ることはなく、空のリストが帰ります。
+   */
   public static List<ImageMetadata> parse(File metaFile) {
     Objects.requireNonNull(metaFile,"File is Null");
     if (!metaFile.exists()) {
-      throw new UncheckedIOException("metaFile is not Found",new FileNotFoundException());
+      throw new UncheckedIOException("MetaFile is not Found",new FileNotFoundException());
     }
 
     if (!metaFile.isFile()) {

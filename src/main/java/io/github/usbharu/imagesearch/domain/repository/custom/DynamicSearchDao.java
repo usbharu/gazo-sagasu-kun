@@ -110,7 +110,6 @@ public class DynamicSearchDao {
         +  groupSql
         +  idSql
         +  tagsSql2;
-    System.out.println("countSql = " + countSql);
     Images images = new Images((Integer) jdbcTemplate.queryForMap(countSql).get("count"));
     try {
 

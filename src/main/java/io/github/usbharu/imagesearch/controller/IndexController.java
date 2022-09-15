@@ -107,10 +107,7 @@ public class IndexController {
       page = Integer.parseInt(pageStr);
     }
 
-
     Images images = imageSearch.search3(tags.split("[; ,]"), group, sort, order, limit, page);
-    int pageCount = ((int) Math.ceil(images.getCount() / limit));
-    logger.debug("Page count: {}",pageCount);
     model.addAttribute("tagCount", tagService.tagOrderOfMostUsedLimit(20));
     model.addAttribute("message", tags);
     model.addAttribute("images", images);
@@ -119,7 +116,7 @@ public class IndexController {
     model.addAttribute("version", buildProperties.getVersion());
     model.addAttribute("limit", limit);
     model.addAttribute("page", page);
-    model.addAttribute("pageCount", pageCount );
+    model.addAttribute("pageCount", ((int) Math.ceil(images.getCount() / limit)) );
     model.addAttribute("count", images.getCount());
     return "search";
   }

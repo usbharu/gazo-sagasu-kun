@@ -22,8 +22,8 @@ public class DynamicSearchBuilder {
 
   private int id = -1;
 
-  private int limit;
-  private int page;
+  private int limit = 100;
+  private int page = 0;
 
   /**
    * タグをセットする
@@ -82,8 +82,8 @@ public class DynamicSearchBuilder {
     return this;
   }
 
-  public DynamicSearchBuilder setOrder(String order){
-    Objects.requireNonNull(order,"Order is Null");
+  public DynamicSearchBuilder setOrder(String order) {
+    Objects.requireNonNull(order, "Order is Null");
     this.order = ImageTagDaoOrder.fromString(order).getSql();
     return this;
   }
@@ -101,7 +101,7 @@ public class DynamicSearchBuilder {
   }
 
   public DynamicSearchBuilder setOrderType(String orderType) {
-    Objects.requireNonNull(orderType,"OrderType is Null.");
+    Objects.requireNonNull(orderType, "OrderType is Null.");
     this.orderType = ImageTagDaoOrderType.fromString(orderType).getSql();
     return this;
   }
@@ -118,13 +118,13 @@ public class DynamicSearchBuilder {
   }
 
   public DynamicSearchBuilder setLimit(int limit) {
-    require().positive(limit, "Limit is negative or zero");
+    require().positiveElse(limit, 100);
     this.limit = limit;
     return this;
   }
 
   public DynamicSearchBuilder setPage(int page) {
-    require().positiveOrZero(page,"Page is negative");
+    require().positiveOrZeroElse(page, 0);
     this.page = page;
     return this;
   }
@@ -135,6 +135,6 @@ public class DynamicSearchBuilder {
    * @return ビルドされた {@code DynamicSearch}
    */
   public DynamicSearch createDynamicSearch() {
-    return new DynamicSearch(tags, group, order, orderType, id, limit,page);
+    return new DynamicSearch(tags, group, order, orderType, id, limit, page);
   }
 }

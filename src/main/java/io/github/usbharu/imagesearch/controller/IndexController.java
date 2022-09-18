@@ -99,12 +99,19 @@ public class IndexController {
 
     int limit = 100;
     if (limitStr != null && !limitStr.isBlank()) {
-      limit = Integer.parseInt(limitStr);
+      try {
+        limit = Integer.parseInt(limitStr);
+      }catch (NumberFormatException e){
+        logger.warn("Illegal Page Number",e);
+      }
     }
     int page = 0;
     if (pageStr != null && !pageStr.isBlank()) {
-
-      page = Integer.parseInt(pageStr);
+      try {
+        page = Integer.parseInt(pageStr);
+      } catch (NumberFormatException e) {
+        logger.warn("Illegal Page Number",e);
+      }
     }
 
     Images images = imageSearch.search3(tags.split("[; ,]"), group, sort, order, limit, page);
@@ -116,7 +123,7 @@ public class IndexController {
     model.addAttribute("version", buildProperties.getVersion());
     model.addAttribute("limit", limit);
     model.addAttribute("page", page);
-    model.addAttribute("pageCount", ((int) Math.ceil(images.getCount() / limit)) );
+    model.addAttribute("pageCount", ((int) Math.ceil(images.getCount() / limit)));
     model.addAttribute("count", images.getCount());
     return "search";
   }

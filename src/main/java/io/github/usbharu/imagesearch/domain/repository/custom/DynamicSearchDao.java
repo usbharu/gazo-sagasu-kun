@@ -112,7 +112,7 @@ public class DynamicSearchDao {
         +  tagsSql2;
     Images images = new Images((Integer) jdbcTemplate.queryForMap(countSql).get("count"));
     try {
-
+      System.out.println(sql);
       List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql, dynamicSearch.limit,
           dynamicSearch.page * dynamicSearch.limit);
 

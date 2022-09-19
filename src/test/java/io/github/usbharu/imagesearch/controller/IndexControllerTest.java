@@ -5,7 +5,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -23,16 +22,13 @@ import io.github.usbharu.imagesearch.domain.service.ImageSearch;
 import io.github.usbharu.imagesearch.domain.service.ImageService;
 import io.github.usbharu.imagesearch.domain.service.TagService;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 
@@ -107,6 +103,38 @@ class IndexControllerTest {
         .andDo(print())
         .andExpect(model().attribute("images", hasItem(hasProperty("name", is("0.jpg")))))
         .andExpect(view().name("search")).andExpect(status().isOk());
+  }
+
+  @Test
+  void search_lotsOfResults_returnPagedImages() throws Exception {
+    Images images = new Images(102);
+
+    for (int i = 0; i < 102; i++) {
+      images.add(new Image("image"+i+".jpg","image"+i+".jpg"));
+    }
+    when(imageSearch.search3(any(String[].class),any(),any(),any(),anyInt(),anyInt())).thenReturn(images);
+
+    when(tagService.tagOrderOfMostUsedLimit(anyInt())).thenReturn(List.of(
+        new TagCount(37, new Tag(10, "tag8")),
+        new TagCount(33, new Tag(1, "tag1")),
+        new TagCount(28, new Tag(5, "tag2")),
+        new TagCount(23, new Tag(11, "tag7")),
+        new TagCount(22, new Tag(6, "tag11")),
+        new TagCount(22, new Tag(4, "tag4")),
+        new TagCount(19, new Tag(9, "tag9")),
+        new TagCount(19, new Tag(8, "tag3")),
+        new TagCount(18, new Tag(2, "tag6")),
+        new TagCount(17, new Tag(3, "tag5")),
+        new TagCount(12, new Tag(7, "tag10"))
+    ));
+
+
+    when(groupService.getGroupsAndAll()).thenReturn(List.of(new Group(1, "a"),
+        new Group(2, "b"),
+        new Group(3, "c"),
+        new Group("all")));
+
+    this.mockMvc.perform(get("/search").param("tags","tag1").param("limit","10")).andDo(print()).andExpect(status().isOk()).andExpect(model().attribute("pageCount",10));
   }
 
   @Test

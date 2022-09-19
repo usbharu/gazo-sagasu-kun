@@ -82,7 +82,7 @@ class IndexControllerTest {
         List.of(new Image("0.jpg", "testData/1/0.jpg"), new Image("1.jpg", "testData/1/1.jpg"),
             new Image("2.jpg", "testData/1/2.jpg"));
     images.addAll(es);
-    when(imageSearch.search3(any(String[].class),any(),any(),any(),500,0)).thenReturn(images);
+    when(imageSearch.search3(any(String[].class),any(),any(),any(),anyInt(),anyInt())).thenReturn(images);
 
     when(tagService.tagOrderOfMostUsedLimit(anyInt())).thenReturn(List.of(
         new TagCount(37, new Tag(10, "tag8")),

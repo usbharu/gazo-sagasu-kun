@@ -2,6 +2,7 @@ package io.github.usbharu.imagesearch.domain.service;
 
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.Tag;
+import io.github.usbharu.imagesearch.domain.model.custom.Images;
 import io.github.usbharu.imagesearch.domain.repository.TagDao;
 import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchBuilder;
 import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchDao;
@@ -46,5 +47,11 @@ public class ImageSearch {
       return new Tag("ERROR");
     }
     return tag;
+  }
+
+  public Images search3(String[] split, String group, String sort, String order, int limit,int page) {
+    return dynamicSearchDao.search(
+        new DynamicSearchBuilder().setTags(split).setGroup(group).setOrder(order).setOrderType(sort).setPage(page)
+            .setLimit(limit).createDynamicSearch());
   }
 }

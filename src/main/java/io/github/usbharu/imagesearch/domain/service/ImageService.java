@@ -2,6 +2,7 @@ package io.github.usbharu.imagesearch.domain.service;
 
 import io.github.usbharu.imagesearch.domain.model.DuplicateImages;
 import io.github.usbharu.imagesearch.domain.model.Image;
+import io.github.usbharu.imagesearch.domain.model.custom.Images;
 import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchBuilder;
 import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchDao;
 import io.github.usbharu.imagesearch.domain.service.duplicate.DuplicateCheck;
@@ -30,7 +31,7 @@ public class ImageService {
   }
 
   public Image findById(int id) {
-    List<Image> search =
+    Images search =
         dynamicSearchDao.search(new DynamicSearchBuilder().setId(id).createDynamicSearch());
 
     if (search.isEmpty()) {

@@ -13,6 +13,13 @@ public interface IntegerValidation {
     throw new IllegalArgumentException(message);
   }
 
+  default int positiveElse(int number, int actual) {
+    if (number > 0) {
+      return number;
+    }
+    return positive(actual);
+  }
+
   default int positiveOrZero(int number) {
     return positiveOrZero(number, "");
   }
@@ -22,6 +29,13 @@ public interface IntegerValidation {
       return number;
     }
     throw new IllegalArgumentException(message);
+  }
+
+  default int positiveOrZeroElse(int number, int actual) {
+    if (number >= 0) {
+      return number;
+    }
+    return positiveOrZero(actual);
   }
 
   default int negative(int number, String message) {

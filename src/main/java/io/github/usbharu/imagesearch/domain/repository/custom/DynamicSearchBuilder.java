@@ -1,5 +1,7 @@
 package io.github.usbharu.imagesearch.domain.repository.custom;
 
+import static io.github.usbharu.imagesearch.domain.validation.Validation.require;
+
 import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchDao.DynamicSearch;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +10,8 @@ import java.util.Objects;
 /**
  * 様々なデータをもとに検索する{@link DynamicSearchDao}に使用する{@link DynamicSearch}のBuilderです。
  *
- * @since 0.0.3
  * @author usbharu
+ * @since 0.0.3
  */
 public class DynamicSearchBuilder {
 
@@ -19,6 +21,9 @@ public class DynamicSearchBuilder {
   private String orderType = "image_id";
 
   private int id = -1;
+
+  private int limit = 100;
+  private int page = 0;
 
   /**
    * タグをセットする
@@ -38,10 +43,23 @@ public class DynamicSearchBuilder {
     return this;
   }
 
+  public DynamicSearchBuilder setTags(String[] tags) {
+    Objects.requireNonNull(tags, "Tags is Null");
+    List<String> list = new ArrayList<>();
+    for (String tag : tags) {
+      if (!tag.isBlank()) {
+        list.add(tag);
+      }
+    }
+    this.tags = list;
+    return this;
+  }
+
   /**
    * グループをセットする
    *
-   * @param group セットするグループ 文字列がblankもしくはallという文字列が代入されていた場合無視されます。つまりこれは {@code group.isBlank() || group.equals("all")}が {@code true}の場合に無視されるということです。
+   * @param group セットするグループ 文字列がblankもしくはallという文字列が代入されていた場合無視されます。つまりこれは
+   *              {@code group.isBlank() || group.equals("all")}が {@code true}の場合に無視されるということです。
    * @return グループがセットされた {@code DynamicSearchBuilder}
    */
   public DynamicSearchBuilder setGroup(String group) {
@@ -59,8 +77,14 @@ public class DynamicSearchBuilder {
    * @return ソート方向がセットされた {@code DynamicSearchBuilder}
    */
   public DynamicSearchBuilder setOrder(ImageTagDaoOrder order) {
-    Objects.requireNonNull(order,"ImageTagDaoOrder is Null");
+    Objects.requireNonNull(order, "ImageTagDaoOrder is Null");
     this.order = order.getSql();
+    return this;
+  }
+
+  public DynamicSearchBuilder setOrder(String order) {
+    Objects.requireNonNull(order, "Order is Null");
+    this.order = ImageTagDaoOrder.fromString(order).getSql();
     return this;
   }
 
@@ -71,8 +95,14 @@ public class DynamicSearchBuilder {
    * @return ソート方式がセットされた {@code DynamicSearchBuilder}
    */
   public DynamicSearchBuilder setOrderType(ImageTagDaoOrderType imageTagDaoOrderType) {
-    Objects.requireNonNull(imageTagDaoOrderType,"ImageTagDaoOrderType is Null");
+    Objects.requireNonNull(imageTagDaoOrderType, "ImageTagDaoOrderType is Null");
     orderType = imageTagDaoOrderType.getSql();
+    return this;
+  }
+
+  public DynamicSearchBuilder setOrderType(String orderType) {
+    Objects.requireNonNull(orderType, "OrderType is Null.");
+    this.orderType = ImageTagDaoOrderType.fromString(orderType).getSql();
     return this;
   }
 
@@ -87,12 +117,24 @@ public class DynamicSearchBuilder {
     return this;
   }
 
+  public DynamicSearchBuilder setLimit(int limit) {
+    require().positiveElse(limit, 100);
+    this.limit = limit;
+    return this;
+  }
+
+  public DynamicSearchBuilder setPage(int page) {
+    require().positiveOrZeroElse(page, 0);
+    this.page = page;
+    return this;
+  }
+
   /**
    * Builderをビルドします。
    *
    * @return ビルドされた {@code DynamicSearch}
    */
   public DynamicSearch createDynamicSearch() {
-    return new DynamicSearch(tags, group, order, orderType, id);
+    return new DynamicSearch(tags, group, order, orderType, id, limit, page);
   }
 }

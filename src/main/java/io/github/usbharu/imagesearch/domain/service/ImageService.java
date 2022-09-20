@@ -7,7 +7,7 @@ import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchBuild
 import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchDao;
 import io.github.usbharu.imagesearch.domain.service.duplicate.DuplicateCheck;
 import io.github.usbharu.imagesearch.domain.service.pixiv.PixivMetadataService;
-import java.util.List;
+import io.github.usbharu.imagesearch.domain.service.twitter.TwitterMetadataService;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +23,19 @@ public class ImageService {
   final DuplicateCheck duplicateCheck;
 
   final PixivMetadataService pixivMetadataService;
+  final
+  TwitterMetadataService twitterMetadataService;
 
   @Autowired
   public ImageService(DynamicSearchDao dynamicSearchDao, DuplicateCheck duplicateCheck,
-      PixivMetadataService pixivMetadataService) {
+      PixivMetadataService pixivMetadataService, TwitterMetadataService twitterMetadataService) {
     Objects.requireNonNull(dynamicSearchDao, "DynamicSearchDao is Null");
     Objects.requireNonNull(duplicateCheck, "DuplicateCheck is Null");
 
     this.dynamicSearchDao = dynamicSearchDao;
     this.duplicateCheck = duplicateCheck;
     this.pixivMetadataService = pixivMetadataService;
+    this.twitterMetadataService = twitterMetadataService;
   }
 
   public Image findById(int id) {
@@ -47,6 +50,7 @@ public class ImageService {
     DuplicateImages metadata = new DuplicateImages();
     metadata.addAll(duplicateCheck.check(image));
     image.addMetadata(pixivMetadataService.getPixivLink(image));
+    image.addMetadata(twitterMetadataService.getTwitterUrl(image));
     image.addMetadata(metadata);
     logger.trace("View Image :{}", image);
     return image;

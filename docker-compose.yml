@@ -1,0 +1,9 @@
+version: "3"
+services:
+  imagesearch:
+    build: .
+    image: imagesearch
+    ports:
+      - "8080:80"
+    volumes:
+      - ./data:/data

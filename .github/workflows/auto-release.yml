@@ -28,10 +28,19 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         arguments: bootJar
+    - name: Check Tag Push
+      run: echo "tag=${REF##*/v}" >> $GITHUB_ENV
+    
+    - name: Check Tag workflow dispatch
+      if: github.event_name == 'workflow_dispatch'
+      run: echo "tag=test" >> $GITHUB_ENV
+    
     - name: Create release
       uses: softprops/action-gh-release@v0.1.4
       env:
         token: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
+        tag_name: $${{ env.tag }}
         draft: false
         files: build/libs/*

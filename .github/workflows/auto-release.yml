@@ -41,6 +41,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
+        tag_name: ${{ env.tag }}
         name: ${{ env.tag }}
         draft: false
         files: build/libs/*

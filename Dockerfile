@@ -18,6 +18,4 @@ ENV DATASOURCE=jdbc:sqlite:/data/imagetag.db
 
 WORKDIR /data
 
-RUN ls /bin/imagesearch -la
-
 CMD ["java","-server" ,"-jar","/bin/imagesearch/ImageSearch.jar","--spring.config.location=classpath:/application.properties,file:/data/application.properties"]

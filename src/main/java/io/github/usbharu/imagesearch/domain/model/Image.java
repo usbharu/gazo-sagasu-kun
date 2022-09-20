@@ -48,6 +48,9 @@ public class Image {
   }
 
   public void addMetadata(ImageMetadata metadata) {
+    if (metadata == null) {
+      return;
+    }
     for (ImageMetadata metadatum : getMetadata()) {
       if (metadatum.getType().equals(metadata.getType())) {
         boolean b = metadatum.addMetadata(metadata);

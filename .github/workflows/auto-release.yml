@@ -36,7 +36,7 @@ jobs:
       run: echo "tag=test" >> $GITHUB_ENV
     
     - name: Create release
-      uses: softprops/action-gh-release@v0.1.4
+      uses: softprops/action-gh-release@v0.1.14
       env:
         token: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

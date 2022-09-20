@@ -88,9 +88,13 @@ public class IndexController {
       @ModelAttribute("duplicate") String duplicate,
       @ModelAttribute("limit") String limitStr,
       @ModelAttribute("page") String pageStr,
+      @ModelAttribute("link") String link,
       Model model) {
     if (duplicate != null && !duplicate.isBlank()) {
       return "redirect:/image/" + duplicate;
+    }
+    if(link!=null&&!link.isBlank()){
+      return "redirect:"+link;
     }
 
     if (!groupService.validation(group)) {
@@ -154,5 +158,15 @@ public class IndexController {
       return null;
     }
     return new HttpEntity<>(byteImg, httpHeaders);
+  }
+
+  @GetMapping("/redirect")
+  public String redirectTo(@ModelAttribute("url") String url){
+    return "redirect:" + url;
+  }
+
+  @GetMapping("/link")
+  public String linkTo(@ModelAttribute("url")String url){
+    return "redirect:"+url;
   }
 }

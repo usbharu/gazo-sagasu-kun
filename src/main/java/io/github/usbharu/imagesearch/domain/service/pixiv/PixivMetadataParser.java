@@ -1,6 +1,7 @@
 package io.github.usbharu.imagesearch.domain.service.pixiv;
 
 import io.github.usbharu.imagesearch.domain.model.ImageMetadata;
+import io.github.usbharu.imagesearch.domain.model.LinkTo;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
 import java.io.BufferedReader;
@@ -97,9 +98,16 @@ public class PixivMetadataParser {
     if (text.startsWith("Tags")) {
       logger.trace("Find Tags");
       return tags(bufferedReader);
+    }else if (text.startsWith("URL")){
+      logger.trace("Find URL");
+      return url(bufferedReader);
     }
 
     return null;
+  }
+
+  private static LinkTo url(BufferedReader bufferedReader) throws IOException {
+    return new LinkTo(bufferedReader.readLine());
   }
 
   private static Tags tags(BufferedReader bufferedReader) throws IOException {

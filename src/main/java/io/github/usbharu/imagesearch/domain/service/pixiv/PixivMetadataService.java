@@ -19,17 +19,9 @@ public class PixivMetadataService {
   }
 
   public LinkTo getPixivLink(Image image) {
-    List<ImageMetadata> pixivImageMetadata = getPixivImageMetadata(new File(image.getPath()));
-    for (ImageMetadata pixivImageMetadatum : pixivImageMetadata) {
-      System.out.println("pixivImageMetadatum = " + pixivImageMetadatum);
-      if (pixivImageMetadatum instanceof LinkTo) {
-        LinkTo pixivImageMetadatum1 = (LinkTo) pixivImageMetadatum;
-        System.out.println(
-            "pixivImageMetadatum1.getValues() = " + pixivImageMetadatum1.getValues());
-        return pixivImageMetadatum1;
-      }
+    if (imageFileNameUtil.isPixivTypeFileName(image.getName())) {
+      return new LinkTo(imageFileNameUtil.getPixivUrl(image.getName()));
     }
-    System.out.println("RETURN NULL");
     return null;
   }
 

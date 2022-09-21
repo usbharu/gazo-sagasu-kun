@@ -118,4 +118,14 @@ public class ImageTagUtil {
     return (Tags) metadata;
   }
 
+  public static Tags getMatchedTags(Tags tags,String regex){
+    Tags result = new Tags();
+    for (Tag tag : tags) {
+      if (tag.getName().matches(regex)) {
+        result.add(tag);
+      }
+    }
+    return result;
+  }
+
 }

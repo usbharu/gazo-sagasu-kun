@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.12.RELEASE'
     id 'java'
     id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'jacoco'
 }
 
 group = 'io.github.usbharu'
@@ -39,7 +40,10 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
+
+
 
 springBoot {
     buildInfo()

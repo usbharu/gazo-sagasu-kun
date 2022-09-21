@@ -134,6 +134,7 @@ public class IndexController {
     model.addAttribute("page", page);
     model.addAttribute("pageCount", ((int) Math.ceil(images.getCount() / limit)));
     model.addAttribute("count", images.getCount());
+    model.addAttribute("merge",merge);
     return "search";
   }
 

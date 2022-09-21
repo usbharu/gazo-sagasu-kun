@@ -1,5 +1,6 @@
 package io.github.usbharu.imagesearch.domain.service;
 
+import io.github.usbharu.imagesearch.domain.exceptions.TagDatabaseEmptyException;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.custom.Images;
@@ -42,16 +43,21 @@ public class ImageSearch {
 
   // TODO: 2022/09/08 randomTagの位置がおかしい
   public Tag randomTag() {
-    Tag tag = tagDao.selectRandomOne();
-    if (tag == null) {
+
+    try {
+      return tagDao.selectRandomOne();
+    } catch (TagDatabaseEmptyException e) {
+      logger.debug("Tag Data Base Empty", e);
       return new Tag("ERROR");
     }
-    return tag;
+
+
   }
 
-  public Images search3(String[] split, String group, String sort, String order, int limit,int page) {
+  public Images search3(String[] split, String group, String sort, String order, int limit,
+      int page) {
     return dynamicSearchDao.search(
-        new DynamicSearchBuilder().setTags(split).setGroup(group).setOrder(order).setOrderType(sort).setPage(page)
-            .setLimit(limit).createDynamicSearch());
+        new DynamicSearchBuilder().setTags(split).setGroup(group).setOrder(order).setOrderType(sort)
+            .setPage(page).setLimit(limit).createDynamicSearch());
   }
 }

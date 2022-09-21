@@ -2,6 +2,7 @@ package io.github.usbharu.imagesearch.domain.repository;
 
 import static io.github.usbharu.imagesearch.domain.validation.Validation.require;
 
+import io.github.usbharu.imagesearch.domain.exceptions.GroupDatabaseEmptyException;
 import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.validation.StringValidation;
 import java.util.ArrayList;
@@ -66,9 +67,15 @@ public class GroupDao {
   public Group insertOneWithReturnGroup(String name) {
     require().nonNullAndNonBlank(name,"Name is null or blank");
     insertOne(name);
-    Map<String, Object> maps =
-        jdbcTemplate.queryForMap("SELECT id,name FROM groupId WHERE name = ?;", name);
-    return parseMap(maps);
+    try {
+
+      Map<String, Object> maps =
+          jdbcTemplate.queryForMap("SELECT id,name FROM groupId WHERE name = ?;", name);
+      return parseMap(maps);
+    }catch (EmptyResultDataAccessException e){
+      throw new GroupDatabaseEmptyException("Group Database is Empty",e);
+    }
+
   }
 
   public int deleteOne(int id) {

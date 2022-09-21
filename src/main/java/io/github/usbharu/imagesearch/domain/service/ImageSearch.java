@@ -8,6 +8,7 @@ import io.github.usbharu.imagesearch.domain.repository.TagDao;
 import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchBuilder;
 import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchDao;
 import io.github.usbharu.imagesearch.domain.service.duplicate.DuplicateCheck;
+import io.github.usbharu.imagesearch.util.ImageFileNameUtil;
 import io.github.usbharu.imagesearch.util.ImageTagUtil;
 import io.github.usbharu.imagesearch.util.ListUtils;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,14 +28,18 @@ public class ImageSearch {
 
   final DuplicateCheck duplicateCheck;
 
+  final
+  ImageFileNameUtil imageFileNameUtil;
+
   public ImageSearch(DynamicSearchDao dynamicSearchDao, TagDao tagDao,
-      DuplicateCheck duplicateCheck) {
+      DuplicateCheck duplicateCheck, ImageFileNameUtil imageFileNameUtil) {
     Objects.requireNonNull(dynamicSearchDao, "DynamicSearchDao is Null");
     Objects.requireNonNull(tagDao, "TagDao is Null");
     Objects.requireNonNull(duplicateCheck, "DuplicateCheck is Null");
     this.dynamicSearchDao = dynamicSearchDao;
     this.tagDao = tagDao;
     this.duplicateCheck = duplicateCheck;
+    this.imageFileNameUtil = imageFileNameUtil;
   }
 
   // TODO: 2022/09/08 randomTagの位置がおかしい
@@ -60,6 +66,9 @@ public class ImageSearch {
     Set<String> tagNames = new HashSet<>();
     Images result = new Images(images.getCount());
     for (Image image : images) {
+      if (!imageFileNameUtil.isPixivTypeFileName(image.getName())) {
+        result.add(image);
+      }
       Tags tags = ImageTagUtil.getTags(image);
       Tag tag = ListUtils.getOr(ImageTagUtil.getMatchedTags(tags, "--\\d+--"), 0, null);
       if (tag == null) {

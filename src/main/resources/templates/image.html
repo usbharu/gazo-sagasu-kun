@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title th:title="${image.name}"></title>
-  <lind rel="stylesheet" th:href="@{/css/style.css}" type="text/css"/>
+  <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css"/>
   <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet">
   <meta charset="UTF-8">
   <meta content="width=device-width" name="viewport">
@@ -18,10 +18,14 @@
   <img th:alt="${image.name}" th:src="${httpUrl}+${image.path}" width="100%">
 </a>
 <th:block th:each="metadata : ${image.metadata}">
-  <p th:text="${metadata.type}"></p>
-  <th:block th:each="value : ${metadata.values}">
-    <a th:href="'/search?'+${metadata.type}+'='+${value}" th:text="${value}"></a>
-  </th:block>
+  <p th:text="${metadata.type}" ></p>
+  <div class="metadata_type">
+    <th:block th:each="value : ${metadata.values}">
+      <div class="metadata">
+        <a th:href="'/search?'+${metadata.type}+'='+${value}" th:text="${value}"></a>
+      </div>
+    </th:block>
+  </div>
 </th:block>
 <footer>
   <p th:text="'App version is '+${version}"></p>

@@ -4,17 +4,17 @@ body {
   text-decoration: none;
 }
 
-.tags {
+.tags,.metadata_type {
   display: flex;
   flex-wrap: wrap;
 }
 
-.tag {
+.tag,.metadata {
   margin: 5px 3px;
   text-decoration: none;
 }
 
-.tag a {
+.tag a,.metadata a {
   display: inline-block;
   border-radius: 4px;
   font-weight: bold;
@@ -100,5 +100,12 @@ footer {
 }
 
 .paging a{
+  text-decoration: none;
+  color: dodgerblue;
+  text-align: center;
   margin: 2px;
+}
+
+.paging a:visited{
+  color: dodgerblue;
 }

@@ -15,7 +15,7 @@ public class ImageDataBaseScheduleTask {
 
   Logger logger = LoggerFactory.getLogger(ImageDataBaseScheduleTask.class);
 
-  @Scheduled(cron = "0 0 * * * *")
+  @Scheduled(cron = "${imagesearch.scan.cron:0 0 0 * * *}")
   public void scan() {
     logger.info("Start Scheduled Scan");
     imageScanner.startScan();

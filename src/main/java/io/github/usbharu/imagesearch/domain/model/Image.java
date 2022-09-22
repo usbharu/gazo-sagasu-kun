@@ -2,6 +2,8 @@ package io.github.usbharu.imagesearch.domain.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Image {
 
@@ -14,6 +16,7 @@ public class Image {
 
   private int group;
 
+  Logger logger = LoggerFactory.getLogger(Image.class);
 
   public Image(String name, String path) {
     this.name = name;
@@ -55,7 +58,7 @@ public class Image {
       if (metadatum.getType().equals(metadata.getType())) {
         boolean b = metadatum.addMetadata(metadata);
         if (!b){
-          System.out.println("Rejected add Metadata. :"+ this);
+          logger.debug("Rejected add metadata at {}",this);
         }
         return;
       }

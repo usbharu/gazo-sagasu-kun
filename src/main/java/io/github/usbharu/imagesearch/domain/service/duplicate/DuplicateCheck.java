@@ -51,8 +51,6 @@ public class DuplicateCheck {
   }
 
   public void addAllImage() {
-    System.out.println("imageDao.findAll() = " + imageDao.findAll());
-
     imageDao.findAll().forEach(this::addImage);
 
   }

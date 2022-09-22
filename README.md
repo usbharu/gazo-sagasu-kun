@@ -1,10 +1,32 @@
 # gazo-sagasu-kun
-A web application that searches for XPKeyword in the xmp metadata of JPEGs.
+画像を検索できるアプリ。
 
-## config
+JPG形式のタグ、PixivBathDownloaderのMetafileに対応しています。
 
-application.properties
+## 使い方
 
-``` imagesearch.imageFolder={The path of the directory two levels above the directory containing the JPEG images.} ```
+`java -jar ImageSearch-*.*.*.jar`
 
-``` imagesearch.httpImageFolder={URL that can be accessed from a browser or other device in the directory two levels above the directory containing the JPEG images.} ```
+## Docker
+
+```docker-compose
+version: "3"
+services:
+  imagesearch:
+    image: usbharu/imagesearch
+    ports:
+      - "8080:80"
+    volumes:
+      - path/to/images/folder:/data
+```
+
+## LICENSE
+
+APACHE LICENSE, VERSION 2.0
+
+## Library
+
+- [Spring Framework](https://spring.io/)
+- [Apache Commons Imaging](https://commons.apache.org/proper/commons-imaging/)
+- [SQLite JDBC](https://github.com/xerial/sqlite-jdbc)
+- [JImageHash](https://github.com/KilianB/JImageHash)

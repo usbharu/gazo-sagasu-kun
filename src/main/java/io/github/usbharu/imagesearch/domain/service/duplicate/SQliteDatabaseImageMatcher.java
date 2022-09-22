@@ -56,7 +56,6 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
 
   @Override
   public void serializeToDatabase(int id) throws SQLException {
-    System.out.println("serialize to database");
     PreparedStatement ps =
         conn.prepareStatement("INSERT OR REPLACE INTO ImageHasher (Id,SerializeData) VALUES(?,?)");
     PipedOutputStream pipeOut = new PipedOutputStream();

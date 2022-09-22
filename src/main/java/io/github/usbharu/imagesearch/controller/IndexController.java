@@ -63,21 +63,6 @@ public class IndexController {
     return "index";
   }
 
-//  @GetMapping("/searched")
-//  public String searched(@ModelAttribute("tags") String msg, @ModelAttribute("sort") String sort,
-//      @ModelAttribute("order") String order, Model model) {
-//
-//    System.out.println("msg = " + msg);
-//    log.trace("Access to Searched : " + msg);
-//    List<Image> list = new ArrayList<>(imageSearch.search2(msg.split("[; ,]"), sort, order));
-//    model.addAttribute("tagCount", tagService.tagOrderOfMostUsedLimit(20));
-//    model.addAttribute("message", msg);
-//    model.addAttribute("order", order);
-//    model.addAttribute("sort", sort);
-//    model.addAttribute("images", list);
-//    model.addAttribute("httpUrl", httpFolder);
-//    return "searched";
-//  }
 
   @SuppressWarnings("IntegerDivisionInFloatingPointContext")
   @GetMapping("/search")

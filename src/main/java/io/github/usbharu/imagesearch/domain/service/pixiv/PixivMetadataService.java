@@ -30,7 +30,6 @@ public class PixivMetadataService {
         + imageFileNameUtil.getPixivTypeFileBaseName(
         image.getName()) + "-meta.txt";
     File file = new File(imageFileNameUtil.getFullPath(pathname));
-    System.out.println("file = " + file);
     if (file.exists()) {
       return PixivMetadataParser.parse(file);
     }

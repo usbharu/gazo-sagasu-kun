@@ -100,5 +100,12 @@ footer {
 }
 
 .paging a{
+  text-decoration: none;
+  color: dodgerblue;
+  text-align: center;
   margin: 2px;
+}
+
+.paging a:visited{
+  color: dodgerblue;
 }

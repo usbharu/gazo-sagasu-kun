@@ -21,11 +21,19 @@
 
 
   <section class="main">
-    <div class="paging">
-      <th:block th:each="pageNumber : ${#numbers.sequence(0,pageCount)}">
-        <a th:href="${'search?tags=' + tags + '&order=' + order + '&sort=' + sort + '&group=' + group + '&page=' + pageNumber+ '&limit=' + limit+'&merge='+merge}">[[${pageNumber}]]</a>
+    <th:div th:if="${pageCount != 0}" class="paging">
+      <th:block th:if="${page != 0}"><a
+          th:href="${'search?tags=' + tags + '&order=' + order + '&sort=' + sort + '&group=' + group + '&page=' + (page - 1) + '&limit=' + limit+'&merge='+merge}">←</a>
       </th:block>
-    </div>
+      <th:block th:each="pageNumber : ${#numbers.sequence(0,pageCount)}">
+        <a th:if="${pageNumber != page}"
+           th:href="${'search?tags=' + tags + '&order=' + order + '&sort=' + sort + '&group=' + group + '&page=' + pageNumber+ '&limit=' + limit+'&merge='+merge}">[[${pageNumber}]]</a>
+        <th:span th:if="${pageNumber == page}">[[${pageNumber}]]</th:span>
+      </th:block>
+      <th:block th:if="${page != pageCount}"><a
+          th:href="${'search?tags=' + tags + '&order=' + order + '&sort=' + sort + '&group=' + group + '&page=' + (page + 1) + '&limit=' + limit+'&merge='+merge}">→</a>
+      </th:block>
+    </th:div>
     <th:block th:each="image : ${images}">
       <div class="images">
         <hr>
@@ -35,11 +43,19 @@
         <p th:text="${image.name}"></p>
       </div>
     </th:block>
-    <div class="paging">
-      <th:block th:each="pageNumber : ${#numbers.sequence(0, pageCount)}">
-        <a th:href="${'search?tags=' + tags + '&order=' + order + '&sort=' + sort + '&group=' + group + '&page=' + pageNumber+ '&limit=' + limit+'&merge='+merge}">[[${pageNumber}]]</a>
+    <th:div th:if="${pageCount != 0}" class="paging">
+      <th:block th:if="${page != 0}"><a
+          th:href="${'search?tags=' + tags + '&order=' + order + '&sort=' + sort + '&group=' + group + '&page=' + (page - 1) + '&limit=' + limit+'&merge='+merge}">←</a>
       </th:block>
-    </div>
+      <th:block th:each="pageNumber : ${#numbers.sequence(0,pageCount)}">
+        <a th:if="${pageNumber != page}"
+           th:href="${'search?tags=' + tags + '&order=' + order + '&sort=' + sort + '&group=' + group + '&page=' + pageNumber+ '&limit=' + limit+'&merge='+merge}">[[${pageNumber}]]</a>
+        <th:span th:if="${pageNumber == page}">[[${pageNumber}]]</th:span>
+      </th:block>
+      <th:block th:if="${page != pageCount}"><a
+          th:href="${'search?tags=' + tags + '&order=' + order + '&sort=' + sort + '&group=' + group + '&page=' + (page + 1) + '&limit=' + limit+'&merge='+merge}">→</a>
+      </th:block>
+    </th:div>
   </section>
   <section class="side">
     <h2>おすすめタグ</h2>

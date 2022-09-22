@@ -4,6 +4,7 @@ import static io.github.usbharu.imagesearch.domain.validation.Validation.require
 import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseTag;
 import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseTags;
 
+import io.github.usbharu.imagesearch.domain.exceptions.TagDatabaseEmptyException;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.custom.TagCount;
 import io.github.usbharu.imagesearch.domain.validation.StringValidation;
@@ -92,8 +93,7 @@ public class TagDao {
                   + "LIMIT 1");
       return parseTag(stringObjectMap);
     }catch (EmptyResultDataAccessException e){
-      logger.warn("Failed to retrieve random Tag", e);
-      return null;
+      throw new TagDatabaseEmptyException("Tag Database is Empty",e);
     }
   }
 

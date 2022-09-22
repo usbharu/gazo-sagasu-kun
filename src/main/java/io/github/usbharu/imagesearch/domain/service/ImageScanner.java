@@ -1,5 +1,6 @@
 package io.github.usbharu.imagesearch.domain.service;
 
+import io.github.usbharu.imagesearch.domain.exceptions.GroupDatabaseEmptyException;
 import io.github.usbharu.imagesearch.domain.exceptions.IllegalPropertyValueException;
 import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.model.Image;
@@ -125,7 +126,7 @@ public class ImageScanner {
         if (file.toPath().startsWith(path)) {
           try {
             return new GroupPathSet(groupDao.insertOneWithReturnGroup(paths.getKey()), path);
-          }catch (EmptyResultDataAccessException e){
+          }catch (GroupDatabaseEmptyException e){
             logger.warn("Database Select result is 0",e);
             logger.warn("INSERTした直後のSELECTなのでデータベースに異常がある可能性が高い");
           }

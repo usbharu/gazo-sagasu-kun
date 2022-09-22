@@ -17,7 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class ImageSearchApplication {
 
-  @Value(value = "${imagesearch.duplicate.enable:false}")
+  @Value(value = "${imagesearch.duplicate.enable:true}")
   private static boolean duplicateCheck=false;
 
   public static void main(String[] args) {

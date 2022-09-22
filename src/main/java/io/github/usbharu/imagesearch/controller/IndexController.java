@@ -89,6 +89,7 @@ public class IndexController {
       @ModelAttribute("limit") String limitStr,
       @ModelAttribute("page") String pageStr,
       @ModelAttribute("link") String link,
+      @ModelAttribute("merge")String mergeStr,
       Model model) {
     if (duplicate != null && !duplicate.isBlank()) {
       return "redirect:/image/" + duplicate;
@@ -117,8 +118,12 @@ public class IndexController {
         logger.warn("Illegal Page Number",e);
       }
     }
+    boolean merge = false;
+    if (mergeStr!=null&&!mergeStr.isBlank()) {
+      merge = Boolean.parseBoolean(mergeStr);
+    }
 
-    Images images = imageSearch.search3(tags.split("[; ,]"), group, sort, order, limit, page);
+    Images images = imageSearch.search3(tags.split("[; ,]"), group, sort, order, limit, page,merge);
     model.addAttribute("tagCount", tagService.tagOrderOfMostUsedLimit(20));
     model.addAttribute("message", tags);
     model.addAttribute("images", images);
@@ -129,6 +134,7 @@ public class IndexController {
     model.addAttribute("page", page);
     model.addAttribute("pageCount", ((int) Math.ceil(images.getCount() / limit)));
     model.addAttribute("count", images.getCount());
+    model.addAttribute("merge",merge);
     return "search";
   }
 

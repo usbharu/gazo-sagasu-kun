@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -78,7 +79,7 @@ class IndexControllerTest {
         List.of(new Image("0.jpg", "testData/1/0.jpg"), new Image("1.jpg", "testData/1/1.jpg"),
             new Image("2.jpg", "testData/1/2.jpg"));
     images.addAll(es);
-    when(imageSearch.search3(any(String[].class),any(),any(),any(),anyInt(),anyInt())).thenReturn(images);
+    when(imageSearch.search3(any(String[].class),any(),any(),any(),anyInt(),anyInt(),eq(false))).thenReturn(images);
 
     when(tagService.tagOrderOfMostUsedLimit(anyInt())).thenReturn(List.of(
         new TagCount(37, new Tag(10, "tag8")),
@@ -112,7 +113,7 @@ class IndexControllerTest {
     for (int i = 0; i < 102; i++) {
       images.add(new Image("image"+i+".jpg","image"+i+".jpg"));
     }
-    when(imageSearch.search3(any(String[].class),any(),any(),any(),anyInt(),anyInt())).thenReturn(images);
+    when(imageSearch.search3(any(String[].class),any(),any(),any(),anyInt(),anyInt(),eq(false))).thenReturn(images);
 
     when(tagService.tagOrderOfMostUsedLimit(anyInt())).thenReturn(List.of(
         new TagCount(37, new Tag(10, "tag8")),

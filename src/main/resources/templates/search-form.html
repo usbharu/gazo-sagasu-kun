@@ -25,7 +25,7 @@
   </select><select id="order" name="order">
     <option th:selected="${order} == asc" value="asc">昇順</option>
     <option th:selected="${order} == desc" value="desc">降順</option>
-  </select><select id="merge" name="merge"><option th:selected="${merge} == true" value="true">マージする</option><option th:selected="${merge} == true" value="false">マージしない</option></select><input type="submit" value="検索"></form>
+  </select><select id="merge" name="merge"><option th:selected="${merge} == true" value="true">マージする</option><option th:selected="${merge} == false" value="false">マージしない</option></select><input type="submit" value="検索"></form>
 </div>
 </body>
 </html>

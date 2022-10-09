@@ -7,11 +7,14 @@ import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
 import io.github.usbharu.imagesearch.domain.repository.custom.BulkDao;
 import io.github.usbharu.imagesearch.domain.service.scan.Scanner;
+import io.github.usbharu.imagesearch.util.FileComparator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,13 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 @ConfigurationProperties("imagesearch.scan")
 @Service
 public class ImageScanner {
 
+  private final FileComparator fileComparator = new FileComparator();
 
   private final GroupDao groupDao;
   private final Map<String, List<Path>> pathsMap = new HashMap<>();
@@ -107,7 +110,9 @@ public class ImageScanner {
 
     GroupPathSet group1 = getGroup(file);
     logger.debug("Current depth: {} , group {} , file: {}", depth, group1, file);
-    for (File listFile : file.listFiles()) {
+    File[] files = file.listFiles();
+    Arrays.sort(files,fileComparator);
+    for (File listFile : files) {
       if (listFile.isDirectory()) {
         scanFolder(listFile, depth + 1);
       } else if (scanner.isSupported(listFile)) {
@@ -220,4 +225,6 @@ public class ImageScanner {
           '}';
     }
   }
+
+
 }

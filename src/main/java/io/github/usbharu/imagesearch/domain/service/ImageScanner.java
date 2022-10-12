@@ -62,7 +62,6 @@ public class ImageScanner {
       return;
     }
     logger.info("Scan folder :{} folder from  {} ", getDepth(), file);
-    bulkDao.delete();
     for (Entry<String, String> stringStringEntry : getGroup().entrySet()) {
       String value = stringStringEntry.getValue();
       List<Path> paths = new ArrayList<>();
@@ -80,6 +79,8 @@ public class ImageScanner {
       images.clear();
       scanFolder(file, 0);
       logger.info(" Successful scan");
+      bulkDao.delete();
+      
       bulkDao.insertSplit(images, 500);
     }
   }

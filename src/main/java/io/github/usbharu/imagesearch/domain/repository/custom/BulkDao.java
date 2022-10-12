@@ -100,51 +100,56 @@ public class BulkDao {
       tagSql.append("('").append(tag.getName()).append("'),");
     }
     tagSql.deleteCharAt(tagSql.length() - 1);
-    jdbcTemplate.update(tagSql.toString());
+    synchronized (jdbcTemplate) {
 
-    StringBuilder imageSql = new StringBuilder();
-    imageSql.append("INSERT OR IGNORE INTO image(name,path,groupId) VALUES");
+      jdbcTemplate.update(tagSql.toString());
 
-    for (Image image : images) {
-      imageSql.append("('").append(image.getName()).append("','").append(image.getPath())
-          .append("',").append(image.getGroup()).append("),");
-    }
-    imageSql.deleteCharAt(imageSql.length() - 1);
-    imageSql.append(
-        "RETURNING id as image_id,name as image_name,path as image_path,groupId as image_group");
-    List<Image> updatedImageList = jdbcTemplate.query(imageSql.toString(), imageRowMapper);
+      StringBuilder imageSql = new StringBuilder();
+      imageSql.append("INSERT OR IGNORE INTO image(name,path,groupId) VALUES");
 
-    logger.debug("{} images have been updated.", updatedImageList.size());
+      for (Image image : images) {
+        imageSql.append("('").append(image.getName()).append("','").append(image.getPath())
+            .append("',").append(image.getGroup()).append("),");
+      }
+      imageSql.deleteCharAt(imageSql.length() - 1);
+      imageSql.append(
+          "RETURNING id as image_id,name as image_name,path as image_path,groupId as image_group");
+      logger.trace("ImageSql : {}",imageSql);
+      List<Image> updatedImageList = jdbcTemplate.query(imageSql.toString(), imageRowMapper,
+          (Object[]) null);
 
-    StringBuilder imageTagSql = new StringBuilder();
-    imageTagSql.append("INSERT OR IGNORE INTO image_tag(image_id,tag_id) VALUES");
-    List<Image> imageList = jdbcTemplate.query(
-        "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM main.image",
-        imageRowMapper);
-    if (imageList.isEmpty()) {
-      return;
-    }
-    for (Image image : images) {
-      int id = -1;
-      for (Image image1 : imageList) {
-        if (image1.getPath().equals(image.getPath())) {
-          id = image1.getId();
-          break;
+      logger.debug("{} images have been updated.", updatedImageList.size());
+
+      StringBuilder imageTagSql = new StringBuilder();
+      imageTagSql.append("INSERT OR IGNORE INTO image_tag(image_id,tag_id) VALUES");
+      List<Image> imageList = jdbcTemplate.query(
+          "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM main.image",
+          imageRowMapper);
+      if (imageList.isEmpty()) {
+        return;
+      }
+      for (Image image : images) {
+        int id = -1;
+        for (Image image1 : imageList) {
+          if (image1.getPath().equals(image.getPath())) {
+            id = image1.getId();
+            break;
+          }
+        }
+
+        List<Tag> tags = getTagsFromDB(getTagsNoNull(image));
+        for (Tag tag : tags) {
+          imageTagSql.append("(").append(id).append(",").append(tag.getId()).append("),");
         }
       }
+      imageTagSql.deleteCharAt(imageTagSql.length() - 1);
 
-      List<Tag> tags = getTagsFromDB(getTagsNoNull(image));
-      for (Tag tag : tags) {
-        imageTagSql.append("(").append(id).append(",").append(tag.getId()).append("),");
-      }
+      jdbcTemplate.update(imageTagSql.toString());
     }
-    imageTagSql.deleteCharAt(imageTagSql.length() - 1);
-
-    jdbcTemplate.update(imageTagSql.toString());
   }
 
   /**
-   * ImageHashテーブル以外のテーブルのデータを削除します。
+   * ImageHash、Groupテーブル以外のテーブルのデータを削除します。
    */
   public void delete() {
     logger.info("delete all");
@@ -152,9 +157,6 @@ public class BulkDao {
       logger.debug("Delete image");
       jdbcTemplate.update("DELETE FROM main.image NOT INDEXED ");
       logger.debug("Deleted image");
-      logger.debug("Delete groupId");
-      jdbcTemplate.update("DELETE FROM main.groupId NOT INDEXED ");
-      logger.debug("Deleted groupId");
       logger.debug("Delete image_tag");
       jdbcTemplate.update("DELETE FROM main.image_tag NOT INDEXED ");
       logger.debug("Deleted image_tag");

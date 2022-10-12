@@ -1,47 +1,48 @@
 package io.github.usbharu.imagesearch.domain.repository;
 
 import static io.github.usbharu.imagesearch.domain.validation.Validation.require;
-import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImage;
-import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImages;
 
 import io.github.usbharu.imagesearch.domain.model.Image;
-import io.github.usbharu.imagesearch.domain.validation.StringValidation;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository("ImageDao")
 public class ImageDao {
 
+  private final ImageRowMapper imageRowMapper;
   Logger logger = LoggerFactory.getLogger(ImageDao.class);
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
+  public ImageDao() {
+    imageRowMapper = new ImageRowMapper();
+  }
+
   public List<Image> findAll() {
     logger.trace("findAll");
-    List<Map<String, Object>> maps = jdbcTemplate.queryForList(
-        "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image");
-    List<Image> result = parseImages(maps);
-    logger.trace("Success to findAll : " + result.size());
-    return result;
+    return jdbcTemplate.query(
+        "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image",
+        imageRowMapper);
   }
 
   public List<Image> findByName(String name) {
     require().nonNullAndNonBlank(name, "name is null or blank");
     logger.trace("findByName name:" + name);
-    List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList(
+    return
+        jdbcTemplate.query(
             "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE name = ?",
+            imageRowMapper,
             name);
-    List<Image> result = parseImages(maps);
-    logger.trace("Success to findByName : " + result.size());
-    return result;
+
   }
 
   public Image findByUrl(String url) {
@@ -49,12 +50,10 @@ public class ImageDao {
     logger.trace("findByUrl url:" + url);
     try {
 
-      Map<String, Object> maps = jdbcTemplate.queryForMap(
+      return jdbcTemplate.queryForObject(
           "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE path = ?",
+          imageRowMapper,
           url);
-      Image image = parseImage(maps);
-      logger.trace("Success to findByUrl : " + image);
-      return image;
     } catch (EmptyResultDataAccessException e) {
       logger.warn(url + " was not found.", e);
       return null;
@@ -65,14 +64,10 @@ public class ImageDao {
     require().positive(id);
     logger.trace("findById id:" + id);
     try {
-
-      Map<String, Object> stringObjectMap =
-          jdbcTemplate.queryForMap(
-              "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE id = ?",
-              id);
-      Image image = parseImage(stringObjectMap);
-      logger.trace("Success to findById id:" + image);
-      return image;
+      return jdbcTemplate.queryForObject(
+          "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE id = ?",
+          imageRowMapper,
+          id);
     } catch (EmptyResultDataAccessException e) {
       logger.warn(id + " was not found", e);
       return null;
@@ -93,13 +88,10 @@ public class ImageDao {
     Objects.requireNonNull(image, "Image is null");
     logger.trace("insertOneWithReturnImage image:" + image);
     insertOne(image);
-    Map<String, Object> stringObjectMap =
-        jdbcTemplate.queryForMap(
-            "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE path = ?",
-            image.getPath());
-    Image result = parseImage(stringObjectMap);
-    logger.trace("Success to insertOneWithReturnImage : " + result);
-    return result;
+    return jdbcTemplate.queryForObject(
+        "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM image WHERE path = ?",
+        imageRowMapper,
+        image.getPath());
   }
 
   public Image selectOne(String url) {
@@ -112,5 +104,14 @@ public class ImageDao {
     int update = jdbcTemplate.update("DELETE FROM image WHERE path = ?", url);
     logger.trace("Success to deleteOne : " + update);
     return update;
+  }
+
+  public static class ImageRowMapper implements RowMapper<Image> {
+
+    @Override
+    public Image mapRow(ResultSet rs, int rowNum) throws SQLException {
+      return new Image(rs.getInt("image_id"), rs.getString("image_name"),
+          rs.getString("image_path"), rs.getInt("image_group"));
+    }
   }
 }

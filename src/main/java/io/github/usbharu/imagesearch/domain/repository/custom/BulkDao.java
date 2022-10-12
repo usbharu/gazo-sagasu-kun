@@ -1,13 +1,12 @@
 package io.github.usbharu.imagesearch.domain.repository.custom;
 
 import static io.github.usbharu.imagesearch.util.ImageTagUtil.getTagsNoNull;
-import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImages;
 
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
-import io.github.usbharu.imagesearch.domain.repository.GroupDao;
-import io.github.usbharu.imagesearch.domain.repository.TagDao;
+import io.github.usbharu.imagesearch.domain.repository.ImageDao.ImageRowMapper;
+import io.github.usbharu.imagesearch.domain.repository.TagDao.TagRowMapper;
 import io.github.usbharu.imagesearch.util.ImageTagUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +30,7 @@ public class BulkDao {
 
   private final Logger logger = LoggerFactory.getLogger(BulkDao.class);
   private static final Tag none = new Tag(1, "NONE");
+  private final ImageRowMapper imageRowMapper;
 
   /**
    * Autowired用のコンストラクタ
@@ -41,6 +41,7 @@ public class BulkDao {
   public BulkDao(JdbcTemplate jdbcTemplate) {
     Objects.requireNonNull(jdbcTemplate,"JdbcTemplate is Null");
     this.jdbcTemplate = jdbcTemplate;
+    imageRowMapper = new ImageRowMapper();
   }
 
   /**
@@ -111,14 +112,15 @@ public class BulkDao {
     imageSql.deleteCharAt(imageSql.length() - 1);
     imageSql.append(
         "RETURNING id as image_id,name as image_name,path as image_path,groupId as image_group");
-    List<Image> updatedImageList = parseImages(jdbcTemplate.queryForList(imageSql.toString()));
+    List<Image> updatedImageList = jdbcTemplate.query(imageSql.toString(), imageRowMapper);
 
     logger.debug("{} images have been updated.", updatedImageList.size());
 
     StringBuilder imageTagSql = new StringBuilder();
     imageTagSql.append("INSERT OR IGNORE INTO image_tag(image_id,tag_id) VALUES");
-    List<Image> imageList = parseImages(jdbcTemplate.queryForList(
-        "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM main.image"));
+    List<Image> imageList = jdbcTemplate.query(
+        "SELECT id as image_id,name as image_name,path as image_path,groupId as image_group FROM main.image",
+        imageRowMapper);
     if (imageList.isEmpty()) {
       return;
     }
@@ -173,12 +175,12 @@ public class BulkDao {
       return List.of(none);
     }
     StringBuilder sb = new StringBuilder();
-    sb.append("SELECT id,name FROM tag WHERE name IN (");
+    sb.append("SELECT id as tag_id,name as tag_name FROM tag WHERE name IN (");
     for (Tag tag : tags) {
       sb.append("'").append(tag.getName()).append("',");
     }
     sb.deleteCharAt(sb.length() - 1);
     sb.append(")");
-    return ImageTagUtil.parseTags(jdbcTemplate.queryForList(sb.toString()));
+    return jdbcTemplate.query(sb.toString(),new TagRowMapper());
   }
 }

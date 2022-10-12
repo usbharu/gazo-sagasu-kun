@@ -1,12 +1,13 @@
 package io.github.usbharu.imagesearch.domain.repository.custom;
 
-import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseImage;
-
 import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
 import io.github.usbharu.imagesearch.domain.model.custom.Images;
+import io.github.usbharu.imagesearch.domain.repository.ImageDao.ImageRowMapper;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -91,13 +93,13 @@ public class DynamicSearchDao {
         + groupSql
         + idSql
         + "GROUP BY image_id\n"
-        + "ORDER BY "+ dynamicSearch.orderType + " " + dynamicSearch.order + "\n"
+        + "ORDER BY " + dynamicSearch.orderType + " " + dynamicSearch.order + "\n"
         + "LIMIT ?\n"
         + "OFFSET ?\n";
-    String tagsSql2="\n";
+    String tagsSql2 = "\n";
 
     if (!dynamicSearch.tags.isEmpty()) {
-      tagsSql2 = "AND tag.name IN ("+sb+")";
+      tagsSql2 = "AND tag.name IN (" + sb + ")";
     }
 
     String countSql = "SELECT COUNT(image_id) as count,\n"
@@ -107,29 +109,19 @@ public class DynamicSearchDao {
         + "         JOIN tag ON image_tag.tag_id = tag.id\n"
         + "         JOIN groupId on image.groupId = groupId.id\n"
         + "WHERE TRUE\n"
-        +  groupSql
-        +  idSql
-        +  tagsSql2;
+        + groupSql
+        + idSql
+        + tagsSql2;
     Images images = new Images((Integer) jdbcTemplate.queryForMap(countSql).get("count"));
     try {
       List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql, dynamicSearch.limit,
           dynamicSearch.page * dynamicSearch.limit);
 
-      for (Map<String, Object> map : maps) {
-        Image image = parseImage(map);
-        image.getMetadata()
-            .add(new Group((Integer) map.get("image_group"), (String) map.get("group_name")));
-        Tags tags = new Tags();
-        String[] tagIds = ((String) map.get("tags_id")).split(",");
-        String[] tagNames = ((String) map.get("tags_name")).split(",");
-        List<Tag> tagList = new ArrayList<>();
-        for (int i = 0; i < tagIds.length; i++) {
-          tagList.add(new Tag(Integer.parseInt(tagIds[i]), tagNames[i]));
-        }
-        tags.addAll(tagList);
-        image.getMetadata().add(tags);
-        images.add(image);
-      }
+      List<Image> searchResults =
+          jdbcTemplate.query(sql, new DynamicSearchRowMapper(), dynamicSearch.limit,
+              dynamicSearch.page * dynamicSearch.limit);
+
+      images.addAll(searchResults);
     } catch (DataAccessException e) {
       logger.warn("Failed Dynamic Search", e);
     }
@@ -193,4 +185,23 @@ public class DynamicSearchDao {
     }
   }
 
+  private static class DynamicSearchRowMapper implements RowMapper<Image> {
+
+    private static final ImageRowMapper imageRowMapper = new ImageRowMapper();
+
+    @Override
+    public Image mapRow(ResultSet rs, int rowNum) throws SQLException {
+      Image image = imageRowMapper.mapRow(rs, rowNum);
+      Group group = new Group(rs.getInt("image_group"), rs.getString("group_name"));
+      String[] tagIds = rs.getString("tags_id").split(",");
+      String[] tagNames = rs.getString("tags_name").split(",");
+      Tags tags = new Tags();
+      for (int i = 0; i < tagIds.length; i++) {
+        tags.add(new Tag(Integer.parseInt(tagIds[i]), tagNames[i]));
+      }
+      image.addMetadata(group);
+      image.addMetadata(tags);
+      return image;
+    }
+  }
 }

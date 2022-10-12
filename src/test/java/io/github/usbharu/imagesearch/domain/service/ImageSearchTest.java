@@ -47,7 +47,7 @@ class ImageSearchTest {
     Tags tags = new Tags();
     tags.add(new Tag("--123456--"));
     Image image1 = new Image("123456_p1.jpg","123456_p1.jpg");
-    Image image2 = new Image("123456_p2.jhg","123456_p2.jpg");
+    Image image2 = new Image("123456_p2.jpg","123456_p2.jpg");
     Image image3 = new Image("123456_p3.jpg","123456_p3.jpg");
 
     Image image4 = new Image("123457_p4.jpg","123457_p4.jpg");

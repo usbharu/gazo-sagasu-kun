@@ -17,16 +17,18 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("imagesearch.util.filename")
 public class ImageFileNameUtil {
 
-  private final String pixivTypeFileBaseName = "(\\d+)";
-  private final String pixivTypeFileNumber = "_p(\\d+)\\.";
+  private final String jpgOrPng = "(jpg|jpeg|JPG|JPEG|png|PNG)$";
+
+  private final String pixivTypeFileBaseName = "^(\\d+)_p\\d+\\." + jpgOrPng;
+  private final String pixivTypeFileNumber = "^\\d+_p(\\d+)\\." + jpgOrPng;
   private final Pattern isPixivTypeFileName;
   private final Pattern getPixivTypeFileBaseName;
 
   private final Pattern getPixivTypeFileNumber;
 
-  private final String twitterFileUserName = "(\\w+)-\\d+-img\\d+\\.(jpg|jpeg|JPG|JPEG|png|PNG)";
-  private final String twitterFileId = "\\w+-(\\d+)-img\\d+\\.(jpg|jpeg|JPG|JPEG|png|PNG)";
-  private final String twitterFileNumber = "\\w+-\\d+-img(\\d+)\\.(jpg|jpeg|JPG|JPEG|png|PNG)";
+  private final String twitterFileUserName = "(\\w+)-\\d+-img\\d+\\." + jpgOrPng;
+  private final String twitterFileId = "\\w+-(\\d+)-img\\d+\\." + jpgOrPng;
+  private final String twitterFileNumber = "\\w+-\\d+-img(\\d+)\\." + jpgOrPng;
 
   private final Pattern twitterFileUserNamePattern;
   private final Pattern twitterFileIdPattern;
@@ -38,7 +40,7 @@ public class ImageFileNameUtil {
   private final Logger logger = LoggerFactory.getLogger(ImageFileNameUtil.class);
 
   public ImageFileNameUtil() {
-    isPixivTypeFileName = Pattern.compile(pixivTypeFileBaseName + pixivTypeFileNumber);
+    isPixivTypeFileName = Pattern.compile(pixivTypeFileBaseName);
     getPixivTypeFileBaseName = Pattern.compile(pixivTypeFileBaseName);
     twitterFileUserNamePattern = Pattern.compile(twitterFileUserName);
     twitterFileIdPattern = Pattern.compile(twitterFileId);
@@ -48,12 +50,12 @@ public class ImageFileNameUtil {
 
   public boolean isJpg(String name) {
     require().nonNullAndNonBlank(name, "Name is null or blank");
-    return name.toUpperCase().endsWith("JPG") || name.toUpperCase().endsWith("JPEG");
+    return name.toUpperCase().endsWith(".JPG") || name.toUpperCase().endsWith(".JPEG");
   }
 
   public boolean isPng(String name) {
     require().nonNullAndNonBlank(name, "Name is null or blank");
-    return name.toUpperCase().endsWith("PNG");
+    return name.toUpperCase().endsWith(".PNG");
   }
 
   public boolean isPixivTypeFileName(String name) {
@@ -66,14 +68,14 @@ public class ImageFileNameUtil {
     logger.trace("get pixiv type file base name {}", name);
     final Matcher matcher = getPixivTypeFileBaseName.matcher(name);
     if (matcher.find()) {
-      return matcher.group();
+      return matcher.group(1);
     }
     return null;
   }
 
-  public String getPixivFileNumber(String name){
-    require().nonNullAndNonBlank(name,"Name is null or blank");
-    logger.trace("get pixiv type file number {}",name);
+  public String getPixivFileNumber(String name) {
+    require().nonNullAndNonBlank(name, "Name is null or blank");
+    logger.trace("get pixiv type file number {}", name);
     final Matcher matcher = getPixivTypeFileNumber.matcher(name);
     if (matcher.find()) {
       return matcher.group(1);
@@ -101,9 +103,9 @@ public class ImageFileNameUtil {
     return null;
   }
 
-  public String getTwitterFileNumber(String name){
-    require().nonNullAndNonBlank(name,"Name is Null or Blank");
-    logger.trace("get twitter type file number {}",name);
+  public String getTwitterFileNumber(String name) {
+    require().nonNullAndNonBlank(name, "Name is Null or Blank");
+    logger.trace("get twitter type file number {}", name);
     Matcher matcher = twitterFileNumberPattern.matcher(name);
     if (matcher.find()) {
       return matcher.group(1);
@@ -111,17 +113,18 @@ public class ImageFileNameUtil {
     return null;
   }
 
-  public boolean isTwitterTypeFileName(String name){
-    require().nonNullAndNonBlank(name,"Name is Null or Blank");
+  public boolean isTwitterTypeFileName(String name) {
+    require().nonNullAndNonBlank(name, "Name is Null or Blank");
     return twitterFileUserNamePattern.matcher(name).find();
   }
 
-  public String getTwitterUrl(String name){
-    return "https://twitter.com/"+getTwitterFileUserName(name)+"/status/"+getTwitterFileId(name)+"/photo/"+getTwitterFileNumber(name);
+  public String getTwitterUrl(String name) {
+    return "https://twitter.com/" + getTwitterFileUserName(name) + "/status/" + getTwitterFileId(
+        name) + "/photo/" + getTwitterFileNumber(name);
   }
 
-  public String getPixivUrl(String name){
-    return "https://www.pixiv.net/artworks/"+getPixivTypeFileBaseName(name);
+  public String getPixivUrl(String name) {
+    return "https://www.pixiv.net/artworks/" + getPixivTypeFileBaseName(name);
   }
 
   public String getFullPath(String path) {

@@ -14,20 +14,6 @@ public class ImageTagUtil {
   private ImageTagUtil() {
   }
 
-  public static Tags parseTags(List<Map<String, Object>> maps) {
-    Objects.requireNonNull(maps,"Maps is Null");
-    Tags tags = new Tags();
-    for (Map<String, Object> map : maps) {
-      tags.add(parseTag(map));
-    }
-    return tags;
-  }
-
-  public static Tag parseTag(Map<String, Object> map) {
-    Objects.requireNonNull(map,"Map is Null");
-    return new Tag((Integer) map.get("id"), (String) map.get("name"));
-  }
-
   public static Image parseImage(Map<String, Object> map) {
     Objects.requireNonNull(map,"Map is Null");
     return new Image((Integer) map.get("image_id"), (String) map.get("image_name"),
@@ -43,14 +29,6 @@ public class ImageTagUtil {
     return images;
   }
 
-  public static List<Image> parseImagesWithMetadata(List<Map<String, Object>> maps) {
-    Objects.requireNonNull(maps,"Maps is Null");
-    List<Image> images = new ArrayList<>();
-    for (Map<String, Object> map : maps) {
-      images.add(parseImageWithMetadata(map));
-    }
-    return images;
-  }
 
   public static Image parseImageWithMetadata(Map<String, Object> map) {
     Objects.requireNonNull(map,"Map is Null");

@@ -1,13 +1,12 @@
 package io.github.usbharu.imagesearch.domain.repository;
 
 import static io.github.usbharu.imagesearch.domain.validation.Validation.require;
-import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseTag;
-import static io.github.usbharu.imagesearch.util.ImageTagUtil.parseTags;
 
 import io.github.usbharu.imagesearch.domain.exceptions.TagDatabaseEmptyException;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.custom.TagCount;
-import io.github.usbharu.imagesearch.domain.validation.StringValidation;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,34 +16,37 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class TagDao {
 
 
+  private final TagRowMapper tagRowMapper;
   Logger logger = LoggerFactory.getLogger(TagDao.class);
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
+  public TagDao() {
+    tagRowMapper = new TagRowMapper();
+  }
+
 
   public List<Tag> findAll() {
-    List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT * FROM tag");
-    return parseTags(maps);
+    return jdbcTemplate.query("SELECT id as tag_id,name as tag_name FROM tag", tagRowMapper);
   }
 
   public Tag findById(int id) {
     require().positive(id);
-    Map<String, Object> maps = jdbcTemplate.queryForMap("SELECT * FROM tag WHERE id = ?", id);
-    return parseTag(maps);
+    return jdbcTemplate.queryForObject("SELECT id as tag_id,name as tag_name FROM tag WHERE id = ?", tagRowMapper);
 
   }
 
   public List<Tag> findByName(String name) {
     require().nonNullAndNonBlank(name, "name is null or blank");
-    List<Map<String, Object>> maps =
-        jdbcTemplate.queryForList("SELECT * FROM tag WHERE name = ?", name);
-    return parseTags(maps);
+    return jdbcTemplate.query("SELECT id as tag_id,name as tag_name FROM tag WHERE name = ?",
+        tagRowMapper, name);
   }
 
   public int insertOne(String tag) {
@@ -58,9 +60,10 @@ public class TagDao {
   public Tag insertOneWithReturnTag(String tag) {
     require().nonNullAndNonBlank(tag, "Tag is Null or blank");
     insertOne(tag);
-    Map<String, Object> stringObjectMap =
-        jdbcTemplate.queryForMap("SELECT id,name FROM tag WHERE name = ?;", tag);
-    return parseTag(stringObjectMap);
+
+    return jdbcTemplate.queryForObject(
+        "SELECT id as tag_id,name as tag_name FROM tag WHERE name = ?;", tagRowMapper, tag);
+
   }
 
   public int deleteOne(Tag tag) {
@@ -80,18 +83,17 @@ public class TagDao {
 
   public Tag selectRandomOne() {
     try {
-      Map<String, Object> stringObjectMap =
-          jdbcTemplate.queryForMap(
-              "SELECT id, name\n"
-                  + "FROM tag\n"
-                  + "WHERE NOT name LIKE '--%--"
-                  + "'\n"
-                  + "  AND NOT 'NON"
-                  + "E'\n"
-                  + "ORDER BY RANDOM"
-                  + "()\n"
-                  + "LIMIT 1");
-      return parseTag(stringObjectMap);
+
+      return jdbcTemplate.queryForObject(
+          "SELECT id as tag_id,name as tag_name\n"
+              + "FROM tag\n"
+              + "WHERE NOT name LIKE '--%--"
+              + "'\n"
+              + "  AND NOT 'NON"
+              + "E'\n"
+              + "ORDER BY RANDOM"
+              + "()\n"
+              + "LIMIT 1", tagRowMapper);
     }catch (EmptyResultDataAccessException e){
       throw new TagDatabaseEmptyException("Tag Database is Empty",e);
     }
@@ -136,5 +138,13 @@ public class TagDao {
           new Tag(((Integer) map.get("tag_id")), (String) map.get("tag_name"))));
     }
     return result;
+  }
+
+  public static class TagRowMapper implements RowMapper<Tag>{
+
+    @Override
+    public Tag mapRow(ResultSet rs, int rowNum) throws SQLException {
+      return new Tag(rs.getInt("tag_id"),rs.getString("tag_name"));
+    }
   }
 }

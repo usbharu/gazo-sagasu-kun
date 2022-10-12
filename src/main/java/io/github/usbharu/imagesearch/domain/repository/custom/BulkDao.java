@@ -8,6 +8,7 @@ import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
 import io.github.usbharu.imagesearch.domain.repository.TagDao;
+import io.github.usbharu.imagesearch.domain.repository.TagDao.TagRowMapper;
 import io.github.usbharu.imagesearch.util.ImageTagUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -179,6 +180,6 @@ public class BulkDao {
     }
     sb.deleteCharAt(sb.length() - 1);
     sb.append(")");
-    return ImageTagUtil.parseTags(jdbcTemplate.queryForList(sb.toString()));
+    return jdbcTemplate.query(sb.toString(),new TagRowMapper());
   }
 }

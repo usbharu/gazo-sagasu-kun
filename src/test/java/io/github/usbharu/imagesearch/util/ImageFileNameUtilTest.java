@@ -152,6 +152,42 @@ class ImageFileNameUtilTest {
         () -> imageFileNameUtil.getPixivTypeFileBaseName(" "));
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "136834_p1.jpg,1",
+      "7193799_p3424.png,3424"
+  })
+  void getPixivFileNumber_pixivFile_returnNumber(String string, String expected) {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertEquals(expected, imageFileNameUtil.getPixivFileNumber(string));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"usbharu_dev-1571732741414334464-img1.png", "mt6qp.jpg",
+      "4Dba622S_p0.jpg"})
+  void getPixivFileNumber_NotPixivFile_returnNull(String string) {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertNull(imageFileNameUtil.getPixivFileNumber(string));
+  }
+
+  @Test
+  void getPixivFileNumber_Null_throwNullPointException() {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertThrows(NullPointerException.class, () -> imageFileNameUtil.getPixivFileNumber(null));
+  }
+
+  @Test
+  void getPixivFileNumber_Empty_throwIllegalArgumentException() {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertThrows(IllegalArgumentException.class, () -> imageFileNameUtil.getPixivFileNumber(""));
+  }
+
+  @Test
+  void getPixivFileNumber_Blank_throwIllegalArgumentException() {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertThrows(IllegalArgumentException.class, () -> imageFileNameUtil.getPixivFileNumber(" "));
+  }
+
   @Test
   void getTwitterFileUserName_TwitterFile_returnUserName() {
     ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
@@ -169,11 +205,58 @@ class ImageFileNameUtilTest {
   }
 
   @Test
+  void getTwitterFileUserName_Null_throwNullPointException() {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertThrows(NullPointerException.class, () -> imageFileNameUtil.getTwitterFileUserName(null));
+  }
+
+  @Test
+  void getTwitterFileUserName_Empty_throwIllegalArgumentException() {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertThrows(IllegalArgumentException.class,
+        () -> imageFileNameUtil.getTwitterFileUserName(""));
+  }
+
+  @Test
+  void getTwitterFileUserName_Blank_throwIllegalArgumentException() {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertThrows(IllegalArgumentException.class,
+        () -> imageFileNameUtil.getTwitterFileUserName(" "));
+  }
+
+  @Test
   void getTwitterFIneId_TwitterFile_returnId() {
     ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
     String twitterFileId =
         imageFileNameUtil.getTwitterFileId("usbharu_dev-1571732741414334464-img1.png");
     assertEquals("1571732741414334464", twitterFileId);
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"usbharu_dev-1571732741414334464-img.png",
+      "usbharu_dev-1571732741414334464-imga1.png", "usbharu_dev--1571732741414334464-img1.png",
+      "123456789_p0.jpg"})
+  void getTwitterFileId_NotTwitterFile_returnNull(String string) {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertNull(imageFileNameUtil.getTwitterFileId(string));
+  }
+
+  @Test
+  void getTwitterFileId_Null_throwNullPointException() {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertThrows(NullPointerException.class, () -> imageFileNameUtil.getTwitterFileId(null));
+  }
+
+  @Test
+  void getTwitterFileId_Empty_throwIllegalArgumentException() {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertThrows(IllegalArgumentException.class, () -> imageFileNameUtil.getTwitterFileId(""));
+  }
+
+  @Test
+  void getTwitterFileId_Blank_throwIllegalArgumentException() {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertThrows(IllegalArgumentException.class, () -> imageFileNameUtil.getTwitterFileId(" "));
   }
 
   @Test
@@ -182,6 +265,33 @@ class ImageFileNameUtilTest {
     String twitterFileNumber =
         imageFileNameUtil.getTwitterFileNumber("usbharu_dev-1571732741414334464-img1.png");
     assertEquals("1", twitterFileNumber);
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"usbharu_dev-1571732741414334464-img.png",
+      "usbharu_dev-1571732741414334464-imga1.png", "usbharu_dev--1571732741414334464-img1.png",
+      "123456789_p0.jpg"})
+  void getTwitterFileNumber_NotTwitterFile_returnNull(String string) {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertNull(imageFileNameUtil.getTwitterFileNumber(string));
+  }
+
+  @Test
+  void getTwitterFileNumber_Null_throwNullPointException() {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertThrows(NullPointerException.class, () -> imageFileNameUtil.getTwitterFileNumber(null));
+  }
+
+  @Test
+  void getTwitterFileNumber_Empty_throwIllegalArgumentException() {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertThrows(IllegalArgumentException.class, () -> imageFileNameUtil.getTwitterFileNumber(""));
+  }
+
+  @Test
+  void getTwitterFileNumber_Blank_throwIllegalArgumentException() {
+    ImageFileNameUtil imageFileNameUtil = new ImageFileNameUtil();
+    assertThrows(IllegalArgumentException.class, () -> imageFileNameUtil.getTwitterFileNumber(" "));
   }
 
   @Test

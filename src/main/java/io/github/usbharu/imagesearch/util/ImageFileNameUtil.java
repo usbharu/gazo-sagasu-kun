@@ -20,7 +20,7 @@ public class ImageFileNameUtil {
   private final String jpgOrPng = "(jpg|jpeg|JPG|JPEG|png|PNG)$";
 
   private final String pixivTypeFileBaseName = "^(\\d+)_p\\d+\\." + jpgOrPng;
-  private final String pixivTypeFileNumber = "_p(\\d+)\\." + jpgOrPng;
+  private final String pixivTypeFileNumber = "^\\d+_p(\\d+)\\." + jpgOrPng;
   private final Pattern isPixivTypeFileName;
   private final Pattern getPixivTypeFileBaseName;
 

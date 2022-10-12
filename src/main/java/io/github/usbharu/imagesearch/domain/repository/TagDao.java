@@ -39,7 +39,7 @@ public class TagDao {
 
   public Tag findById(int id) {
     require().positive(id);
-    return jdbcTemplate.queryForObject("SELECT id as tag_id,name as tag_name FROM tag WHERE id = ?", tagRowMapper);
+    return jdbcTemplate.queryForObject("SELECT id as tag_id,name as tag_name FROM tag WHERE tag_id = ?", tagRowMapper,id);
 
   }
 

@@ -8,40 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
+@Deprecated
 public class ImageTagUtil {
 
   private ImageTagUtil() {
   }
 
-  public static Image parseImage(Map<String, Object> map) {
-    Objects.requireNonNull(map,"Map is Null");
-    return new Image((Integer) map.get("image_id"), (String) map.get("image_name"),
-        (String) map.get("image_path"), (Integer) map.get("image_group"));
-  }
-
-  public static List<Image> parseImages(List<Map<String, Object>> maps) {
-    Objects.requireNonNull(maps,"Maps is Null");
-    List<Image> images = new ArrayList<>();
-    for (Map<String, Object> map : maps) {
-      images.add(parseImage(map));
-    }
-    return images;
-  }
-
-
-  public static Image parseImageWithMetadata(Map<String, Object> map) {
-    Objects.requireNonNull(map,"Map is Null");
-    Image image = parseImage(map);
-    Tags tags = getTagsNoNull(image);
-    tags.add(getTag(map));
-    return image;
-  }
-
-  public static Tag getTag(Map<String, Object> map) {
-    Objects.requireNonNull(map,"Map is Null");
-    return new Tag((Integer) map.get("id"), (String) map.get("name"));
-  }
 
   public static Tags getTags(Image image) {
     Objects.requireNonNull(image,"Image is Null");

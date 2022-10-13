@@ -18,7 +18,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty(value = "imagesearch.scan.impl", havingValue = "pixiv")
+@ConditionalOnProperty(value = "imagesearch.scan.impl", havingValue = "legacy-pixiv")
 public class PixivBatchDownloaderPluginScanner extends DefaultJpegScanner implements Scanner {
 
   Logger logger = LoggerFactory.getLogger(PixivBatchDownloaderPluginScanner.class);

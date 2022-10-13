@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty(value = "imagesearch.scan.impl",havingValue = "default",matchIfMissing = true)
+@ConditionalOnProperty(value = "imagesearch.scan.impl",havingValue = "legacy",matchIfMissing = false)
 public class DefaultJpegScanner implements Scanner {
 
   Logger logger = LoggerFactory.getLogger(DefaultJpegScanner.class);

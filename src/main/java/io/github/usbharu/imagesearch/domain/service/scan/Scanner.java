@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
  * @since 0.0.4
  */
 @Component
+@Deprecated
 public interface Scanner {
 
   /**

@@ -7,6 +7,7 @@ import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
 import io.github.usbharu.imagesearch.domain.repository.custom.BulkDao;
 import io.github.usbharu.imagesearch.domain.service.scan.Scanner;
+import io.github.usbharu.imagesearch.domain.service.scan.ScannerLoader;
 import io.github.usbharu.imagesearch.util.FileComparator;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -42,16 +43,16 @@ public class ImageScanner {
   private String folder = "";
 
   final
-  Scanner scanner;
+  ScannerLoader scannerLoader;
 
   @Autowired
-  public ImageScanner(BulkDao bulkDao, GroupDao groupDao, Scanner scanner) {
+  public ImageScanner(BulkDao bulkDao, GroupDao groupDao, ScannerLoader scannerLoader) {
     Objects.requireNonNull(bulkDao, "BulkDao is Null");
     Objects.requireNonNull(groupDao, "GroupDao is Null");
-    Objects.requireNonNull(scanner, "Scanner is Null");
+    Objects.requireNonNull(scannerLoader,"ScannerLoader is Null");
     this.bulkDao = bulkDao;
     this.groupDao = groupDao;
-    this.scanner = scanner;
+    this.scannerLoader= scannerLoader;
   }
 
   public void startScan() {
@@ -80,7 +81,7 @@ public class ImageScanner {
       scanFolder(file, 0);
       logger.info(" Successful scan");
       bulkDao.delete();
-      
+
       bulkDao.insertSplit(images, 500);
     }
   }
@@ -116,7 +117,7 @@ public class ImageScanner {
     for (File listFile : files) {
       if (listFile.isDirectory()) {
         scanFolder(listFile, depth + 1);
-      } else if (scanner.isSupported(listFile)) {
+      } else {
         scanImage(listFile, group1);
       }
     }
@@ -155,7 +156,7 @@ public class ImageScanner {
     Path subpath = imagePath.subpath(Paths.get(folder).getNameCount(), imagePath.getNameCount());
     logger.trace("Group name: {}  count: {} subpath: {} image path: {}",group.getPath(),group.getPath().getNameCount(),subpath,imagePath);
 
-    Image imageObject = scanner.getMetadata(image, subpath);
+    Image imageObject = scannerLoader.getMetadata(image, subpath);
     if (imageObject == null) {
       imageObject = new Image(image.getName(), subpath.toString());
     }

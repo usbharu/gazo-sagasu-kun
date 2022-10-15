@@ -4,7 +4,7 @@ import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.ImageMetadata;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
-import io.github.usbharu.imagesearch.domain.service.scan.DefaultJpegScanner;
+import io.github.usbharu.imagesearch.domain.service.scan.impl.DefaultJpegScanner;
 import io.github.usbharu.imagesearch.domain.service.scan.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;

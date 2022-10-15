@@ -10,4 +10,6 @@ import org.springframework.stereotype.Component;
 public interface ScannerLoader {
   List<Scanner> getScanner();
   Image getMetadata(File image, Path subpath);
+  Filter getFilter();
+  Unifier getUnifier();
 }

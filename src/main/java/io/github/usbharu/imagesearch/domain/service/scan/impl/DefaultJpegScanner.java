@@ -22,9 +22,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
-@ConditionalOnProperty(value = "imagesearch.scan.impl",havingValue = "legacy",matchIfMissing = false)
+@Component
 public class DefaultJpegScanner implements Scanner {
 
   Logger logger = LoggerFactory.getLogger(DefaultJpegScanner.class);

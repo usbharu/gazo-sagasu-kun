@@ -19,6 +19,15 @@ public interface ScannerLoader {
     return null;
   }
 
+  default boolean isSupported(File file){
+    for (Scanner scanner : getScanner()) {
+      if (scanner.isSupported(file)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   Filter getFilter();
   Unifier getUnifier();
 }

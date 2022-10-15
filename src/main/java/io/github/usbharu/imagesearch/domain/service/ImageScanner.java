@@ -119,7 +119,7 @@ public class ImageScanner {
     for (File listFile : files) {
       if (listFile.isDirectory()) {
         scanFolder(listFile, depth + 1);
-      } else {
+      } else if (scannerLoader.isSupported(listFile)){
         scanImage(listFile, group1);
       }
     }
@@ -173,18 +173,23 @@ public class ImageScanner {
     images.add(imageObject);
   }
 
-  private void filterMetadata(Image image){
+  private void filterMetadata(Image image) {
     Filter filter = scannerLoader.getFilter();
-    for (ImageMetadata metadatum : image.getMetadata()) {
-      filter.filter(metadatum);
+    List<ImageMetadata> metadata = image.getMetadata();
+    for (int i = 0, metadataSize = metadata.size(); i < metadataSize; i++) {
+      ImageMetadata metadatum = metadata.get(i);
+      ImageMetadata filtered = filter.filter(metadatum);
+      metadata.set(i, filtered);
     }
-
   }
 
-  private void unifyMetadata(Image image){
+  private void unifyMetadata(Image image) {
     Unifier unifier = scannerLoader.getUnifier();
-    for (ImageMetadata metadatum : image.getMetadata()) {
-      unifier.unify(metadatum);
+    List<ImageMetadata> metadata = image.getMetadata();
+    for (int i = 0, metadataSize = metadata.size(); i < metadataSize; i++) {
+      ImageMetadata metadatum = metadata.get(i);
+      ImageMetadata unified = unifier.unify(metadatum);
+      metadata.set(i, unified);
     }
   }
 

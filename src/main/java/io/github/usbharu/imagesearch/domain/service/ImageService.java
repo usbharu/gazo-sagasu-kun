@@ -8,6 +8,7 @@ import io.github.usbharu.imagesearch.domain.repository.custom.DynamicSearchDao;
 import io.github.usbharu.imagesearch.domain.service.duplicate.DuplicateCheck;
 import io.github.usbharu.imagesearch.domain.service.famous_services.pixiv.PixivMetadataService;
 import io.github.usbharu.imagesearch.domain.service.famous_services.twitter.TwitterMetadataService;
+import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,9 @@ public class ImageService {
 
     Image image = search.get(0);
     DuplicateImages metadata = new DuplicateImages();
-    metadata.addAll(duplicateCheck.check(image));
+    List<Image> check = duplicateCheck.check(image);
+    System.out.println("check = " + check);
+    metadata.addAll(check);
     image.addMetadata(pixivMetadataService.getPixivLink(image));
     image.addMetadata(twitterMetadataService.getTwitterUrl(image));
     image.addMetadata(metadata);

@@ -15,7 +15,10 @@ public class DuplicateImages extends ArrayList<Image>
 
   @Override
   public List<String> getValues() {
-    return this.stream().map((Image image) -> String.valueOf(image.getId()) ).collect(Collectors.toList());
+    return this.stream().map((Image image) -> {
+      System.out.println("image = " + image);
+      return String.valueOf(image.getId());
+    }).collect(Collectors.toList());
   }
 
   @Override

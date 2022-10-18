@@ -97,6 +97,9 @@ public class BulkDao {
     tagSql.append("INSERT OR IGNORE INTO tag(name) VALUES");
     tagSql.append("('NONE'),");
     for (Tag tag : tagList) {
+      if (tag == null) {
+        continue;
+      }
       tagSql.append("('").append(tag.getName()).append("'),");
     }
     tagSql.deleteCharAt(tagSql.length() - 1);
@@ -173,12 +176,16 @@ public class BulkDao {
 
   private List<Tag> getTagsFromDB(List<Tag> tags) {
     logger.trace("Get tags {}",tags);
+    tags.removeIf(Objects::isNull);
     if (tags.isEmpty()) {
       return List.of(none);
     }
     StringBuilder sb = new StringBuilder();
     sb.append("SELECT id as tag_id,name as tag_name FROM tag WHERE name IN (");
     for (Tag tag : tags) {
+      if (tag == null) {
+        continue;
+      }
       sb.append("'").append(tag.getName()).append("',");
     }
     sb.deleteCharAt(sb.length() - 1);

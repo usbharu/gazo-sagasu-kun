@@ -97,7 +97,11 @@ public class DuplicateCheck {
       List<Result<String>> similarImages = databaseImageMatcher.getSimilarImages(targetHash,
           (int) (targetHash.getBitResolution() * 0.1), algo);
       for (Result<String> similarImage : similarImages) {
-        result.add(imageDao.findById(Integer.parseInt(similarImage.value)));
+        Image resultImage = imageDao.findById(Integer.parseInt(similarImage.value));
+        if (resultImage == null) {
+          continue;
+        }
+        result.add(resultImage);
       }
     } catch (NumberFormatException e) {
       e.printStackTrace();

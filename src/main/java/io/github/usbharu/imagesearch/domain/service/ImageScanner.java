@@ -174,11 +174,15 @@ public class ImageScanner {
   }
 
   private void filterMetadata(Image image) {
+//    System.out.println("image = " + image);
     Filter filter = scannerLoader.getFilter();
     List<ImageMetadata> metadata = image.getMetadata();
     for (int i = 0, metadataSize = metadata.size(); i < metadataSize; i++) {
       ImageMetadata metadatum = metadata.get(i);
       ImageMetadata filtered = filter.filter(metadatum);
+      if (filtered == null) {
+        continue;
+      }
       metadata.set(i, filtered);
     }
   }

@@ -47,7 +47,6 @@ public class CsvTagUnifier implements Unifier {
       return imageMetadata;
     }
     Tags metadata = (Tags) imageMetadata;
-    int size = metadata.size();
     LOGGER.trace("Filtering : {}", metadata);
     for (int i = 0, metadataSize = metadata.size(); i < metadataSize; i++) {
       Tag tag = metadata.get(i);

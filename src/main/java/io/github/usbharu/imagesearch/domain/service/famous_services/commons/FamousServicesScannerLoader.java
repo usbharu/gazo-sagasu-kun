@@ -23,15 +23,15 @@ public class FamousServicesScannerLoader implements ScannerLoader {
 
 
   private final CsvTagFilter csvTagFilter;
-  private final CsvUnifier csvUnifier;
+  private final CsvTagUnifier csvTagUnifier;
 
   public FamousServicesScannerLoader(
       @Qualifier("defaultJpegScanner") DefaultJpegScanner defaultJpegScanner, CsvTagFilter csvTagFilter,
-      CsvUnifier csvUnifier) {
+      CsvTagUnifier csvTagUnifier) {
     SCANNERS.add(defaultJpegScanner);
     this.defaultJpegScanner = defaultJpegScanner;
     this.csvTagFilter = csvTagFilter;
-    this.csvUnifier = csvUnifier;
+    this.csvTagUnifier = csvTagUnifier;
   }
 
 
@@ -47,6 +47,6 @@ public class FamousServicesScannerLoader implements ScannerLoader {
 
   @Override
   public Unifier getUnifier() {
-    return csvUnifier;
+    return csvTagUnifier;
   }
 }

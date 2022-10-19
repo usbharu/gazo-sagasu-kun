@@ -6,6 +6,7 @@ import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
 import io.github.usbharu.imagesearch.domain.service.scan.Filter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,8 +93,11 @@ public class CsvTagFilter implements Filter {
       for (FilterCsv filterCsv : filterCsvs) {
 
         if (filterCsv.getRegex()) {
-
-          patterns.add(Pattern.compile(filterCsv.getString()));
+          try {
+            patterns.add(Pattern.compile(filterCsv.getString()));
+          }catch (PatternSyntaxException e){
+            LOGGER.warn("Filter CSV has regex error",e);
+          }
           LOGGER.debug("Add regex filter : {}", filterCsv.getString());
         } else {
 
@@ -103,6 +108,8 @@ public class CsvTagFilter implements Filter {
         LOGGER.info("{} filters have been set.(plane {}, regex {})", filterCsvs.size(),
             simpleFilter.size(), patterns.size());
       }
+    }catch (FileNotFoundException e){
+      LOGGER.warn("Filter Csv Not Found",e);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

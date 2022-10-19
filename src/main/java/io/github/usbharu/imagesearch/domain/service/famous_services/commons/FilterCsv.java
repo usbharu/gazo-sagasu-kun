@@ -9,7 +9,7 @@ public class FilterCsv {
   @CsvColumn(number = 1)
   private String string;
   @CsvColumn(number = 2)
-  @CsvBooleanFormat
+  @CsvBooleanFormat(failToFalse = true)
   private Boolean isRegex;
 
   public String getString() {

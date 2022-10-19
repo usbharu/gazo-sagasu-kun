@@ -11,7 +11,7 @@ public class UnifierCsv {
   @CsvColumn(number = 2)
   String unifiedString;
   @CsvColumn(number = 3)
-  @CsvBooleanFormat
+  @CsvBooleanFormat(failToFalse = true)
   boolean isRegex;
 
   public String getString() {

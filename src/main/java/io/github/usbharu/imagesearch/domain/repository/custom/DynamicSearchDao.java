@@ -58,7 +58,9 @@ public class DynamicSearchDao {
       sb.deleteCharAt(sb.length() - 1);
     }
     String tagsSql = "\n";
-    if (!dynamicSearch.tags.isEmpty()) {
+    if (dynamicSearch.tags.isEmpty()) {
+      logger.info("tag is empty");
+    } else {
       tagsSql = "AND image_id IN (SELECT image.id\n" + "FROM image\n"
           + "JOIN image_tag ON image.id = image_tag.image_id\n"
           + "JOIN tag ON image_tag.tag_id = tag.id\n" + "WHERE tag.name IN (" + sb + ")\n"
@@ -102,21 +104,22 @@ public class DynamicSearchDao {
       tagsSql2 = "AND tag.name IN (" + sb + ")";
     }
 
-    String countSql = "SELECT COUNT(image_id) as count,\n"
-        + "       groupId.name as group_name\n"
-        + "FROM image\n"
+    String countSql = "SELECT COUNT(image_id) as count\n"
+        + "FROM(SELECT image_id\n"
+        +
+        "FROM image\n"
         + "         JOIN image_tag ON image.id = image_tag.image_id\n"
         + "         JOIN tag ON image_tag.tag_id = tag.id\n"
         + "         JOIN groupId on image.groupId = groupId.id\n"
         + "WHERE TRUE\n"
         + groupSql
         + idSql
-        + tagsSql2;
+        + tagsSql2
+        + "GROUP BY image_id)";
+    logger.debug(countSql);
     Images images = new Images((Integer) jdbcTemplate.queryForMap(countSql).get("count"));
     try {
-      List<Map<String, Object>> maps = jdbcTemplate.queryForList(sql, dynamicSearch.limit,
-          dynamicSearch.page * dynamicSearch.limit);
-
+      logger.debug(sql);
       List<Image> searchResults =
           jdbcTemplate.query(sql, new DynamicSearchRowMapper(), dynamicSearch.limit,
               dynamicSearch.page * dynamicSearch.limit);

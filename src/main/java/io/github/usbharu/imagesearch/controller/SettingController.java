@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class SettingController {
 
-  @Value("${server.port}")
+  @Value("${server.port:null}")
   String serverPort;
 
   @Value("${imagesearch.scan.folder}")
@@ -24,10 +24,10 @@ public class SettingController {
   @Value("${imagesearch.scan.impl}")
   String imagesearchScanImpl;
 
-  @Value("${imagesearch.scan.filter.path}")
+  @Value("${imagesearch.scan.filter.path:null}")
   String imagesearchScanFilterPath;
 
-  @Value("${imagesearch.scan.unifier.path}")
+  @Value("${imagesearch.scan.unifier.path:null}")
   String imagesearchScanUnifierPath;
 
   @GetMapping("/setting")

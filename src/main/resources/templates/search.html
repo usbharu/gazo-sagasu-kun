@@ -38,7 +38,7 @@
       <div class="images">
         <hr>
         <a target="_blank" th:href="'/image/'+${image.id}">
-          <img th:alt="${image.name}" th:src="${httpUrl}+${image.path}" width="100%">
+          <img th:alt="${image.name}" th:src="${httpUrl}+${image.path}" width="100%" loading="lazy">
         </a>
         <p th:text="${image.name}"></p>
       </div>

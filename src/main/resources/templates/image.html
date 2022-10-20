@@ -15,7 +15,7 @@
   </a>
 </div>
 <a target="_self" th:href="${httpUrl}+${image.path}">
-  <img th:alt="${image.name}" th:src="${httpUrl}+${image.path}" width="100%">
+  <img th:alt="${image.name}" th:src="${httpUrl}+${image.path}" width="100%" loading="eager">
 </a>
 <th:block th:each="metadata : ${image.metadata}">
   <p th:text="${metadata.type}" ></p>

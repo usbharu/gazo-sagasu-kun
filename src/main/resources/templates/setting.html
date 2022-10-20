@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Setting</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
+  <meta content="width=device-width" name="viewport">
+</head>
+<body>
+<div>
+  <a href="/" style="color: inherit"><hi>イラスト検索</hi></a>
+</div>
+<table>
+  <tr th:each="element : ${settings}">
+    <td>[[${element.key}]]</td>
+    <td>[[${element.value}]]</td>
+  </tr>
+</table>
+</body>
+</html>

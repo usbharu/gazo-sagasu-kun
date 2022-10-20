@@ -1,6 +1,5 @@
 package io.github.usbharu.imagesearch.domain.service;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -12,10 +11,11 @@ import static org.mockito.Mockito.when;
 import io.github.usbharu.imagesearch.domain.model.Group;
 import io.github.usbharu.imagesearch.domain.repository.GroupDao;
 import io.github.usbharu.imagesearch.domain.repository.custom.BulkDao;
-import io.github.usbharu.imagesearch.domain.service.scan.Scanner;
+import io.github.usbharu.imagesearch.domain.service.scan.ScannerLoader;
+import io.github.usbharu.imagesearch.domain.service.scan.impl.DefaultFilter;
+import io.github.usbharu.imagesearch.domain.service.scan.impl.DefaultUnifier;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ class ImageScannerTest {
   GroupDao groupDao;
 
   @Mock
-  Scanner scanner;
+  ScannerLoader scannerLoader;
 
   @InjectMocks ImageScanner imageScanner;
 
@@ -59,8 +59,9 @@ class ImageScannerTest {
     doNothing().when(bulkDao).insertSplit(any(),anyInt());
     doNothing().when(bulkDao).delete();
     when(groupDao.insertOneWithReturnGroup(eq("default"))).thenReturn(new Group(286,"default"));
-    when(scanner.isSupported(any())).thenReturn(true);
-
+    when(scannerLoader.isSupported(any())).thenReturn(true);
+    when(scannerLoader.getFilter()).thenReturn(new DefaultFilter());
+    when(scannerLoader.getUnifier()).thenReturn(new DefaultUnifier());
     imageScanner.startScan();
     verify(bulkDao,times(1)).insertSplit(any(),anyInt());
   }

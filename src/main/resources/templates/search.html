@@ -5,7 +5,7 @@
   <link href="https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c" rel="stylesheet">
   <meta charset="UTF-8">
   <meta content="width=device-width" name="viewport">
-  <title th:text="${message}+' の検索結果'"></title>
+  <title th:text="${message}+' の検索結果 : '+${count}"></title>
 </head>
 <body>
 <a href="#page_top" class="page_top_btn">Top</a>
@@ -14,7 +14,7 @@
 </div>
 
 <div th:include="search-form :: search-form(${message},${order},${sort},${groups},${group})"></div>
-
+<p>[[${message}+' の検索結果 : '+${count}]]</p>
 <th:block th:if="${images.size == 0}">
   <h2>検索結果が見つかりませんでした</h2>
 </th:block>
@@ -22,6 +22,7 @@
 
 
   <section class="main">
+
     <th:div th:if="${pageCount != 0}" class="paging">
       <th:block th:if="${page != 0}"><a
           th:href="${'search?tags=' + tags + '&order=' + order + '&sort=' + sort + '&group=' + group + '&page=' + (page - 1) + '&limit=' + limit+'&merge='+merge}">←</a>

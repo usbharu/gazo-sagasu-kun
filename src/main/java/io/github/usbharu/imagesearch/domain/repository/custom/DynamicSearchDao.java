@@ -105,7 +105,9 @@ public class DynamicSearchDao {
     }
 
     String countSql = "SELECT COUNT(image_id) as count\n"
-        + "FROM(SELECT image_id\n"
+        +
+        "FROM(SELECT image_id,\n"
+        + "     groupId.name as group_name\n"
         +
         "FROM image\n"
         + "         JOIN image_tag ON image.id = image_tag.image_id\n"

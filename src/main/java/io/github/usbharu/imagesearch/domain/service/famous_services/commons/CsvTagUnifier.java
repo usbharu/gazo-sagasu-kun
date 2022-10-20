@@ -6,6 +6,7 @@ import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
 import io.github.usbharu.imagesearch.domain.service.scan.Unifier;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
@@ -89,7 +90,7 @@ public class CsvTagUnifier implements Unifier {
             regexUnifier.put(unifierCsv.unifiedString, Pattern.compile(unifierCsv.string));
             LOGGER.debug("Add regex unifier pattern : {} unified : {}",unifierCsv.string,unifierCsv.unifiedString);
           } catch (PatternSyntaxException e) {
-            e.printStackTrace();
+            LOGGER.warn("Unifier CSV has regex error",e);
           }
         } else {
           planeUnifier.put(unifierCsv.string, unifierCsv.unifiedString);
@@ -97,6 +98,8 @@ public class CsvTagUnifier implements Unifier {
         }
       }
       LOGGER.info("{} unifiers have been set. (plane {}, regex {})",unifierCsvs.size(),planeUnifier.size(),regexUnifier.size());
+    }catch (FileNotFoundException e){
+      LOGGER.warn("Unifier Csv Not Found",e);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

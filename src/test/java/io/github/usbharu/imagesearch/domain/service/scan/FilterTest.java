@@ -6,7 +6,7 @@ import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
 import org.junit.jupiter.api.Test;
 
-public class FilterTest {
+public abstract class FilterTest {
 
   protected Filter filter;
 

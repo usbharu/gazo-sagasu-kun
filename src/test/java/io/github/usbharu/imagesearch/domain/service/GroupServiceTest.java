@@ -62,13 +62,15 @@ class GroupServiceTest {
 
   @Test
   void getGroup_getGroup_returnAllGroups() {
-
+    when(environment.getProperty(anyString())).thenReturn("test");
     when(groupDao.findAll()).thenReturn(List.of(new Group("default"),new Group("test1")));
     assertEquals(2,groupService.getGroups().size());
   }
 
   @Test
   void getGroupAndAll_getGroupAndAll_returnAllGroupAndAll() {
+    when(environment.getProperty(anyString())).thenReturn("test");
+
     when(groupDao.findAll()).thenReturn(List.of(new Group("default"),new Group("test1")));
     assertEquals(3,groupService.getGroupsAndAll().size());
   }

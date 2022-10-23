@@ -25,13 +25,18 @@ public class GroupService {
   }
 
   public List<Group> getGroups() {
-    return groupDao.findAll();
+    List<Group> groupList = groupDao.findAll();
+    ArrayList<Group> groups = new ArrayList<>(groupList);
+    groups.removeIf(group -> !validation(group.getName()));
+    return groups;
   }
 
   public List<Group> getGroupsAndAll() {
 
-    ArrayList<Group> all = new ArrayList<>(groupDao.findAll());
-    all.add(new Group("all"));
+    List<Group> groupList = groupDao.findAll();
+    ArrayList<Group> all = new ArrayList<>(groupList);
+    all.removeIf(group -> !validation(group.getName()));
+    all.add(0,new Group("all"));
     return all;
   }
 

@@ -188,6 +188,19 @@ public class DynamicSearchDao {
       limit = 200;
       page = 0;
     }
+
+    @Override
+    public String toString() {
+      return "DynamicSearch{" +
+          "tags=" + tags +
+          ", group='" + group + '\'' +
+          ", order='" + order + '\'' +
+          ", orderType='" + orderType + '\'' +
+          ", id=" + id +
+          ", limit=" + limit +
+          ", page=" + page +
+          '}';
+    }
   }
 
   private static class DynamicSearchRowMapper implements RowMapper<Image> {

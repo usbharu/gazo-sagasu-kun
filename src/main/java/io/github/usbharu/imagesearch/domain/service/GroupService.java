@@ -26,8 +26,9 @@ public class GroupService {
 
   public List<Group> getGroups() {
     List<Group> groupList = groupDao.findAll();
-    groupList.removeIf(group -> !validation(group.getName()));
-    return groupList;
+    ArrayList<Group> groups = new ArrayList<>(groupList);
+    groups.removeIf(group -> !validation(group.getName()));
+    return groups;
   }
 
   public List<Group> getGroupsAndAll() {

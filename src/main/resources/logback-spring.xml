@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+
+  <include resource="org/springframework/boot/logging/logback/base.xml"/>
+  <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+    <target>System.err</target>
+    <encoder>
+      <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+      <charset>${CONSOLE_LOG_CHARSET}</charset>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>WARN</level>
+    </filter>
+  </appender>
+  <logger name="io.github.usbharu" level="debug"/>
+  <root>
+    <appender-ref ref="STDERR"/>
+  </root>
+</configuration>

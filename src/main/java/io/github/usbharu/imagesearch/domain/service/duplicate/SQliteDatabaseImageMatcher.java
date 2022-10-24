@@ -210,4 +210,8 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
       return null;
     }
   }
+
+  @Override
+  public void close() throws SQLException {
+  }
 }

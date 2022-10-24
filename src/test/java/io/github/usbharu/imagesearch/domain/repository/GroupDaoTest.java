@@ -95,7 +95,7 @@ class GroupDaoTest {
   @ExpectedDatabase(value = "/groupDB/forInsert/expected/", assertionMode = DatabaseAssertionMode.NON_STRICT)
   void insertOne_insertOne_insertOne() {
     int insert = groupDao.insertOne("insert");
-    assertEquals(1,insert);
+    assertEquals(1, insert);
   }
 
   @Test

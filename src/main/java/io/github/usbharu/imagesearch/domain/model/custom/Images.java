@@ -4,7 +4,8 @@ import io.github.usbharu.imagesearch.domain.model.Image;
 import java.util.ArrayList;
 
 public class Images extends ArrayList<Image> {
-  private int count=0;
+
+  private int count = 0;
 
   public Images(int count) {
     this.count = count;

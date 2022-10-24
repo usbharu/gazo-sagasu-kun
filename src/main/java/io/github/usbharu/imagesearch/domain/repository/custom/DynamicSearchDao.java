@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +43,7 @@ public class DynamicSearchDao {
    * @param dynamicSearch 実行する検索の内容
    * @return 検索結果 {@code null} になることはない
    */
-// TODO: 2022/09/15 分割するべき
+  // TODO: 2022/09/15 分割するべき
   public Images search(DynamicSearch dynamicSearch) {
     dynamicSearch = Objects.requireNonNullElse(dynamicSearch, new DynamicSearch());
     StringBuilder sb = new StringBuilder();
@@ -85,39 +84,24 @@ public class DynamicSearchDao {
         + "       image.groupId          as image_group,\n"
         + "       groupId.name           as group_name,\n"
         + "       GROUP_CONCAT(tag_id)   as tags_id,\n"
-        + "       GROUP_CONCAT(tag.name) as tags_name\n"
-        + "FROM image_tag\n"
+        + "       GROUP_CONCAT(tag.name) as tags_name\n" + "FROM image_tag\n"
         + "         JOIN image on image.id = image_tag.image_id\n"
         + "         JOIN tag on tag.id = image_tag.tag_id\n"
-        + "         JOIN groupId on groupId = groupId.id\n"
-        + "WHERE TRUE\n"
-        + tagsSql
-        + groupSql
-        + idSql
-        + "GROUP BY image_id\n"
-        + "ORDER BY " + dynamicSearch.orderType + " " + dynamicSearch.order + "\n"
-        + "LIMIT ?\n"
-        + "OFFSET ?\n";
+        + "         JOIN groupId on groupId = groupId.id\n" + "WHERE TRUE\n" + tagsSql + groupSql
+        + idSql + "GROUP BY image_id\n" + "ORDER BY " + dynamicSearch.orderType + " "
+        + dynamicSearch.order + "\n" + "LIMIT ?\n" + "OFFSET ?\n";
     String tagsSql2 = "\n";
 
     if (!dynamicSearch.tags.isEmpty()) {
       tagsSql2 = "AND tag.name IN (" + sb + ")";
     }
 
-    String countSql = "SELECT COUNT(image_id) as count\n"
-        +
-        "FROM(SELECT image_id,\n"
-        + "     groupId.name as group_name\n"
-        +
-        "FROM image\n"
+    String countSql = "SELECT COUNT(image_id) as count\n" + "FROM(SELECT image_id,\n"
+        + "     groupId.name as group_name\n" + "FROM image\n"
         + "         JOIN image_tag ON image.id = image_tag.image_id\n"
         + "         JOIN tag ON image_tag.tag_id = tag.id\n"
-        + "         JOIN groupId on image.groupId = groupId.id\n"
-        + "WHERE TRUE\n"
-        + groupSql
-        + idSql
-        + tagsSql2
-        + "GROUP BY image_id)";
+        + "         JOIN groupId on image.groupId = groupId.id\n" + "WHERE TRUE\n" + groupSql
+        + idSql + tagsSql2 + "GROUP BY image_id)";
     logger.debug(countSql);
     Images images = new Images((Integer) jdbcTemplate.queryForMap(countSql).get("count"));
     try {
@@ -159,7 +143,7 @@ public class DynamicSearchDao {
      * @param order     並べ替え
      * @param orderType 並べ替えのタイプ
      * @param id        画像のid
-     * @param limit
+     * @param limit     検索数
      */
     public DynamicSearch(List<String> tags, String group, String order, String orderType, int id,
         int limit, int page) {
@@ -191,25 +175,19 @@ public class DynamicSearchDao {
 
     @Override
     public String toString() {
-      return "DynamicSearch{" +
-          "tags=" + tags +
-          ", group='" + group + '\'' +
-          ", order='" + order + '\'' +
-          ", orderType='" + orderType + '\'' +
-          ", id=" + id +
-          ", limit=" + limit +
-          ", page=" + page +
-          '}';
+      return "DynamicSearch{" + "tags=" + tags + ", group='" + group + '\'' + ", order='" + order
+          + '\'' + ", orderType='" + orderType + '\'' + ", id=" + id + ", limit=" + limit
+          + ", page=" + page + '}';
     }
   }
 
   private static class DynamicSearchRowMapper implements RowMapper<Image> {
 
-    private static final ImageRowMapper imageRowMapper = new ImageRowMapper();
+    private static final ImageRowMapper IMAGE_ROW_MAPPER = new ImageRowMapper();
 
     @Override
     public Image mapRow(ResultSet rs, int rowNum) throws SQLException {
-      Image image = imageRowMapper.mapRow(rs, rowNum);
+      Image image = IMAGE_ROW_MAPPER.mapRow(rs, rowNum);
       Group group = new Group(rs.getInt("image_group"), rs.getString("group_name"));
       String[] tagIds = rs.getString("tags_id").split(",");
       String[] tagNames = rs.getString("tags_name").split(",");

@@ -33,11 +33,9 @@ public class ImageFileNameUtil {
   private final Pattern twitterFileUserNamePattern;
   private final Pattern twitterFileIdPattern;
   private final Pattern twitterFileNumberPattern;
-
+  private final Logger logger = LoggerFactory.getLogger(ImageFileNameUtil.class);
   @Value(value = "${imagesearch.scan.folder:}")
   private String scanFolder = "";
-
-  private final Logger logger = LoggerFactory.getLogger(ImageFileNameUtil.class);
 
   public ImageFileNameUtil() {
     isPixivTypeFileName = Pattern.compile(pixivTypeFileBaseName);

@@ -4,6 +4,8 @@ plugins {
     id 'java'
     id 'org.openjfx.javafxplugin' version '0.0.8'
     id 'jacoco'
+    id "com.github.spotbugs" version "5.0.13"
+    id 'checkstyle'
 }
 
 group = 'io.github.usbharu'
@@ -19,6 +21,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.apache.commons:commons-imaging:1.0-alpha3'
+    implementation 'com.github.spotbugs:spotbugs-annotations:4.7.3'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.xerial:sqlite-jdbc:3.39.3.0'
@@ -45,7 +48,6 @@ tasks.named('test') {
 }
 
 
-
 springBoot {
     buildInfo()
 }
@@ -58,4 +60,12 @@ javafx {
 
 jar {
     enabled = false
+}
+
+checkstyle {
+    toolVersion = '10.3.4'
+}
+
+spotbugs {
+    ignoreFailures = true
 }

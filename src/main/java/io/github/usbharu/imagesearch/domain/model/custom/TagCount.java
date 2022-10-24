@@ -1,5 +1,6 @@
 package io.github.usbharu.imagesearch.domain.model.custom;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 
 public class TagCount {
@@ -17,6 +18,7 @@ public class TagCount {
     return count;
   }
 
+  @SuppressFBWarnings("EI_EXPOSE_REP")
   public Tag getTag() {
     return tag;
   }

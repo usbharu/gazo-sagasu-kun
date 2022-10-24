@@ -7,14 +7,13 @@ import io.github.usbharu.imagesearch.domain.service.scan.Unifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Component
 @Configuration
-@ConditionalOnProperty(value = "imagesearch.scan.impl", havingValue = "default",matchIfMissing = true)
+@ConditionalOnProperty(value = "imagesearch.scan.impl", havingValue = "default", matchIfMissing = true)
 public class DefaultScannerLoader implements ScannerLoader {
 
   private static final Filter FILTER = new DefaultFilter();

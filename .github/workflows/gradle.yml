@@ -28,5 +28,5 @@ jobs:
         java-version: '11'
         distribution: 'corretto'
         cache: 'gradle'
-    - name: Bild
-      run: ./gradlew build test --no-daemon
+    - name: Build
+      run: ./gradlew build

@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImageHash {
 
-  private final static HashingAlgorithm algorithm = new DifferenceHash(32, Precision.Simple);
+  private static final HashingAlgorithm DIFFERENCE_HASH = new DifferenceHash(32, Precision.Simple);
 
   public Hash hash(File file) throws IOException {
-    return algorithm.hash(file);
+    return DIFFERENCE_HASH.hash(file);
   }
 
 }

@@ -27,14 +27,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class DuplicateCheck {
 
-  Logger logger = LoggerFactory.getLogger(DuplicateCheck.class);
-
   final HashDao hashDao;
-
   final ImageDao imageDao;
-
   final ImageFileNameUtil imageFileNameUtil;
   final DifferenceHash algo;
+  Logger logger = LoggerFactory.getLogger(DuplicateCheck.class);
   SQliteDatabaseImageMatcher databaseImageMatcher;
 
   public DuplicateCheck(ImageFileNameUtil imageFileNameUtil, ImageDao imageDao, HashDao hashDao,
@@ -61,7 +58,7 @@ public class DuplicateCheck {
       databaseImageMatcher.addImage(String.valueOf(image.getId()),
           new File(imageFileNameUtil.getFullPath(image.getPath())));
     } catch (IOException | SQLException e) {
-      logger.warn("Failed add image. Image: "+image,e);
+      logger.warn("Failed add image. Image: " + image, e);
     }
   }
 

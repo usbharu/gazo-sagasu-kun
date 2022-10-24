@@ -5,7 +5,6 @@ import dev.brachtendorf.jimagehash.hash.Hash;
 import dev.brachtendorf.jimagehash.hashAlgorithms.HashingAlgorithm;
 import dev.brachtendorf.jimagehash.matcher.persistent.database.DatabaseImageMatcher;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PipedInputStream;
@@ -104,7 +103,7 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
     }
   }
 
-    @Override
+  @Override
   public boolean doesEntryExist(String uniqueId, HashingAlgorithm hashAlgo) {
     try {
       jdbcTemplate.queryForMap("SELECT * FROM " + resolveTableName(hashAlgo) + " WHERE URL = ?",
@@ -122,7 +121,8 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
     String tableName = resolveTableName(hasher);
     List<Result<String>> uniqueIds = new ArrayList<>();
     synchronized (jdbcTemplate) {
-      List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT url,hash FROM " + tableName);
+      List<Map<String, Object>> maps =
+          jdbcTemplate.queryForList("SELECT url,hash FROM " + tableName);
       for (Map<String, Object> map : maps) {
         byte[] bytes = (byte[]) map.get("hash");
         Hash h = reconstructHashFromDatabase(hasher, bytes);
@@ -198,14 +198,15 @@ public class SQliteDatabaseImageMatcher extends DatabaseImageMatcher {
     return super.reconstructHashFromDatabase(hasher, bytes);
   }
 
-  public byte[] findById(int id,HashingAlgorithm algorithm){
+  public byte[] findById(int id, HashingAlgorithm algorithm) {
     try {
 
       Map<String, Object> stringObjectMap =
-          jdbcTemplate.queryForMap("SELECT hash FROM "+resolveTableName(algorithm)+" WHERE url = ?", id);
+          jdbcTemplate.queryForMap(
+              "SELECT hash FROM " + resolveTableName(algorithm) + " WHERE url = ?", id);
       return (byte[]) stringObjectMap.get("hash");
-    }catch (EmptyResultDataAccessException e){
-      logger.warn(id+" was not found",e);
+    } catch (EmptyResultDataAccessException e) {
+      logger.warn(id + " was not found", e);
       return null;
     }
   }

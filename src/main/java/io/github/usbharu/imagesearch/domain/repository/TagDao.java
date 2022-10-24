@@ -39,7 +39,8 @@ public class TagDao {
 
   public Tag findById(int id) {
     require().positive(id);
-    return jdbcTemplate.queryForObject("SELECT id as tag_id,name as tag_name FROM tag WHERE tag_id = ?", tagRowMapper,id);
+    return jdbcTemplate.queryForObject(
+        "SELECT id as tag_id,name as tag_name FROM tag WHERE tag_id = ?", tagRowMapper, id);
 
   }
 
@@ -68,11 +69,12 @@ public class TagDao {
 
   public int deleteOne(Tag tag) {
     Objects.requireNonNull(tag, "Tag is Null");
-    return jdbcTemplate.update("DELETE FROM tag WHERE id = ? AND name = ?", tag.getId(),tag.getName());
+    return jdbcTemplate.update("DELETE FROM tag WHERE id = ? AND name = ?", tag.getId(),
+        tag.getName());
   }
 
   public int deleteById(int id) {
-    require().positive(id,"Id is negative or zero");
+    require().positive(id, "Id is negative or zero");
     return jdbcTemplate.update("DELETE FROM tag WHERE id = ?", id);
   }
 
@@ -94,8 +96,8 @@ public class TagDao {
               + "ORDER BY RANDOM"
               + "()\n"
               + "LIMIT 1", tagRowMapper);
-    }catch (EmptyResultDataAccessException e){
-      throw new TagDatabaseEmptyException("Tag Database is Empty",e);
+    } catch (EmptyResultDataAccessException e) {
+      throw new TagDatabaseEmptyException("Tag Database is Empty", e);
     }
   }
 
@@ -140,11 +142,11 @@ public class TagDao {
     return result;
   }
 
-  public static class TagRowMapper implements RowMapper<Tag>{
+  public static class TagRowMapper implements RowMapper<Tag> {
 
     @Override
     public Tag mapRow(ResultSet rs, int rowNum) throws SQLException {
-      return new Tag(rs.getInt("tag_id"),rs.getString("tag_name"));
+      return new Tag(rs.getInt("tag_id"), rs.getString("tag_name"));
     }
   }
 }

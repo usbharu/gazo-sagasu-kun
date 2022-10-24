@@ -68,9 +68,6 @@ public class Tag implements ImageMetadata {
 
   @Override
   public String toString() {
-    return "Tag{" +
-        "id=" + id +
-        ", name='" + name + '\'' +
-        '}';
+    return "Tag{" + "id=" + id + ", name='" + name + '\'' + '}';
   }
 }

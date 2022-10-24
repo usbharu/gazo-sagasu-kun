@@ -1,8 +1,6 @@
 package io.github.usbharu.imagesearch.domain.exceptions;
 
-import org.springframework.dao.EmptyResultDataAccessException;
-
-public class TagDatabaseEmptyException extends RuntimeException{
+public class TagDatabaseEmptyException extends RuntimeException {
 
   public TagDatabaseEmptyException() {
   }

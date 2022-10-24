@@ -12,18 +12,18 @@ class ListUtilsTest {
 
   @Test
   void getOr_getFromIndex_returnElement() {
-    List<String> list = List.of("a","b","c","d");
+    List<String> list = List.of("a", "b", "c", "d");
     String actual = getOr(list, 2, "a");
     String expected = "c";
-    assertEquals(expected,actual);
+    assertEquals(expected, actual);
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {-1,100,3892843})
+  @ValueSource(ints = {-1, 100, 3892843})
   void getOr_getFromIllegalIndex_returnDefault(int n) {
-    List<String> list = List.of("a","b","c","d");
+    List<String> list = List.of("a", "b", "c", "d");
     String actual = getOr(list, n, "a");
     String expected = "a";
-    assertEquals(expected,actual);
+    assertEquals(expected, actual);
   }
 }

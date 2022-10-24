@@ -45,12 +45,13 @@ class PixivBatchDownloaderPluginScannerTest extends ScannerTest {
 
   @Test
   void isSupported_otherSupportedFile_returnTrue() {
-    assertTrue(pixivBatchDownloaderPluginScanner.isSupported(new File("/testData/pixiv/123456_p0.png")));
+    assertTrue(
+        pixivBatchDownloaderPluginScanner.isSupported(new File("/testData/pixiv/123456_p0.png")));
   }
 
   @Test
-@Override
-  protected void getMetadata_hasNoMetadataFile_returnNull(){
+  @Override
+  protected void getMetadata_hasNoMetadataFile_returnNull() {
 
   }
 

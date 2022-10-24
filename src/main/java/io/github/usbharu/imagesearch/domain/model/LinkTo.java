@@ -2,9 +2,9 @@ package io.github.usbharu.imagesearch.domain.model;
 
 import java.util.List;
 
-public class LinkTo implements ImageMetadata{
+public class LinkTo implements ImageMetadata {
 
-  String link="";
+  String link = "";
 
   public LinkTo(String link) {
     this.link = link;

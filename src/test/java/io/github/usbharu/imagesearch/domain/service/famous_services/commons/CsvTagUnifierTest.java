@@ -86,7 +86,8 @@ class CsvTagUnifierTest extends UnifierTest {
   @Test
   void init_emptyCsvFilter_doNothing() {
     CsvTagUnifier csvTagUnifier = (CsvTagUnifier) super.unifier;
-    csvTagUnifier.setPath(getClass().getClassLoader().getResource("testData/unifier_empty.csv").getPath());
+    csvTagUnifier.setPath(
+        getClass().getClassLoader().getResource("testData/unifier_empty.csv").getPath());
     csvTagUnifier.init();
     assertEquals(0, csvTagUnifier.planeUnifier.size());
     assertEquals(0, csvTagUnifier.regexUnifier.size());
@@ -95,7 +96,8 @@ class CsvTagUnifierTest extends UnifierTest {
   @Test
   void init_invalidRegex_skipRegex() {
     CsvTagUnifier csvTagUnifier = (CsvTagUnifier) super.unifier;
-    csvTagUnifier.setPath(getClass().getClassLoader().getResource("testData/unifier_error_regex.csv").getPath());
+    csvTagUnifier.setPath(
+        getClass().getClassLoader().getResource("testData/unifier_error_regex.csv").getPath());
     csvTagUnifier.init();
     assertEquals(0, csvTagUnifier.planeUnifier.size());
     assertEquals(0, csvTagUnifier.regexUnifier.size());

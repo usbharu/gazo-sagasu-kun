@@ -9,13 +9,13 @@ class ImageTest {
 
   @Test
   void addMetadata_NoContains_addMetadata() {
-    Image image = new Image("test","/test");
+    Image image = new Image("test", "/test");
     Tags metadata = new Tags();
     metadata.add(new Tag("test1"));
     metadata.add(new Tag("test2"));
     image.addMetadata(metadata);
 
-    assertEquals(2,ImageTagUtil.getTags(image).size());
+    assertEquals(2, ImageTagUtil.getTags(image).size());
   }
 
   @Test
@@ -32,7 +32,7 @@ class ImageTest {
 
     System.out.println(image.getMetadata());
 
-    assertEquals(4,ImageTagUtil.getTags(image).size());
+    assertEquals(4, ImageTagUtil.getTags(image).size());
   }
 
 }

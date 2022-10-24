@@ -20,27 +20,25 @@ import org.apache.commons.imaging.formats.tiff.constants.MicrosoftTagConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultJpegScanner implements Scanner {
 
+  @Autowired
+  protected ImageFileNameUtil imageFileNameUtil;
   Logger logger = LoggerFactory.getLogger(DefaultJpegScanner.class);
-
-  @Autowired protected ImageFileNameUtil imageFileNameUtil;
 
   @Override
   public boolean isSupported(File file) {
-    Objects.requireNonNull(file,"File is Null");
+    Objects.requireNonNull(file, "File is Null");
     return imageFileNameUtil.isJpg(file.getName());
   }
 
   @Override
   public Image getMetadata(File image, Path subpath) {
-    Objects.requireNonNull(image,"Image is Null");
-    Objects.requireNonNull(subpath,"SubPath is Null");
+    Objects.requireNonNull(image, "Image is Null");
+    Objects.requireNonNull(subpath, "SubPath is Null");
     try {
       ImageMetadata metadata = Imaging.getMetadata(image);
       if (metadata == null) {

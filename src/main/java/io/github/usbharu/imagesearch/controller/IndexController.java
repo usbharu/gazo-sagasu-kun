@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 public class IndexController {
 
+  final BuildProperties buildProperties;
   private final ImageFileNameUtil imageFileNameUtil;
   private final ImageSearch imageSearch;
   private final TagService tagService;
@@ -36,15 +37,12 @@ public class IndexController {
   Logger logger = LoggerFactory.getLogger(IndexController.class);
   @Value("${imagesearch.scan.http.folder:}")
   private String httpFolder = "";
-
   @Value("${imagesearch.scan.folder:}")
   private String folder = "";
-  final
-  BuildProperties buildProperties;
 
   @Autowired
-  public IndexController(ImageSearch imageSearch, TagService tagService,
-      GroupService groupService, ImageService imageService, BuildProperties buildProperties,
+  public IndexController(ImageSearch imageSearch, TagService tagService, GroupService groupService,
+      ImageService imageService, BuildProperties buildProperties,
       ImageFileNameUtil imageFileNameUtil) {
     this.imageSearch = imageSearch;
     this.tagService = tagService;
@@ -64,23 +62,19 @@ public class IndexController {
   }
 
 
+  @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("ICAST_INT_CAST_TO_DOUBLE_PASSED_TO_CEIL")
   @SuppressWarnings("IntegerDivisionInFloatingPointContext")
   @GetMapping("/search")
-  public String search(@ModelAttribute("tags") String tags,
-      @ModelAttribute("group") String group,
-      @ModelAttribute("sort") String sort,
-      @ModelAttribute("order") String order,
-      @ModelAttribute("duplicate") String duplicate,
-      @ModelAttribute("limit") String limitStr,
-      @ModelAttribute("page") String pageStr,
-      @ModelAttribute("link") String link,
-      @ModelAttribute("merge")String mergeStr,
-      Model model) {
+  public String search(@ModelAttribute("tags") String tags, @ModelAttribute("group") String group,
+      @ModelAttribute("sort") String sort, @ModelAttribute("order") String order,
+      @ModelAttribute("duplicate") String duplicate, @ModelAttribute("limit") String limitStr,
+      @ModelAttribute("page") String pageStr, @ModelAttribute("link") String link,
+      @ModelAttribute("merge") String mergeStr, Model model) {
     if (duplicate != null && !duplicate.isBlank()) {
       return "redirect:/image/" + duplicate;
     }
-    if(link!=null&&!link.isBlank()){
-      return "redirect:"+link;
+    if (link != null && !link.isBlank()) {
+      return "redirect:" + link;
     }
 
     if (!groupService.validation(group)) {
@@ -91,8 +85,8 @@ public class IndexController {
     if (limitStr != null && !limitStr.isBlank()) {
       try {
         limit = Integer.parseInt(limitStr);
-      }catch (NumberFormatException e){
-        logger.warn("Illegal Page Number",e);
+      } catch (NumberFormatException e) {
+        logger.warn("Illegal Page Number", e);
       }
     }
     int page = 0;
@@ -100,15 +94,16 @@ public class IndexController {
       try {
         page = Integer.parseInt(pageStr);
       } catch (NumberFormatException e) {
-        logger.warn("Illegal Page Number",e);
+        logger.warn("Illegal Page Number", e);
       }
     }
     boolean merge = false;
-    if (mergeStr!=null&&!mergeStr.isBlank()) {
+    if (mergeStr != null && !mergeStr.isBlank()) {
       merge = Boolean.parseBoolean(mergeStr);
     }
 
-    Images images = imageSearch.search3(tags.split("[; ,]"), group, sort, order, limit, page,merge);
+    Images images =
+        imageSearch.search3(tags.split("[; ,]"), group, sort, order, limit, page, merge);
     model.addAttribute("tagCount", tagService.tagOrderOfMostUsedLimit(20));
     model.addAttribute("message", tags);
     model.addAttribute("images", images);
@@ -119,7 +114,7 @@ public class IndexController {
     model.addAttribute("page", page);
     model.addAttribute("pageCount", ((int) Math.ceil(images.getCount() / limit)));
     model.addAttribute("count", images.getCount());
-    model.addAttribute("merge",merge);
+    model.addAttribute("merge", merge);
     return "search";
   }
 
@@ -152,12 +147,12 @@ public class IndexController {
   }
 
   @GetMapping("/redirect")
-  public String redirectTo(@ModelAttribute("url") String url){
+  public String redirectTo(@ModelAttribute("url") String url) {
     return "redirect:" + url;
   }
 
   @GetMapping("/link")
-  public String linkTo(@ModelAttribute("url")String url){
-    return "redirect:"+url;
+  public String linkTo(@ModelAttribute("url") String url) {
+    return "redirect:" + url;
   }
 }

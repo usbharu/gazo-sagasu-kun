@@ -6,6 +6,7 @@ import com.github.mygreen.supercsv.annotation.format.CsvBooleanFormat;
 
 @CsvBean
 public class UnifierCsv {
+
   @CsvColumn(number = 1)
   String string;
   @CsvColumn(number = 2)

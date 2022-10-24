@@ -33,9 +33,7 @@ public enum ImageTagDaoOrderType {
 
   @Override
   public String toString() {
-    return "ImageTagDaoOrderType{" +
-        "sql='" + sql + '\'' +
-        '}';
+    return "ImageTagDaoOrderType{" + "sql='" + sql + '\'' + '}';
   }
 
   public String getName() {

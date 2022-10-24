@@ -26,10 +26,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class BulkDao {
 
+  private static final Tag NONE = new Tag(1, "NONE");
   private final JdbcTemplate jdbcTemplate;
-
   private final Logger logger = LoggerFactory.getLogger(BulkDao.class);
-  private static final Tag none = new Tag(1, "NONE");
   private final ImageRowMapper imageRowMapper;
 
   /**
@@ -39,7 +38,7 @@ public class BulkDao {
    */
   @Autowired
   public BulkDao(JdbcTemplate jdbcTemplate) {
-    Objects.requireNonNull(jdbcTemplate,"JdbcTemplate is Null");
+    Objects.requireNonNull(jdbcTemplate, "JdbcTemplate is Null");
     this.jdbcTemplate = jdbcTemplate;
     imageRowMapper = new ImageRowMapper();
   }
@@ -80,12 +79,12 @@ public class BulkDao {
   }
 
   protected void internalInsert(List<Image> images) {
-    Objects.requireNonNull(images,"Images is Null");
+    Objects.requireNonNull(images, "Images is Null");
     if (images.isEmpty()) {
       return;
     }
     for (Image image : images) {
-      image.setPath(image.getPath().replaceAll("\\\\","/"));
+      image.setPath(image.getPath().replaceAll("\\\\", "/"));
     }
 
     List<Tag> tagList = new ArrayList<>();
@@ -117,7 +116,7 @@ public class BulkDao {
       imageSql.deleteCharAt(imageSql.length() - 1);
       imageSql.append(
           "RETURNING id as image_id,name as image_name,path as image_path,groupId as image_group");
-      logger.trace("ImageSql : {}",imageSql);
+      logger.trace("ImageSql : {}", imageSql);
       List<Image> updatedImageList = jdbcTemplate.query(imageSql.toString(), imageRowMapper,
           (Object[]) null);
 
@@ -175,10 +174,10 @@ public class BulkDao {
   }
 
   private List<Tag> getTagsFromDB(List<Tag> tags) {
-    logger.trace("Get tags {}",tags);
+    logger.trace("Get tags {}", tags);
     tags.removeIf(Objects::isNull);
     if (tags.isEmpty()) {
-      return List.of(none);
+      return List.of(NONE);
     }
     StringBuilder sb = new StringBuilder();
     sb.append("SELECT id as tag_id,name as tag_name FROM tag WHERE name IN (");
@@ -190,6 +189,6 @@ public class BulkDao {
     }
     sb.deleteCharAt(sb.length() - 1);
     sb.append(")");
-    return jdbcTemplate.query(sb.toString(),new TagRowMapper());
+    return jdbcTemplate.query(sb.toString(), new TagRowMapper());
   }
 }

@@ -121,24 +121,24 @@ class ImageDaoTest {
 
   @Test
   void insertOne_insertNull_throwNullPointException() {
-    assertThrows(NullPointerException.class,()->imageDao.insertOne(null));
+    assertThrows(NullPointerException.class, () -> imageDao.insertOne(null));
   }
 
   @Test
   @DatabaseSetup(value = "/imageDB/forInsertWithReturn/")
-  @ExpectedDatabase(value = "/imageDB/forInsertWithReturn/expected/",assertionMode = DatabaseAssertionMode.NON_STRICT)
+  @ExpectedDatabase(value = "/imageDB/forInsertWithReturn/expected/", assertionMode = DatabaseAssertionMode.NON_STRICT)
   void insertOneWithReturnImage_insertOne_returnInsertedImage() {
-    Image image = new Image("newWithReturn.jpg","/testData/1/newWithReturn.jpg",1);
+    Image image = new Image("newWithReturn.jpg", "/testData/1/newWithReturn.jpg", 1);
     Image image1 = imageDao.insertOneWithReturnImage(image);
 
-    assertEquals(image.getGroup(),image1.getGroup());
-    assertEquals(image.getName(),image1.getName());
-    assertEquals(image.getPath(),image1.getPath());
+    assertEquals(image.getGroup(), image1.getGroup());
+    assertEquals(image.getName(), image1.getName());
+    assertEquals(image.getPath(), image1.getPath());
   }
 
   @Test
   void insertOneWithReturnImage_insertNull_throwNullPointException() {
-    assertThrows(NullPointerException.class,()->imageDao.insertOneWithReturnImage(null));
+    assertThrows(NullPointerException.class, () -> imageDao.insertOneWithReturnImage(null));
   }
 
   @Test
@@ -159,23 +159,23 @@ class ImageDaoTest {
 
   @Test
   void deleteOne_deleteNull_throwNullPointException() {
-    assertThrows(NullPointerException.class,()->imageDao.deleteOne(null));
+    assertThrows(NullPointerException.class, () -> imageDao.deleteOne(null));
   }
 
   @Test
   void deleteOne_deleteEmpty_throwIllegalArgumentException() {
-    assertThrows(IllegalArgumentException.class,()->imageDao.deleteOne(""));
+    assertThrows(IllegalArgumentException.class, () -> imageDao.deleteOne(""));
   }
 
   @Test
   void deleteOne_deleteBlank_throwIllegalArgumentException() {
-    assertThrows(IllegalArgumentException.class,()->imageDao.deleteOne(" "));
+    assertThrows(IllegalArgumentException.class, () -> imageDao.deleteOne(" "));
   }
 
   @Test
   @DatabaseSetup(value = "/imageDB/")
   void deleteOne_deleteIllegalUrl_returnZero() {
     int i = imageDao.deleteOne("d01cab59-0e18-4ebd-a1e6-a4ad5626c361");
-    assertEquals(0,i);
+    assertEquals(0, i);
   }
 }

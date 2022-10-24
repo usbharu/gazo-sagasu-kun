@@ -48,6 +48,6 @@ class TimeOutTest {
   @Test
   void with_withNegativeTime_fail()
       throws ExecutionException, InterruptedException, TimeoutException {
-    assertThrows(IllegalArgumentException.class,() -> TimeOut.with(runnable,-1000));
+    assertThrows(IllegalArgumentException.class, () -> TimeOut.with(runnable, -1000));
   }
 }

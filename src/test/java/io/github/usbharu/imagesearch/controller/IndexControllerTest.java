@@ -37,27 +37,20 @@ import org.springframework.web.context.WebApplicationContext;
 @AutoConfigureMockMvc
 class IndexControllerTest {
 
-  @Autowired
-  private MockMvc mockMvc;
-
   @MockBean
   ImageService imageService;
-
   @MockBean
   TagService tagService;
-
-
   @MockBean
   ImageSearch imageSearch;
-
   @MockBean
   GroupService groupService;
-
   @InjectMocks
   IndexController indexController;
-
   @Autowired
   WebApplicationContext webApplicationContext;
+  @Autowired
+  private MockMvc mockMvc;
 
   @Test
   void index_get_return200() throws Exception {
@@ -66,7 +59,7 @@ class IndexControllerTest {
 
     this.mockMvc.perform(get("/"))
         .andDo(print())
-        .andExpect(model().attribute("message","test"))
+        .andExpect(model().attribute("message", "test"))
         .andExpect(status().isOk());
   }
 
@@ -79,7 +72,8 @@ class IndexControllerTest {
         List.of(new Image("0.jpg", "testData/1/0.jpg"), new Image("1.jpg", "testData/1/1.jpg"),
             new Image("2.jpg", "testData/1/2.jpg"));
     images.addAll(es);
-    when(imageSearch.search3(any(String[].class),any(),any(),any(),anyInt(),anyInt(),eq(false))).thenReturn(images);
+    when(imageSearch.search3(any(String[].class), any(), any(), any(), anyInt(), anyInt(),
+        eq(false))).thenReturn(images);
 
     when(tagService.tagOrderOfMostUsedLimit(anyInt())).thenReturn(List.of(
         new TagCount(37, new Tag(10, "tag8")),
@@ -111,9 +105,10 @@ class IndexControllerTest {
     Images images = new Images(102);
 
     for (int i = 0; i < 102; i++) {
-      images.add(new Image("image"+i+".jpg","image"+i+".jpg"));
+      images.add(new Image("image" + i + ".jpg", "image" + i + ".jpg"));
     }
-    when(imageSearch.search3(any(String[].class),any(),any(),any(),anyInt(),anyInt(),eq(false))).thenReturn(images);
+    when(imageSearch.search3(any(String[].class), any(), any(), any(), anyInt(), anyInt(),
+        eq(false))).thenReturn(images);
 
     when(tagService.tagOrderOfMostUsedLimit(anyInt())).thenReturn(List.of(
         new TagCount(37, new Tag(10, "tag8")),
@@ -129,13 +124,13 @@ class IndexControllerTest {
         new TagCount(12, new Tag(7, "tag10"))
     ));
 
-
     when(groupService.getGroupsAndAll()).thenReturn(List.of(new Group(1, "a"),
         new Group(2, "b"),
         new Group(3, "c"),
         new Group("all")));
 
-    this.mockMvc.perform(get("/search").param("tags","tag1").param("limit","10")).andDo(print()).andExpect(status().isOk()).andExpect(model().attribute("pageCount",10));
+    this.mockMvc.perform(get("/search").param("tags", "tag1").param("limit", "10")).andDo(print())
+        .andExpect(status().isOk()).andExpect(model().attribute("pageCount", 10));
   }
 
   @Test

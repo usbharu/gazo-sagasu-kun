@@ -42,9 +42,6 @@ public class Group implements ImageMetadata {
 
   @Override
   public String toString() {
-    return "Group{" +
-        "id=" + id +
-        ", name='" + name + '\'' +
-        '}';
+    return "Group{" + "id=" + id + ", name='" + name + '\'' + '}';
   }
 }

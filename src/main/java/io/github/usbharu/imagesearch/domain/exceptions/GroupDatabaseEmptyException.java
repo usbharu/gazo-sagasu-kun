@@ -1,6 +1,6 @@
 package io.github.usbharu.imagesearch.domain.exceptions;
 
-public class GroupDatabaseEmptyException extends RuntimeException{
+public class GroupDatabaseEmptyException extends RuntimeException {
 
   public GroupDatabaseEmptyException() {
   }

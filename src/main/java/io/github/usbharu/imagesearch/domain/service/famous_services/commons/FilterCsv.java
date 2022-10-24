@@ -6,6 +6,7 @@ import com.github.mygreen.supercsv.annotation.format.CsvBooleanFormat;
 
 @CsvBean()
 public class FilterCsv {
+
   @CsvColumn(number = 1)
   private String string;
   @CsvColumn(number = 2)

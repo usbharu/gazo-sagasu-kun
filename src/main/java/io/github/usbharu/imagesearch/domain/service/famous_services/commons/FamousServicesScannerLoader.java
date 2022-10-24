@@ -8,7 +8,6 @@ import io.github.usbharu.imagesearch.domain.service.scan.Unifier;
 import io.github.usbharu.imagesearch.domain.service.scan.impl.DefaultJpegScanner;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +29,8 @@ public class FamousServicesScannerLoader implements ScannerLoader {
 
 
   public FamousServicesScannerLoader(
-      @Qualifier("defaultJpegScanner") DefaultJpegScanner defaultJpegScanner, CsvTagFilter csvTagFilter,
+      @Qualifier("defaultJpegScanner") DefaultJpegScanner defaultJpegScanner,
+      CsvTagFilter csvTagFilter,
       CsvTagUnifier csvTagUnifier,
       PixivBatchDownloaderPluginScanner pixivBatchDownloaderPluginScanner) {
     SCANNERS.add(pixivBatchDownloaderPluginScanner);

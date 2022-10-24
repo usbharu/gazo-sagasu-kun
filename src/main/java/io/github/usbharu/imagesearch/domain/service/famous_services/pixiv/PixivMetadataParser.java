@@ -18,8 +18,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * PixivBatchDownloader用のメタデータパーサ.<br>
- *
- * <a href="https://github.com/xuejianxianzun/PixivBatchDownloader">https://github.com/xuejianxianzun/PixivBatchDownloader</a> でダウンロードされる以下のような形式のメタデータをパースします。
+ * <p>
+ * <a
+ * href="https://github.com/xuejianxianzun/PixivBatchDownloader">https://github.com/xuejianxianzun/PixivBatchDownloader</a>
+ * でダウンロードされる以下のような形式のメタデータをパースします。
  *
  * <pre>
  * {@code
@@ -55,12 +57,12 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  *
- * @since 0.0.4
  * @author usbharu
+ * @since 0.0.4
  */
 public class PixivMetadataParser {
 
-  private final static Logger logger = LoggerFactory.getLogger(PixivMetadataParser.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PixivMetadataParser.class);
 
   /**
    * メタデータをパースします。
@@ -69,9 +71,9 @@ public class PixivMetadataParser {
    * @return パースされたメタデータのリスト. Nullが帰ることはなく、空のリストが帰ります。
    */
   public static List<ImageMetadata> parse(File metaFile) {
-    Objects.requireNonNull(metaFile,"File is Null");
+    Objects.requireNonNull(metaFile, "File is Null");
     if (!metaFile.exists()) {
-      throw new UncheckedIOException("MetaFile is not Found",new FileNotFoundException());
+      throw new UncheckedIOException("MetaFile is not Found", new FileNotFoundException());
     }
 
     if (!metaFile.isFile()) {
@@ -88,18 +90,19 @@ public class PixivMetadataParser {
         }
       }
     } catch (IOException e) {
-      throw new UncheckedIOException("MetaFile has problem",e);
+      throw new UncheckedIOException("MetaFile has problem", e);
     }
     return imageMetadataList;
   }
 
-  private static ImageMetadata parseData(String text, BufferedReader bufferedReader) throws IOException {
-    logger.trace("text: {}",text);
+  private static ImageMetadata parseData(String text, BufferedReader bufferedReader)
+      throws IOException {
+    LOGGER.trace("text: {}", text);
     if (text.startsWith("Tags")) {
-      logger.trace("Find Tags");
+      LOGGER.trace("Find Tags");
       return tags(bufferedReader);
-    }else if (text.startsWith("URL")){
-      logger.trace("Find URL");
+    } else if (text.startsWith("URL")) {
+      LOGGER.trace("Find URL");
       return url(bufferedReader);
     }
 
@@ -114,12 +117,12 @@ public class PixivMetadataParser {
     Tags tags = new Tags();
     while (true) {
       String s = bufferedReader.readLine();
-      if (!s.startsWith("#")){
+      if (!s.startsWith("#")) {
         break;
       }
       tags.add(new Tag(s.substring(1)));
     }
-    logger.trace("Tags: {}",tags);
+    LOGGER.trace("Tags: {}", tags);
     return tags;
   }
 

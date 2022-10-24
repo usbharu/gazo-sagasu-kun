@@ -1,12 +1,13 @@
 package io.github.usbharu.imagesearch.domain.validation;
 
-public class Validation implements IntegerValidation,StringValidation{
+public class Validation implements IntegerValidation, StringValidation {
 
   private static final Validation VALIDATION = new Validation();
 
-  private Validation(){}
+  private Validation() {
+  }
 
-  public static Validation require(){
+  public static Validation require() {
     return VALIDATION;
   }
 }

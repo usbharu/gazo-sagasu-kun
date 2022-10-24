@@ -1,6 +1,6 @@
 package io.github.usbharu.imagesearch.domain.exceptions;
 
-public class IllegalPropertyValueException extends IllegalStateException{
+public class IllegalPropertyValueException extends IllegalStateException {
 
   public IllegalPropertyValueException() {
     super();

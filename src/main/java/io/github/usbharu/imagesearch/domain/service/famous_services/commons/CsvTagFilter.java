@@ -27,12 +27,10 @@ import org.supercsv.prefs.CsvPreference;
 @ConfigurationProperties("imagesearch.scan.filter")
 public class CsvTagFilter implements Filter {
 
-  private String path = null;
-
+  private static final Logger LOGGER = LoggerFactory.getLogger(CsvTagFilter.class);
   List<Pattern> patterns = new ArrayList<>();
   List<String> simpleFilter = new ArrayList<>();
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(CsvTagFilter.class);
+  private String path = null;
 
   public CsvTagFilter() {
 
@@ -95,8 +93,8 @@ public class CsvTagFilter implements Filter {
         if (filterCsv.getRegex()) {
           try {
             patterns.add(Pattern.compile(filterCsv.getString()));
-          }catch (PatternSyntaxException e){
-            LOGGER.warn("Filter CSV has regex error",e);
+          } catch (PatternSyntaxException e) {
+            LOGGER.warn("Filter CSV has regex error", e);
           }
           LOGGER.debug("Add regex filter : {}", filterCsv.getString());
         } else {
@@ -108,8 +106,8 @@ public class CsvTagFilter implements Filter {
         LOGGER.info("{} filters have been set.(plane {}, regex {})", filterCsvs.size(),
             simpleFilter.size(), patterns.size());
       }
-    }catch (FileNotFoundException e){
-      LOGGER.warn("Filter Csv Not Found",e);
+    } catch (FileNotFoundException e) {
+      LOGGER.warn("Filter Csv Not Found", e);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

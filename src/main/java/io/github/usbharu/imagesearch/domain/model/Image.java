@@ -1,5 +1,6 @@
 package io.github.usbharu.imagesearch.domain.model;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -9,14 +10,10 @@ public class Image {
 
   private final int id;
   private final String name;
-  private String path;
-
-
   private final List<ImageMetadata> metadata = new ArrayList<>();
-
-  private int group;
-
   Logger logger = LoggerFactory.getLogger(Image.class);
+  private String path;
+  private int group;
 
   public Image(String name, String path) {
     this.name = name;
@@ -46,6 +43,7 @@ public class Image {
     this.group = group;
   }
 
+  @SuppressFBWarnings("EI_EXPOSE_REP")
   public List<ImageMetadata> getMetadata() {
     return metadata;
   }
@@ -57,8 +55,8 @@ public class Image {
     for (ImageMetadata metadatum : getMetadata()) {
       if (metadatum.getType().equals(metadata.getType())) {
         boolean b = metadatum.addMetadata(metadata);
-        if (!b){
-          logger.debug("Rejected add metadata at {}",this);
+        if (!b) {
+          logger.debug("Rejected add metadata at {}", this);
         }
         return;
       }
@@ -74,17 +72,16 @@ public class Image {
     return path;
   }
 
+  public void setPath(String path) {
+    this.path = path;
+  }
+
   public int getId() {
     return id;
   }
 
   public int getGroup() {
     return group;
-  }
-
-
-  public void setPath(String path) {
-    this.path = path;
   }
 
   public void setGroup(int group) {

@@ -32,10 +32,12 @@ public class SettingController {
 
   @GetMapping("/setting")
   public String setting(Model model) {
-    model.addAttribute("settings",    Map.of("server.port", serverPort, "imagesearch.scan.folder", imageSearchScanFolder,
-        "imagesearch.scan.depth", imagesearchScanDepth, "imagesearch.scan.http.folder", imagesearchScanHttpFolder,
-        "imagesearch.scan.impl", imagesearchScanImpl, "imagesearch.scan.filter.csv",
-        imagesearchScanFilterPath, "imagesearch.scan.unifier.csv", imagesearchScanUnifierPath));
+    model.addAttribute("settings",
+        Map.of("server.port", serverPort, "imagesearch.scan.folder", imageSearchScanFolder,
+            "imagesearch.scan.depth", imagesearchScanDepth, "imagesearch.scan.http.folder",
+            imagesearchScanHttpFolder,
+            "imagesearch.scan.impl", imagesearchScanImpl, "imagesearch.scan.filter.csv",
+            imagesearchScanFilterPath, "imagesearch.scan.unifier.csv", imagesearchScanUnifierPath));
     return "setting";
   }
 }

@@ -4,8 +4,8 @@ import io.github.usbharu.imagesearch.domain.model.Image;
 import io.github.usbharu.imagesearch.domain.model.ImageMetadata;
 import io.github.usbharu.imagesearch.domain.model.Tag;
 import io.github.usbharu.imagesearch.domain.model.Tags;
-import io.github.usbharu.imagesearch.domain.service.scan.impl.DefaultJpegScanner;
 import io.github.usbharu.imagesearch.domain.service.scan.Scanner;
+import io.github.usbharu.imagesearch.domain.service.scan.impl.DefaultJpegScanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UncheckedIOException;
@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -34,15 +32,14 @@ public class PixivBatchDownloaderPluginScanner extends DefaultJpegScanner implem
 
   @Override
   public Image getMetadata(File imageFile, Path subpath) {
-    Objects.requireNonNull(imageFile,"ImageFile is Null");
-    Objects.requireNonNull(subpath,"Subpath is Null");
+    Objects.requireNonNull(imageFile, "ImageFile is Null");
+    Objects.requireNonNull(subpath, "Subpath is Null");
     if (!imageFile.exists()) {
-      throw new UncheckedIOException("ImageFile is not found",new FileNotFoundException());
+      throw new UncheckedIOException("ImageFile is not found", new FileNotFoundException());
     }
     if (!imageFile.isFile()) {
       throw new IllegalArgumentException("ImageFile is not file");
     }
-
 
     Image image = null;
     if (imageFileNameUtil.isJpg(imageFile.getName())) {
@@ -56,7 +53,8 @@ public class PixivBatchDownloaderPluginScanner extends DefaultJpegScanner implem
     if (imageFileNameUtil.isPixivTypeFileName(imageFile.getName())) {
       image.getMetadata().addAll(getPixivImageMetadata(imageFile));
       Tags metadata = new Tags();
-      metadata.add(new Tag("--"+imageFileNameUtil.getPixivTypeFileBaseName(imageFile.getName())+"--"));
+      metadata.add(
+          new Tag("--" + imageFileNameUtil.getPixivTypeFileBaseName(imageFile.getName()) + "--"));
       metadata.add(new Tag("--Pixiv--"));
       image.addMetadata(metadata);
       logger.trace(image.toString());

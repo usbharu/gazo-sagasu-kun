@@ -17,7 +17,6 @@ import io.github.usbharu.imagesearch.domain.service.scan.impl.DefaultUnifier;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -36,7 +35,8 @@ class ImageScannerTest {
   @Mock
   ScannerLoader scannerLoader;
 
-  @InjectMocks ImageScanner imageScanner;
+  @InjectMocks
+  ImageScanner imageScanner;
 
   @BeforeEach
   void setUp() {
@@ -50,19 +50,19 @@ class ImageScannerTest {
 //    when(imageScanner.getFolder()).thenReturn("/testData/");
     Field group = imageScanner.getClass().getDeclaredField("group");
     group.trySetAccessible();
-    group.set(imageScanner, Map.of("test","/testData/1/"));
+    group.set(imageScanner, Map.of("test", "/testData/1/"));
 
     Field folder = imageScanner.getClass().getDeclaredField("folder");
     folder.trySetAccessible();
     folder.set(imageScanner, new ClassPathResource("/testData/").getFile().getAbsolutePath());
 
-    doNothing().when(bulkDao).insertSplit(any(),anyInt());
+    doNothing().when(bulkDao).insertSplit(any(), anyInt());
     doNothing().when(bulkDao).delete();
-    when(groupDao.insertOneWithReturnGroup(eq("default"))).thenReturn(new Group(286,"default"));
+    when(groupDao.insertOneWithReturnGroup(eq("default"))).thenReturn(new Group(286, "default"));
     when(scannerLoader.isSupported(any())).thenReturn(true);
     when(scannerLoader.getFilter()).thenReturn(new DefaultFilter());
     when(scannerLoader.getUnifier()).thenReturn(new DefaultUnifier());
     imageScanner.startScan();
-    verify(bulkDao,times(1)).insertSplit(any(),anyInt());
+    verify(bulkDao, times(1)).insertSplit(any(), anyInt());
   }
 }

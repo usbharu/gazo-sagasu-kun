@@ -32,8 +32,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImageScanner {
 
+  final ScannerLoader scannerLoader;
   private final FileComparator fileComparator = new FileComparator();
-
   private final GroupDao groupDao;
   private final Map<String, List<Path>> pathsMap = new HashMap<>();
   private final List<Image> images = new ArrayList<>();
@@ -42,9 +42,6 @@ public class ImageScanner {
   private Map<String, String> group = new HashMap<>();
   private int depth = 4;
   private String folder = "";
-
-  final
-  ScannerLoader scannerLoader;
 
   @Autowired
   public ImageScanner(BulkDao bulkDao, GroupDao groupDao, ScannerLoader scannerLoader) {
@@ -119,7 +116,7 @@ public class ImageScanner {
     for (File listFile : files) {
       if (listFile.isDirectory()) {
         scanFolder(listFile, depth + 1);
-      } else if (scannerLoader.isSupported(listFile)){
+      } else if (scannerLoader.isSupported(listFile)) {
         scanImage(listFile, group1);
       }
     }
@@ -174,7 +171,6 @@ public class ImageScanner {
   }
 
   private void filterMetadata(Image image) {
-//    System.out.println("image = " + image);
     Filter filter = scannerLoader.getFilter();
     List<ImageMetadata> metadata = image.getMetadata();
     for (int i = 0, metadataSize = metadata.size(); i < metadataSize; i++) {
@@ -249,10 +245,7 @@ public class ImageScanner {
 
     @Override
     public String toString() {
-      return "GroupPathSet{" +
-          "group=" + group +
-          ", path=" + path +
-          '}';
+      return "GroupPathSet{" + "group=" + group + ", path=" + path + '}';
     }
   }
 

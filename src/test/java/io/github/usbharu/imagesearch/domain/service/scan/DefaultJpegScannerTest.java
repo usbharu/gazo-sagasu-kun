@@ -7,7 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
-class DefaultJpegScannerTest extends ScannerTest{
+class DefaultJpegScannerTest extends ScannerTest {
+
   @Spy
   ImageFileNameUtil imageFileNameUtil;
 

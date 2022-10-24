@@ -1,6 +1,5 @@
 package io.github.usbharu.imagesearch.domain.service.famous_services;
 
-import static io.github.usbharu.imagesearch.util.ImageTagUtil.getTags;
 import static io.github.usbharu.imagesearch.util.ImageTagUtil.getTagsNoNull;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +17,7 @@ class PixivMetadataParserTest {
   void parse_parseMetaFile_returnMetadataList() throws IOException {
     List<ImageMetadata> parse = PixivMetadataParser.parse(
         new ClassPathResource("/testData/pixiv/123456-meta.txt").getFile());
-    assertEquals(5,getTagsNoNull(parse).size());
+    assertEquals(5, getTagsNoNull(parse).size());
   }
 
   @Test

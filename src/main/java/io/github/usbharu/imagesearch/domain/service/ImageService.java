@@ -18,14 +18,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImageService {
 
-  private final DynamicSearchDao dynamicSearchDao;
-
-  Logger logger = LoggerFactory.getLogger(ImageSearch.class);
   final DuplicateCheck duplicateCheck;
-
   final PixivMetadataService pixivMetadataService;
-  final
-  TwitterMetadataService twitterMetadataService;
+  final TwitterMetadataService twitterMetadataService;
+  private final DynamicSearchDao dynamicSearchDao;
+  Logger logger = LoggerFactory.getLogger(ImageSearch.class);
 
   @Autowired
   public ImageService(DynamicSearchDao dynamicSearchDao, DuplicateCheck duplicateCheck,

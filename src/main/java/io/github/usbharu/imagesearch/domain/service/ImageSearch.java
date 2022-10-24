@@ -17,20 +17,17 @@ import java.util.Objects;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ImageSearch {
 
-  Logger logger = LoggerFactory.getLogger(ImageSearch.class);
   final DynamicSearchDao dynamicSearchDao;
-  private final TagDao tagDao;
-
   final DuplicateCheck duplicateCheck;
-
   final
   ImageFileNameUtil imageFileNameUtil;
+  private final TagDao tagDao;
+  Logger logger = LoggerFactory.getLogger(ImageSearch.class);
 
   public ImageSearch(DynamicSearchDao dynamicSearchDao, TagDao tagDao,
       DuplicateCheck duplicateCheck, ImageFileNameUtil imageFileNameUtil) {
@@ -56,7 +53,8 @@ public class ImageSearch {
 
   }
 
-  public Images search3(String[] split, String group, String sort, String order, int limit,int page,boolean merge) {
+  public Images search3(String[] split, String group, String sort, String order, int limit,
+      int page, boolean merge) {
     Images search = dynamicSearchDao.search(
         new DynamicSearchBuilder().setTags(split).setGroup(group).setOrder(order).setOrderType(sort)
             .setPage(page)
@@ -67,7 +65,7 @@ public class ImageSearch {
     return search;
   }
 
-  public Images mergeSequentialNumbers(Images images){
+  public Images mergeSequentialNumbers(Images images) {
     Set<String> tagNames = new HashSet<>();
     Images result = new Images(images.getCount());
     for (Image image : images) {

@@ -47,7 +47,7 @@ public class CsvTagFilterTest extends FilterTest {
     tags.add(new Tag("test1"));
     tags.add(new Tag("test2"));
     ImageMetadata filtered = csvTagFilter.filter(tags);
-    assertEquals(1,((Tags) filtered).size());
+    assertEquals(1, ((Tags) filtered).size());
   }
 
   @Test
@@ -59,7 +59,7 @@ public class CsvTagFilterTest extends FilterTest {
     tags.add(new Tag("ab"));
     tags.add(new Tag("test2"));
     ImageMetadata filtered = csvTagFilter.filter(tags);
-    assertEquals(1,((Tags) filtered).size());
+    assertEquals(1, ((Tags) filtered).size());
   }
 
   @Test
@@ -67,34 +67,36 @@ public class CsvTagFilterTest extends FilterTest {
     CsvTagFilter csvTagFilter = (CsvTagFilter) super.filter;
     csvTagFilter.setPath(defaultPath);
     csvTagFilter.init();
-    assertEquals(2,csvTagFilter.simpleFilter.size());
-    assertEquals(1,csvTagFilter.patterns.size());
+    assertEquals(2, csvTagFilter.simpleFilter.size());
+    assertEquals(1, csvTagFilter.patterns.size());
   }
 
   @Test
   void init_nullPath_doNothing() {
     CsvTagFilter csvTagFilter = (CsvTagFilter) super.filter;
     csvTagFilter.init();
-    assertEquals(0,csvTagFilter.simpleFilter.size());
-    assertEquals(0,csvTagFilter.patterns.size());
+    assertEquals(0, csvTagFilter.simpleFilter.size());
+    assertEquals(0, csvTagFilter.patterns.size());
   }
 
   @Test
   void init_emptyCsvFilter_doNothing() {
     CsvTagFilter csvTagFilter = (CsvTagFilter) super.filter;
-    csvTagFilter.setPath(getClass().getClassLoader().getResource("testData/filter_empty.csv").getPath());
+    csvTagFilter.setPath(
+        getClass().getClassLoader().getResource("testData/filter_empty.csv").getPath());
     csvTagFilter.init();
-    assertEquals(0,csvTagFilter.simpleFilter.size());
-    assertEquals(0,csvTagFilter.patterns.size());
+    assertEquals(0, csvTagFilter.simpleFilter.size());
+    assertEquals(0, csvTagFilter.patterns.size());
   }
 
   @Test
   void init_invalidRegex_skipRegex() {
     CsvTagFilter csvTagFilter = (CsvTagFilter) super.filter;
-    csvTagFilter.setPath(getClass().getClassLoader().getResource("testData/filter_error_regex.csv").getPath());
+    csvTagFilter.setPath(
+        getClass().getClassLoader().getResource("testData/filter_error_regex.csv").getPath());
     csvTagFilter.init();
-    assertEquals(0,csvTagFilter.simpleFilter.size());
-    assertEquals(0,csvTagFilter.patterns.size());
+    assertEquals(0, csvTagFilter.simpleFilter.size());
+    assertEquals(0, csvTagFilter.patterns.size());
   }
 
   @Test

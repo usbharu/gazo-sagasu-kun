@@ -30,7 +30,3 @@ jobs:
         cache: 'gradle'
     - name: Build
       run: ./gradlew build
-    - name: Test
-      run: ./gradlew test
-    - name: CodeCheck
-      run: ./gradlew check

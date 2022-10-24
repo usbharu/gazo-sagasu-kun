@@ -4,7 +4,6 @@ plugins {
     id 'java'
     id 'org.openjfx.javafxplugin' version '0.0.8'
     id 'jacoco'
-    id 'pmd'
     id "com.github.spotbugs" version "5.0.13"
     id 'checkstyle'
     id "com.github.hierynomus.license" version "0.15.0"
@@ -66,11 +65,4 @@ jar {
 
 checkstyle {
     toolVersion = '10.3.4'
-}
-
-pmd {
-    ruleSets = [
-            'java-braces',
-            'java-codesize',
-    ]
 }

@@ -40,6 +40,8 @@ public class IndexController {
     Logger logger = LoggerFactory.getLogger(IndexController.class);
     @Value("${imagesearch.scan.http.folder:}")
     private String httpFolder = "";
+    @Value("${imagesearch.scan.http.thumbnailFolder:}")
+    private String httpThumbnailFolder = "";
     @Value("${imagesearch.scan.folder:}")
     private String folder = "";
 
@@ -110,7 +112,7 @@ public class IndexController {
         model.addAttribute("tagCount", tagService.tagOrderOfMostUsedLimit(20));
         model.addAttribute("message", tags);
         model.addAttribute("images", images);
-        model.addAttribute("httpUrl", httpFolder);
+        model.addAttribute("httpUrl", httpThumbnailFolder);
         model.addAttribute("groups", groupService.getGroupsAndAll());
         model.addAttribute("version", buildProperties.getVersion());
         model.addAttribute("limit", limit);

@@ -110,7 +110,7 @@ public class BulkDao {
       imageSql.append("INSERT OR IGNORE INTO image(name,path,groupId) VALUES");
 
       for (Image image : images) {
-        imageSql.append("('").append(image.getName()).append("','").append(image.getPath())
+        imageSql.append("('").append(image.getName().replace("'","")).append("','").append(image.getPath())
             .append("',").append(image.getGroup()).append("),");
       }
       imageSql.deleteCharAt(imageSql.length() - 1);
